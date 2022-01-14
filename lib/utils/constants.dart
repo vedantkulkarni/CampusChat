@@ -41,8 +41,8 @@ class Constants {
     // subtitle2 -> subtitle
     fontFamily: fontName,
     fontWeight: FontWeight.w400,
-    fontSize: 14,
-    letterSpacing: -0.04,
+    fontSize: 12,
+
     color: Colors.white,
   );
 
@@ -59,7 +59,7 @@ class Constants {
     // body2 -> body1
     fontFamily: fontName,
     fontWeight: FontWeight.w400,
-    fontSize: 16,
+    fontSize: 14,
 
     color: Colors.white,
   );

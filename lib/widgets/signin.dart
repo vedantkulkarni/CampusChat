@@ -1,28 +1,27 @@
 import 'package:chat_app/utils/constants.dart';
 import 'package:flutter/material.dart';
 
-class SignUpForm extends StatefulWidget {
-  Function changeToSignIn;
+class SignInForm extends StatefulWidget {
+  Function changeToSignUp;
   Function submitAuthForm;
-  SignUpForm(this.changeToSignIn,this.submitAuthForm);
+  SignInForm(this.changeToSignUp, this.submitAuthForm);
 
   @override
-  _SignUpState createState() => _SignUpState();
+  _SignInFormState createState() => _SignInFormState();
 }
 
-class _SignUpState extends State<SignUpForm> {
-  final _signUpKey = GlobalKey<FormState>();
+class _SignInFormState extends State<SignInForm> {
+  final _formkey = GlobalKey<FormState>();
   String user_email = '';
   String user_pass = '';
-  String user_name = '';
 
   void _trySubmit() {
-    final isValid = _signUpKey.currentState!.validate();
+    final isValid = _formkey.currentState!.validate();
 
     FocusScope.of(context).unfocus();
     if (isValid) {
-      _signUpKey.currentState!.save();
-      widget.submitAuthForm(user_email,user_name,user_pass, false);
+      _formkey.currentState!.save();
+      widget.submitAuthForm(user_email,'',user_pass, true);
     }
   }
 
@@ -33,12 +32,9 @@ class _SignUpState extends State<SignUpForm> {
       mainAxisSize: MainAxisSize.min,
       children: [
         Form(
-          key: _signUpKey,
+          key: _formkey,
           child: Column(
             children: [
-              const SizedBox(
-                height: 40,
-              ),
               Container(
                 decoration: BoxDecoration(
                     color: Colors.white,
@@ -46,32 +42,7 @@ class _SignUpState extends State<SignUpForm> {
                 width: 300,
                 child: TextFormField(
                   validator: (value) {
-                    if (value!.isEmpty || value.length < 5) {
-                      return 'Username should be atleast 4 characters.';
-                    }
-                    return null;
-                  },
-                  decoration: const InputDecoration(
-                    border: OutlineInputBorder(),
-                    hintText: 'Username',
-                  ),
-                  keyboardType: TextInputType.emailAddress,
-                  autofocus: false,
-                  onSaved: (newValue) {
-                    user_email = newValue!;
-                  },
-                ),
-              ),
-              const SizedBox(
-                height: 10,
-              ),
-              Container(
-                decoration: BoxDecoration(
-                    color: Colors.white,
-                    borderRadius: BorderRadius.circular(5)),
-                width: 300,
-                child: TextFormField(
-                  validator: (value) {
+                    print("value is : $value");
                     if (value!.isEmpty || !value.contains('@')) {
                       return 'Please enter a valid email address.';
                     }
@@ -133,10 +104,10 @@ class _SignUpState extends State<SignUpForm> {
         ),
         TextButton(
           onPressed: () {
-            widget.changeToSignIn();
+            widget.changeToSignUp();
           },
           child: const Text(
-            "Go back to SignIn",
+            "Don't have an account? SignUp!",
             style: Constants.subtitle,
           ),
           style: ButtonStyle(
