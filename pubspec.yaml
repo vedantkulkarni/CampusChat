@@ -38,6 +38,7 @@ dependencies:
   firebase_core: ^1.11.0
   lottie: ^1.2.1
   firebase_auth: ^3.3.5
+  google_fonts: ^2.2.0
   
 
 dev_dependencies:

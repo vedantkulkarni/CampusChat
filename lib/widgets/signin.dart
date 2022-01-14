@@ -4,7 +4,8 @@ import 'package:flutter/material.dart';
 class SignInForm extends StatefulWidget {
   Function changeToSignUp;
   Function submitAuthForm;
-  SignInForm(this.changeToSignUp, this.submitAuthForm);
+  bool isLoading;
+  SignInForm(this.changeToSignUp, this.submitAuthForm,this.isLoading);
 
   @override
   _SignInFormState createState() => _SignInFormState();
@@ -21,7 +22,7 @@ class _SignInFormState extends State<SignInForm> {
     FocusScope.of(context).unfocus();
     if (isValid) {
       _formkey.currentState!.save();
-      widget.submitAuthForm(user_email,'',user_pass, true);
+      widget.submitAuthForm(user_email, '', user_pass, true, context);
     }
   }
 
@@ -91,7 +92,7 @@ class _SignInFormState extends State<SignInForm> {
         const SizedBox(
           height: 15,
         ),
-        ElevatedButton(
+        (widget.isLoading)?CircularProgressIndicator(color: Colors.white,):ElevatedButton(
           onPressed: () {
             _trySubmit();
           },
@@ -102,7 +103,7 @@ class _SignInFormState extends State<SignInForm> {
           style:
               ElevatedButton.styleFrom(primary: Constants.secondaryThemeColor),
         ),
-        TextButton(
+        (widget.isLoading)?Container():TextButton(
           onPressed: () {
             widget.changeToSignUp();
           },

@@ -7,6 +7,7 @@ class Constants {
   static const Color lightText = Color(0xFF4A6572);
   static const Color secondaryThemeColor = Color.fromRGBO(83, 38, 166, 1);
   static const String fontName = 'Roboto';
+  static const String mainScreenRoute = '/main';
 
   static const TextStyle display1 = TextStyle(
     // h4 -> display1
@@ -27,6 +28,13 @@ class Constants {
 
     color: Colors.white,
   );
+  static const TextStyle hi = TextStyle(
+      // h5 -> headline
+      fontFamily: fontName,
+      fontWeight: FontWeight.w700,
+      fontSize: 20,
+      letterSpacing: 1,
+      color: darkText);
 
   static const TextStyle title = TextStyle(
     // h6 -> title
@@ -46,23 +54,20 @@ class Constants {
     color: Colors.white,
   );
 
-  static const TextStyle body2 = TextStyle(
+  static const TextStyle listTile = TextStyle(
     // body1 -> body2
     fontFamily: fontName,
-    fontWeight: FontWeight.w400,
-    fontSize: 14,
-    letterSpacing: 0.2,
-    color: darkText,
+    fontWeight: FontWeight.bold,
+    fontSize: 18,
+    color: Colors.white,
   );
 
   static const TextStyle body1 = TextStyle(
-    // body2 -> body1
-    fontFamily: fontName,
-    fontWeight: FontWeight.w400,
-    fontSize: 14,
-
-    color: Colors.white,
-  );
+      // body2 -> body1
+      fontFamily: fontName,
+      fontWeight: FontWeight.w400,
+      fontSize: 16,
+      color: lightText);
 
   static const TextStyle caption = TextStyle(
     // Caption -> caption
