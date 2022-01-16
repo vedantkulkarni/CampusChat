@@ -6,8 +6,14 @@ class Constants {
   static const Color darkText = Color(0xFF253840);
   static const Color lightText = Color(0xFF4A6572);
   static const Color secondaryThemeColor = Color.fromRGBO(83, 38, 166, 1);
+  static const Color background = Color.fromARGB(255, 243, 243, 249);
   static const String fontName = 'Roboto';
   static const String mainScreenRoute = '/main';
+
+  static BoxShadow boxShadow = BoxShadow(
+      color: Constants.secondaryThemeColor.withOpacity(0.5),
+      blurRadius: 20.0,
+      offset: Offset(10.0, 10.0));
 
   static const TextStyle display1 = TextStyle(
     // h4 -> display1
@@ -55,12 +61,11 @@ class Constants {
   );
 
   static const TextStyle listTile = TextStyle(
-    // body1 -> body2
-    fontFamily: fontName,
-    fontWeight: FontWeight.bold,
-    fontSize: 18,
-    color: Colors.white,
-  );
+      // body1 -> body2
+      fontFamily: fontName,
+      fontWeight: FontWeight.w600,
+      fontSize: 18,
+      color: darkText);
 
   static const TextStyle body1 = TextStyle(
       // body2 -> body1
