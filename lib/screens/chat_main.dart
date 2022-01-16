@@ -1,6 +1,9 @@
 import 'dart:ui';
 
+import 'package:chat_app/screens/freshers.dart';
+import 'package:chat_app/utils/chat_engine.dart';
 import 'package:chat_app/utils/constants.dart';
+import 'package:chat_app/utils/page_transition.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
@@ -11,8 +14,26 @@ class ChatMain extends StatefulWidget {
   _ChatMainState createState() => _ChatMainState();
 }
 
-class _ChatMainState extends State<ChatMain> {
+class _ChatMainState extends State<ChatMain>
+    with SingleTickerProviderStateMixin {
   final user = FirebaseFirestore.instance.collection('Users');
+  late final AnimationController animationController;
+  late final Animation<double> fadeAnimation;
+
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    animationController = AnimationController(
+        vsync: this, duration: const Duration(milliseconds: 500));
+    fadeAnimation = Tween(begin: 0.0, end: 1.0).animate(animationController);
+  }
+
+  @override
+  void dispose() {
+    animationController.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -20,7 +41,7 @@ class _ChatMainState extends State<ChatMain> {
     double w = MediaQuery.of(context).size.width;
     return SafeArea(
       child: Scaffold(
-        drawer: Drawer(),
+        drawer: const Drawer(),
         appBar: AppBar(
           actions: [
             IconButton(
@@ -50,12 +71,15 @@ class _ChatMainState extends State<ChatMain> {
               Expanded(
                 child: SingleChildScrollView(
                   physics: const BouncingScrollPhysics(),
-                  child: Container(
-                    height: h,
-                    width: w,
+                  child: FadeTransition(
+                    opacity: fadeAnimation,
+                    child: Container(
+                      height: h,
+                      width: w,
 
-                    // child: Center(child: Text('Hi'),),
-                    child: buildChatHome(),
+                      // child: Center(child: Text('Hi'),),
+                      child: buildChatHome(animationController),
+                    ),
                   ),
                 ),
               ),
@@ -66,30 +90,35 @@ class _ChatMainState extends State<ChatMain> {
     );
   }
 
-  FutureBuilder<DocumentSnapshot<Object?>> buildChatHome() {
+  FutureBuilder<DocumentSnapshot<Object?>> buildChatHome(
+      AnimationController ctr1) {
+    final AnimationController ctr = ctr1;
     return FutureBuilder<DocumentSnapshot>(
       future: user.doc(FirebaseAuth.instance.currentUser!.uid).get(),
       builder: (context, AsyncSnapshot<DocumentSnapshot> documentSnapshot) {
-        if (documentSnapshot.hasError)
-          return Text('Something went wrong!');
-        else if (documentSnapshot.hasData && !documentSnapshot.data!.exists)
-          return Text('User does not exist');
-        else if (documentSnapshot.connectionState == ConnectionState.done) {
+        if (documentSnapshot.hasError) {
+          return const Text('Something went wrong!');
+        } else if (documentSnapshot.hasData && !documentSnapshot.data!.exists) {
+          return const Text('User does not exist');
+        } else if (documentSnapshot.connectionState == ConnectionState.done) {
           Map<String, dynamic> data =
               documentSnapshot.data!.data() as Map<String, dynamic>;
-          return ChatHome(data['username'].toString().split(' ')[0]);
-        } else
-          return Center(
+          ctr.forward();
+          return ChatHome(data['username'].toString().split(' ')[0], ctr);
+        } else {
+          return const Center(
             child: CircularProgressIndicator(),
           );
+        }
       },
     );
   }
 } //Gets User's first name and passes down to ChatHome widget.
 
 class ChatHome extends StatelessWidget {
-  String username;
-  ChatHome(this.username);
+  final String username;
+  final AnimationController ctr;
+  const ChatHome(this.username, this.ctr);
 
   @override
   Widget build(BuildContext context) {
@@ -120,11 +149,11 @@ class ChatHome extends StatelessWidget {
           const SizedBox(
             height: 10,
           ),
-          UserDashboard(),
+          UserDashboard(ctr),
           const SizedBox(
             height: 40,
           ),
-          Expanded(child: ActivityList())
+          Expanded(child: ActivityList(ctr))
         ],
       ),
     );
@@ -132,7 +161,9 @@ class ChatHome extends StatelessWidget {
 }
 
 class UserDashboard extends StatelessWidget {
-  const UserDashboard({
+  final AnimationController ctr;
+  const UserDashboard(
+    this.ctr, {
     Key? key,
   }) : super(key: key);
 
@@ -185,7 +216,7 @@ class UserDashboard extends StatelessWidget {
                             color: Colors.orangeAccent,
                           ),
                           Row(
-                            children: const [
+                            children:  const [
                               Text(
                                 '233',
                                 style: TextStyle(
@@ -206,7 +237,7 @@ class UserDashboard extends StatelessWidget {
                       ),
                     ],
                   ),
-                  Container(
+                  SizedBox(
                     width: 100,
                     height: 100,
                     child: Lottie.asset('assets/images/chat_lottie.json'),
@@ -264,7 +295,9 @@ class UserDashboard extends StatelessWidget {
                     ],
                   ),
                   GestureDetector(
-                    onTap: () {},
+                    onTap: () {
+                      ctr.reverse(from: 0.5);
+                    },
                     child: Row(
                       children: [
                         Text(
@@ -293,7 +326,9 @@ class UserDashboard extends StatelessWidget {
 }
 
 class ActivityList extends StatelessWidget {
-  const ActivityList({
+  AnimationController anim;
+  ActivityList(
+    this.anim, {
     Key? key,
   }) : super(key: key);
 
@@ -322,7 +357,7 @@ class ActivityList extends StatelessWidget {
                   scrollDirection: Axis.vertical,
                   children: [
                     Container(
-                      padding: EdgeInsets.only(top: 10, left: 10),
+                      padding: const EdgeInsets.only(top: 10, left: 10),
                       height: 120,
                       decoration: BoxDecoration(
                           gradient: const LinearGradient(
@@ -332,9 +367,9 @@ class ActivityList extends StatelessWidget {
                           borderRadius: BorderRadius.circular(10),
                           boxShadow: [
                             BoxShadow(
-                                color: Color(0xfffeb094).withOpacity(0.5),
+                                color: const Color(0xfffeb094).withOpacity(0.5),
                                 blurRadius: 15.0,
-                                offset: Offset(10, 10)),
+                                offset: const Offset(10, 10)),
                           ]),
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
@@ -350,7 +385,12 @@ class ActivityList extends StatelessWidget {
                                     fontWeight: FontWeight.w700),
                               ),
                               IconButton(
-                                  onPressed: () {},
+                                  onPressed: () async {
+                                    await anim.reverse(from: 0.5);
+                                    await Navigator.push(
+                                        context, PageTransition(ChatEngine('Freshers')));
+                                    await anim.forward();
+                                  },
                                   icon: const Icon(
                                     Icons.arrow_forward,
                                     color: Constants.background,
@@ -394,9 +434,9 @@ class ActivityList extends StatelessWidget {
                           borderRadius: BorderRadius.circular(10),
                           boxShadow: [
                             BoxShadow(
-                                color: Color(0xfffd97b6).withOpacity(0.5),
+                                color: const Color(0xfffd97b6).withOpacity(0.5),
                                 blurRadius: 15.0,
-                                offset: Offset(10, 10)),
+                                offset: const Offset(10, 10)),
                           ]),
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
@@ -413,7 +453,12 @@ class ActivityList extends StatelessWidget {
                                 ),
                               ),
                               IconButton(
-                                  onPressed: () {},
+                                  onPressed: () async{
+                                    await anim.reverse(from: 0.5);
+                                    await Navigator.push(
+                                        context, PageTransition(ChatEngine('Seniors')));
+                                    await anim.forward();
+                                  },
                                   icon: const Icon(
                                     Icons.arrow_forward,
                                     color: Constants.background,
