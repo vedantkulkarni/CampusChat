@@ -1,4 +1,3 @@
-
 import 'package:chat_app/screens/auth.dart';
 import 'package:chat_app/screens/chat_main.dart';
 import 'package:chat_app/utils/constants.dart';
@@ -25,11 +24,11 @@ class MyApp extends StatelessWidget {
       theme: ThemeData(
         primarySwatch: Colors.blue,
       ),
+      debugShowCheckedModeBanner: false,
       home: StreamBuilder(
         stream: FirebaseAuth.instance.userChanges(),
         builder: (context, userSnapShot) {
           if (userSnapShot.hasData) {
-           
             return ChatMain();
           }
           return AuthScreen();

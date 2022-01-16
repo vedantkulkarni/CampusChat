@@ -4,6 +4,7 @@ import 'package:chat_app/utils/constants.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:lottie/lottie.dart';
 
 class ChatMain extends StatefulWidget {
   @override
@@ -19,21 +20,47 @@ class _ChatMainState extends State<ChatMain> {
     double w = MediaQuery.of(context).size.width;
     return SafeArea(
       child: Scaffold(
-        body: SingleChildScrollView(
-          physics: const NeverScrollableScrollPhysics(),
-          child: Container(
-            height: h,
-            width: w,
-            color: Constants.background,
-            // child: Center(child: Text('Hi'),),
-            child: buildChatHome(),
+        drawer: Drawer(),
+        appBar: AppBar(
+          actions: [
+            IconButton(
+                onPressed: () {
+                  FirebaseAuth.instance.signOut();
+                },
+                icon: const Icon(Icons.logout))
+          ],
+          title: const Text(
+            'CampusChat',
+            style: TextStyle(
+                color: Constants.darkText,
+                fontWeight: FontWeight.bold,
+                fontSize: 25),
           ),
+          centerTitle: true,
+          iconTheme: const IconThemeData(
+            color: Constants.darkText,
+          ),
+          backgroundColor: Constants.background,
+          elevation: 0,
         ),
-        floatingActionButton: FloatingActionButton(
-          onPressed: () {
-            FirebaseAuth.instance.signOut();
-          },
-          child: const Icon(Icons.logout),
+        body: Container(
+          color: Constants.background,
+          child: Column(
+            children: [
+              Expanded(
+                child: SingleChildScrollView(
+                  physics: const BouncingScrollPhysics(),
+                  child: Container(
+                    height: h,
+                    width: w,
+
+                    // child: Center(child: Text('Hi'),),
+                    child: buildChatHome(),
+                  ),
+                ),
+              ),
+            ],
+          ),
         ),
       ),
     );
@@ -73,7 +100,7 @@ class ChatHome extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           const SizedBox(
-            height: 70,
+            height: 20,
           ),
           GreetingMessage(username: username),
           const SizedBox(
@@ -90,12 +117,12 @@ class ChatHome extends StatelessWidget {
               )
             ],
           ),
-          SizedBox(
+          const SizedBox(
             height: 10,
           ),
           UserDashboard(),
           const SizedBox(
-            height: 50,
+            height: 40,
           ),
           Expanded(child: ActivityList())
         ],
@@ -129,39 +156,70 @@ class UserDashboard extends StatelessWidget {
           children: [
             Container(
               padding: const EdgeInsets.only(
-                  top: 30, left: 20, right: 40, bottom: 20),
+                  top: 20, left: 20, right: 40, bottom: 10),
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   Column(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Text(
-                        'Doubts',
-                        style: TextStyle(
-                            fontSize: 20,
-                            color: Constants.background.withOpacity(0.7),
-                            fontWeight: FontWeight.w200),
-                      ),
-                      const Text(
-                        'Solved',
-                        style: TextStyle(
-                            fontSize: 30,
-                            color: Constants.background,
-                            fontWeight: FontWeight.bold),
+                      Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            'Doubts',
+                            style: TextStyle(
+                                fontSize: 20,
+                                color: Constants.background.withOpacity(0.7),
+                                fontWeight: FontWeight.w200),
+                          ),
+                          const Text(
+                            'Solved',
+                            style: TextStyle(
+                                fontSize: 30,
+                                color: Constants.background,
+                                fontWeight: FontWeight.w200),
+                          ),
+                          const Divider(
+                            color: Colors.orangeAccent,
+                          ),
+                          Row(
+                            children: const [
+                              Text(
+                                '233',
+                                style: TextStyle(
+                                    fontSize: 40,
+                                    color: Constants.background,
+                                    fontWeight: FontWeight.bold),
+                              ),
+                              Text(
+                                '/400',
+                                style: TextStyle(
+                                    fontSize: 40,
+                                    color: Colors.orangeAccent,
+                                    fontWeight: FontWeight.bold),
+                              ),
+                            ],
+                          ),
+                        ],
                       ),
                     ],
                   ),
                   Container(
                     width: 100,
                     height: 100,
-                    decoration: BoxDecoration(
-                        borderRadius: BorderRadius.circular(100),
-                        color: Constants.background),
+                    child: Lottie.asset('assets/images/chat_lottie.json'),
                   )
                 ],
               ),
             ),
+            // Text(
+            //   'Daily Goal',
+            //   style: TextStyle(
+            //     color: Constants.background.withOpacity(0.7),
+            //   ),
+            // ),
             const Divider(
               indent: 20,
               endIndent: 20,
@@ -169,8 +227,8 @@ class UserDashboard extends StatelessWidget {
               color: Colors.orangeAccent,
             ),
             Container(
-              padding:
-                  EdgeInsets.only(top: 10, right: 10, left: 20, bottom: 10),
+              padding: const EdgeInsets.only(
+                  top: 10, right: 10, left: 20, bottom: 10),
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
@@ -216,7 +274,7 @@ class UserDashboard extends StatelessWidget {
                               fontSize: 17,
                               fontWeight: FontWeight.w200),
                         ),
-                        SizedBox(
+                        const SizedBox(
                           width: 10,
                         ),
                         const Icon(
@@ -239,61 +297,151 @@ class ActivityList extends StatelessWidget {
     Key? key,
   }) : super(key: key);
 
-  static const List<String> activityList = [
-    'Interact with Seniors.',
-    'Solve a doubt!',
-    'General Chat',
-  ];
-
   @override
   Widget build(BuildContext context) {
     return Container(
+      // color: Colors.blue.withOpacity(0.2),
+      width: MediaQuery.of(context).size.width * 0.75,
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           const Text(
             'What\'s on your mind today?',
-            style: Constants.body1,
+            style: TextStyle(
+                fontWeight: FontWeight.normal,
+                fontSize: 17,
+                color: Colors.blueGrey),
           ),
           const SizedBox(
-            height: 30,
+            height: 15,
           ),
           Expanded(
-            child: ListView(
-              physics: const BouncingScrollPhysics(),
-              children: List.generate(activityList.length, (index) {
-                return Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
+            child: Container(
+              child: ListView(
+                  physics: const BouncingScrollPhysics(),
+                  scrollDirection: Axis.vertical,
                   children: [
                     Container(
+                      padding: EdgeInsets.only(top: 10, left: 10),
+                      height: 120,
                       decoration: BoxDecoration(
-                          borderRadius: BorderRadius.circular(20),
-                          color: Colors.white,
+                          gradient: const LinearGradient(
+                              colors: [Color(0xfff97a80), Color(0xfffeb094)],
+                              begin: Alignment.bottomLeft,
+                              end: Alignment.topRight),
+                          borderRadius: BorderRadius.circular(10),
                           boxShadow: [
                             BoxShadow(
-                                color: Colors.grey.withOpacity(0.2),
-                                blurRadius: 15,
-                                offset: const Offset(15.0, 15.0))
+                                color: Color(0xfffeb094).withOpacity(0.5),
+                                blurRadius: 15.0,
+                                offset: Offset(10, 10)),
                           ]),
-                      height: 70,
-                      width: MediaQuery.of(context).size.width * 0.75,
-                      child: ListTile(
-                        trailing: const  Icon(
-                          Icons.arrow_forward_ios,
-                          color: Constants.darkText,
-                        ),
-                        title: Text(
-                          activityList[index],
-                          style: Constants.listTile,
-                        ),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              const Text(
+                                'Freshers',
+                                style: TextStyle(
+                                    fontSize: 25,
+                                    color: Constants.background,
+                                    fontWeight: FontWeight.w700),
+                              ),
+                              IconButton(
+                                  onPressed: () {},
+                                  icon: const Icon(
+                                    Icons.arrow_forward,
+                                    color: Constants.background,
+                                    size: 25,
+                                  ))
+                            ],
+                          ),
+                          Row(
+                            children: [
+                              Flexible(
+                                child: Text(
+                                  'Interact with freshers and solve their \ndoubts.',
+                                  softWrap: false,
+                                  overflow: TextOverflow.ellipsis,
+                                  style: TextStyle(
+                                      color:
+                                          Constants.background.withOpacity(0.8),
+                                      fontSize: 16,
+                                      fontWeight: FontWeight.w300),
+                                ),
+                              )
+                            ],
+                          )
+                        ],
                       ),
                     ),
                     const SizedBox(
-                      height: 30,
-                    )
-                  ],
-                );
-              }),
+                      height: 20,
+                    ),
+                    Container(
+                      padding: const EdgeInsets.only(top: 10, left: 10),
+                      height: 120,
+                      decoration: BoxDecoration(
+                          gradient: const LinearGradient(
+                              colors: [
+                                Color(0xffff5087),
+                                Color(0xfffd97b6),
+                              ],
+                              begin: Alignment.bottomCenter,
+                              end: Alignment.topRight),
+                          borderRadius: BorderRadius.circular(10),
+                          boxShadow: [
+                            BoxShadow(
+                                color: Color(0xfffd97b6).withOpacity(0.5),
+                                blurRadius: 15.0,
+                                offset: Offset(10, 10)),
+                          ]),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              const Text(
+                                'Seniors',
+                                style: TextStyle(
+                                  fontSize: 25,
+                                  color: Constants.background,
+                                  fontWeight: FontWeight.w700,
+                                ),
+                              ),
+                              IconButton(
+                                  onPressed: () {},
+                                  icon: const Icon(
+                                    Icons.arrow_forward,
+                                    color: Constants.background,
+                                    size: 25,
+                                  ))
+                            ],
+                          ),
+                          Row(
+                            children: [
+                              Flexible(
+                                child: Text(
+                                  'Chat with your seniors.',
+                                  softWrap: false,
+                                  overflow: TextOverflow.ellipsis,
+                                  style: TextStyle(
+                                    color:
+                                        Constants.background.withOpacity(0.8),
+                                    fontSize: 16,
+                                    fontWeight: FontWeight.w300,
+                                  ),
+                                ),
+                              )
+                            ],
+                          )
+                        ],
+                      ),
+                    ),
+                  ]),
             ),
           )
         ],

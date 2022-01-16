@@ -72,7 +72,7 @@ class Constants {
       fontFamily: fontName,
       fontWeight: FontWeight.w400,
       fontSize: 16,
-      color: lightText);
+      color: Colors.white);
 
   static const TextStyle caption = TextStyle(
     // Caption -> caption
