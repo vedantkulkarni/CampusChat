@@ -153,7 +153,7 @@ class ChatHome extends StatelessWidget {
           const SizedBox(
             height: 40,
           ),
-          Expanded(child: ActivityList(ctr))
+          Expanded(child: ActivityList(ctr, username))
         ],
       ),
     );
@@ -216,7 +216,7 @@ class UserDashboard extends StatelessWidget {
                             color: Colors.orangeAccent,
                           ),
                           Row(
-                            children:  const [
+                            children: const [
                               Text(
                                 '233',
                                 style: TextStyle(
@@ -327,8 +327,9 @@ class UserDashboard extends StatelessWidget {
 
 class ActivityList extends StatelessWidget {
   AnimationController anim;
+   String userFirstName;
   ActivityList(
-    this.anim, {
+    this.anim, this.userFirstName,{
     Key? key,
   }) : super(key: key);
 
@@ -386,10 +387,8 @@ class ActivityList extends StatelessWidget {
                               ),
                               IconButton(
                                   onPressed: () async {
-                                    await anim.reverse(from: 0.5);
-                                    await Navigator.push(
-                                        context, PageTransition(ChatEngine('Freshers')));
-                                    await anim.forward();
+                                    Navigator.push(context,
+                                        PageTransition(Freshers(userFirstName)));
                                   },
                                   icon: const Icon(
                                     Icons.arrow_forward,
@@ -453,11 +452,9 @@ class ActivityList extends StatelessWidget {
                                 ),
                               ),
                               IconButton(
-                                  onPressed: () async{
-                                    await anim.reverse(from: 0.5);
-                                    await Navigator.push(
-                                        context, PageTransition(ChatEngine('Seniors')));
-                                    await anim.forward();
+                                  onPressed: () async {
+                                    Navigator.push(context,
+                                        PageTransition(ChatEngine('Seniors',userFirstName)));
                                   },
                                   icon: const Icon(
                                     Icons.arrow_forward,

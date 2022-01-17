@@ -12,10 +12,12 @@ class AuthScreen extends StatefulWidget {
   _AuthScreenState createState() => _AuthScreenState();
 }
 
-class _AuthScreenState extends State<AuthScreen> {
+class _AuthScreenState extends State<AuthScreen> with TickerProviderStateMixin {
   late LottieBuilder myLottie;
   bool isSignUpMode = false;
   bool isLoading = false;
+  late final AnimationController animationController;
+  late final Animation animation;
   FirebaseAuth auth = FirebaseAuth.instance;
   FirebaseFirestore fireInstance = FirebaseFirestore.instance;
   @override
@@ -23,12 +25,26 @@ class _AuthScreenState extends State<AuthScreen> {
     // TODO: implement initState
     super.initState();
     myLottie = Lottie.asset('assets/images/auth_lottie.json');
+    animationController = new AnimationController(
+        vsync: this, duration: Duration(milliseconds: 500));
+    animation = Tween(begin: 0.0, end: 1.0).animate(animationController);
+    animationController.forward();
   }
 
-  void changeAuthState() {
+  @override
+  void dispose() {
+    animationController.dispose();
+    super.dispose();
+  }
+
+  void changeAuthState() async{
+    await animationController.reverse(from: 0.25);
     setState(() {
+      
       isSignUpMode = !isSignUpMode;
+      
     });
+    await animationController.forward();
   }
 
   void _submitAuthForm(String email, String name, String password,
@@ -49,11 +65,10 @@ class _AuthScreenState extends State<AuthScreen> {
         });
         ScaffoldMessenger.of(ctx)
             .showSnackBar(const SnackBar(content: Text('Login Successfull!')));
-        
       } else {
         authresult = await auth.createUserWithEmailAndPassword(
             email: email, password: password);
-        ScaffoldMessenger.of(ctx).showSnackBar(SnackBar(
+        ScaffoldMessenger.of(ctx).showSnackBar(const SnackBar(
           content: Text('User created successfully'),
           backgroundColor: Colors.green,
         ));
@@ -95,41 +110,45 @@ class _AuthScreenState extends State<AuthScreen> {
   Widget build(BuildContext context) {
     double h = MediaQuery.of(context).size.height;
     double w = MediaQuery.of(context).size.width;
+    
     return SafeArea(
       child: Scaffold(
         backgroundColor: Constants.themeColor,
         body: SingleChildScrollView(
-          child: Container(
-            height: h,
-            width: w,
-            child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                crossAxisAlignment: CrossAxisAlignment.center,
-                children: [
-                  const Center(
-                      child: Text("Welcome!", style: Constants.headline)),
-                  const SizedBox(height: 5),
-                  const Center(
-                      child: Text(
-                    "To continue using the app,\n please sign in first.",
-                    style: Constants.body1,
-                    textAlign: TextAlign.center,
-                  )),
-                  (isSignUpMode)
-                      ? Center(
-                          child: SignUpForm(
-                              changeAuthState, _submitAuthForm, isLoading),
-                        )
-                      : Column(
-                          children: [
-                            Center(
-                              child: myLottie,
-                            ),
-                            SignInForm(
+          child: FadeTransition(
+            opacity: animationController,
+            child: Container(
+              height: h,
+              width: w,
+              child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: [
+                    const Center(
+                        child: Text("Welcome!", style: Constants.headline)),
+                    const SizedBox(height: 5),
+                    const Center(
+                        child: Text(
+                      "To continue using the app,\n please sign in first.",
+                      style: Constants.body1,
+                      textAlign: TextAlign.center,
+                    )),
+                    (isSignUpMode)
+                        ? Center(
+                            child: SignUpForm(
                                 changeAuthState, _submitAuthForm, isLoading),
-                          ],
-                        ),
-                ]),
+                          )
+                        : Column(
+                            children: [
+                              Center(
+                                child: myLottie,
+                              ),
+                              SignInForm(
+                                  changeAuthState, _submitAuthForm, isLoading),
+                            ],
+                          ),
+                  ]),
+            ),
           ),
         ),
       ),

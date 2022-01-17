@@ -5,8 +5,9 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 
 class ChatEngine extends StatefulWidget {
-  final String status; //To identify whether user is Fresher or senior.
-  ChatEngine(this.status, {Key? key}) : super(key: key);
+  final String status;
+  final String userFirstName; //To identify whether user is Fresher or senior.
+  ChatEngine(this.status, this.userFirstName, {Key? key}) : super(key: key);
   @override
   _ChatEngineState createState() => _ChatEngineState();
 }
@@ -18,8 +19,8 @@ class _ChatEngineState extends State<ChatEngine> {
   @override
   void initState() {
     // TODO: implement initState
-    username = FirebaseAuth.instance.currentUser!.uid;
     firestore = FirebaseFirestore.instance;
+    username = FirebaseAuth.instance.currentUser!.uid.toString();
 
     super.initState();
   }
@@ -28,12 +29,56 @@ class _ChatEngineState extends State<ChatEngine> {
   Widget build(BuildContext context) {
     return SafeArea(
       child: Scaffold(
+        appBar: AppBar(
+          leading: IconButton(
+            onPressed: () async {
+              if (!FocusScope.of(context).hasPrimaryFocus) {
+                FocusScope.of(context).unfocus();
+
+                await Future.delayed(Duration(milliseconds: 200), () {});
+              }
+
+              Navigator.of(context).pop();
+            },
+            icon: const Icon(
+              Icons.arrow_back,
+              color: Constants.darkText,
+            ),
+          ),
+          backgroundColor: Constants.background,
+          elevation: 5,
+          title: const Text(
+            'Freshers General Chat',
+            style: TextStyle(
+                color: Constants.darkText, fontWeight: FontWeight.bold),
+          ),
+          actions: [
+            PopupMenuButton(
+                icon: const Icon(
+                  Icons.more_vert,
+                  color: Constants.darkText,
+                ),
+                itemBuilder: (context) => [
+                      const PopupMenuItem(
+                        child: Text('First'),
+                        value: 1,
+                      ),
+                      const PopupMenuItem(
+                        child: Text('Second'),
+                        value: 2,
+                      )
+                    ])
+          ],
+        ),
         body: Container(
             color: Constants.background,
             child: Column(
               children: [
-                Expanded(child: GetMessages(firestore, username,widget.status)),
-                NewMessage(firestore, username, widget.status)
+                Expanded(
+                    child: GetMessages(firestore, username, widget.status,
+                        widget.userFirstName)),
+                NewMessage(
+                    firestore, username, widget.status, widget.userFirstName)
               ],
             )),
       ),
@@ -45,12 +90,14 @@ class NewMessage extends StatefulWidget {
   NewMessage(
     this.firestore,
     this.username,
-    this.status, {
+    this.status,
+    this.userFirstName, {
     Key? key,
   }) : super(key: key);
   FirebaseFirestore firestore;
   String username;
   String status;
+  String userFirstName;
   @override
   State<NewMessage> createState() => _NewMessageState();
 }
@@ -79,7 +126,8 @@ class _NewMessageState extends State<NewMessage> {
         .add({
       'message': s,
       'username': widget.username,
-      'timestamp': Timestamp.now()
+      'timestamp': Timestamp.now(),
+      'userFirstName': widget.userFirstName
     });
     textcontroller.clear();
   }
@@ -119,31 +167,53 @@ class _NewMessageState extends State<NewMessage> {
 class MessageChipUI extends StatelessWidget {
   final String message;
   final bool isMe;
-  MessageChipUI(this.message, this.isMe);
+  String userFirstName;
+  MessageChipUI(this.message, this.isMe, this.userFirstName);
 
   @override
   Widget build(BuildContext context) {
     return Row(
       mainAxisAlignment: isMe ? MainAxisAlignment.end : MainAxisAlignment.start,
       children: [
-        Container(
-          margin: EdgeInsets.symmetric(horizontal: 5, vertical: 2),
-          padding: EdgeInsets.all(10.0),
-          width: 150,
-          decoration: BoxDecoration(
-            color: isMe ? Colors.grey.shade400 : Constants.themeColor,
-            borderRadius: BorderRadius.only(
-                topLeft: Radius.circular(10),
-                topRight: Radius.circular(10),
-                bottomLeft: isMe ? Radius.circular(10) : Radius.circular(2),
-                bottomRight: isMe ? Radius.circular(2) : Radius.circular(10)),
-          ),
-          child: Text(
-            message,
-            style: TextStyle(
-              color: isMe ? Constants.darkText : Constants.background,
+        Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 5),
+              child: Text(
+                isMe ? 'You' : userFirstName,
+                style: TextStyle(
+                    color: Constants.darkText, fontWeight: FontWeight.bold),
+              ),
             ),
-          ),
+            Container(
+              margin: EdgeInsets.symmetric(horizontal: 5, vertical: 2),
+              padding: EdgeInsets.all(10.0),
+              width: 150,
+              decoration: BoxDecoration(
+                  color: isMe ? Colors.grey.shade300 : Constants.themeColor,
+                  borderRadius: BorderRadius.only(
+                      topLeft: Radius.circular(10),
+                      topRight: Radius.circular(10),
+                      bottomLeft:
+                          isMe ? Radius.circular(10) : Radius.circular(2),
+                      bottomRight:
+                          isMe ? Radius.circular(2) : Radius.circular(10)),
+                  boxShadow: [
+                    BoxShadow(
+                        color: isMe
+                            ? Colors.grey.shade300.withOpacity(0.8)
+                            : Constants.themeColor.withOpacity(0.5),
+                        blurRadius: 40)
+                  ]),
+              child: Text(
+                message,
+                style: TextStyle(
+                  color: isMe ? Constants.darkText : Constants.background,
+                ),
+              ),
+            ),
+          ],
         ),
       ],
     );
@@ -154,10 +224,12 @@ class GetMessages extends StatefulWidget {
   FirebaseFirestore firestore;
   String username;
   String status;
+  String userFirstName;
   GetMessages(
     this.firestore,
     this.username,
-    this.status, {
+    this.status,
+    this.userFirstName, {
     Key? key,
   }) : super(key: key);
 
@@ -193,11 +265,16 @@ class _GetMessagesState extends State<GetMessages> {
         }
 
         return ListView.builder(
+          cacheExtent: 2,
+          shrinkWrap: true,
+          physics:
+              BouncingScrollPhysics(parent: AlwaysScrollableScrollPhysics()),
           reverse: true,
           itemBuilder: (context, index) {
             bool isMe =
                 snapshot.data!.docs[index]['username'] == widget.username;
-            return MessageChipUI(snapshot.data!.docs[index]['message'], isMe);
+            return MessageChipUI(snapshot.data!.docs[index]['message'], isMe,
+                snapshot.data!.docs[index]['userFirstName']);
           },
           itemCount: snapshot.data!.docs.length,
         );

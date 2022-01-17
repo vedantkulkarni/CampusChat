@@ -39,6 +39,8 @@ dependencies:
   lottie: ^1.2.1
   firebase_auth: ^3.3.5
   google_fonts: ^2.2.0
+  cached_network_image: ^3.2.0
+  flutter_staggered_animations: ^1.0.0
   
 
 dev_dependencies:
