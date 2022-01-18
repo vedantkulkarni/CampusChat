@@ -10,6 +10,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:flutter_staggered_animations/flutter_staggered_animations.dart';
 import 'package:lottie/lottie.dart';
 
 class ChatMain extends StatefulWidget {
@@ -108,9 +109,10 @@ class _ChatMainState extends State<ChatMain>
         } else if (documentSnapshot.connectionState == ConnectionState.done) {
           Map<String, dynamic> data =
               documentSnapshot.data!.data() as Map<String, dynamic>;
-          ctr.forward();
+
           return ChatHome(data['username'].toString().split(' ')[0], ctr);
         } else {
+          ctr.reset();
           return const Center(
             child: CircularProgressIndicator(),
           );
@@ -250,7 +252,8 @@ class ChatHome extends StatelessWidget {
           const SizedBox(
             height: 40,
           ),
-          Expanded(child: ActivityList(ctr, username))
+          Expanded(child: ActivityList(ctr, username)),
+          
         ],
       ),
     );
@@ -273,22 +276,30 @@ class UserDashboard extends ConsumerWidget {
         future: myProvider.getUserData(),
         builder: (context, snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting)
-            return const Center(
-              child: CircularProgressIndicator(),
+            return Container(
+              height: 240,
+              child: Center(
+                  // child: CircularProgressIndicator(),
+                  ),
             );
+          // ctr.reset();
+          ctr.forward();
           return Container(
             child: Column(
               children: [
-                Row(
-                  children: const [
-                    Text(
-                      'Dashboard',
-                      style: TextStyle(
-                          fontWeight: FontWeight.normal,
-                          fontSize: 17,
-                          color: Colors.blueGrey),
-                    )
-                  ],
+                Container(
+                  height: 20,
+                  child: Row(
+                    children: const [
+                      Text(
+                        'Dashboard',
+                        style: TextStyle(
+                            fontWeight: FontWeight.normal,
+                            fontSize: 17,
+                            color: Colors.blueGrey),
+                      )
+                    ],
+                  ),
                 ),
                 const SizedBox(
                   height: 10,
@@ -469,9 +480,26 @@ class ActivityList extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    const Map<int, dynamic> mp = {
+      1: ['Freshers', 'Interact with freshers and solve their \ndoubts'],
+      2: ['Seniors', 'Chat and get to know your Seniors'],
+      3: ['Teachers', 'Consult some faculty'],
+      4: ['Alumni', 'Get guidance from expert alumni']
+    };
+
+    const colorList = {
+      1: [Color(0xFF5c5fdd), Color(0xFF778deb)],
+      2: [Color(0xfff97a80), Color(0xfffeb094)],
+      3: [
+        Color(0xffff5287),
+        Color(0xfffd99b9),
+      ],
+      4: [Color(0xfff97a80), Color(0xfffeb094)]
+    };
     return Container(
       // color: Colors.blue.withOpacity(0.2),
-      width: MediaQuery.of(context).size.width * 0.75,
+      width: double.maxFinite,
+
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -487,140 +515,115 @@ class ActivityList extends StatelessWidget {
           ),
           Expanded(
             child: Container(
-              child: ListView(
+              width: MediaQuery.of(context).size.width * 0.85,
+              child: AnimationLimiter(
+                child: ListView.builder(
                   physics: const NeverScrollableScrollPhysics(),
-                  scrollDirection: Axis.vertical,
-                  children: [
-                    Container(
-                      padding: const EdgeInsets.only(top: 10, left: 10),
-                      height: 120,
-                      decoration: BoxDecoration(
-                          gradient: const LinearGradient(
-                              colors: [Color(0xfff97a80), Color(0xfffeb094)],
-                              begin: Alignment.bottomLeft,
-                              end: Alignment.topRight),
-                          borderRadius: BorderRadius.circular(10),
-                          boxShadow: [
-                            BoxShadow(
-                                color: const Color(0xfffeb094).withOpacity(0.5),
-                                blurRadius: 15.0,
-                                offset: const Offset(10, 10)),
-                          ]),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                            children: [
-                              const Text(
-                                'Freshers',
-                                style: TextStyle(
-                                    fontSize: 25,
-                                    color: Constants.background,
-                                    fontWeight: FontWeight.w700),
-                              ),
-                              IconButton(
-                                  onPressed: () async {
-                                    Navigator.push(
-                                        context,
-                                        PageTransition(
-                                            Freshers(userFirstName)));
-                                  },
-                                  icon: const Icon(
-                                    Icons.arrow_forward,
-                                    color: Constants.background,
-                                    size: 25,
-                                  ))
-                            ],
-                          ),
-                          Row(
-                            children: [
-                              Flexible(
-                                child: Text(
-                                  'Interact with freshers and solve their \ndoubts.',
-                                  softWrap: false,
-                                  overflow: TextOverflow.ellipsis,
-                                  style: TextStyle(
-                                      color:
-                                          Constants.background.withOpacity(0.8),
-                                      fontSize: 16,
-                                      fontWeight: FontWeight.w300),
-                                ),
-                              )
-                            ],
-                          )
-                        ],
-                      ),
-                    ),
-                    const SizedBox(
-                      height: 20,
-                    ),
-                    Container(
-                      padding: const EdgeInsets.only(top: 10, left: 10),
-                      height: 120,
-                      decoration: BoxDecoration(
-                          gradient: const LinearGradient(
-                              colors: [
-                                Color(0xffff5087),
-                                Color(0xfffd97b6),
-                              ],
-                              begin: Alignment.bottomCenter,
-                              end: Alignment.topRight),
-                          borderRadius: BorderRadius.circular(10),
-                          boxShadow: [
-                            BoxShadow(
-                                color: const Color(0xfffd97b6).withOpacity(0.5),
-                                blurRadius: 15.0,
-                                offset: const Offset(10, 10)),
-                          ]),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                            children: [
-                              const Text(
-                                'Seniors',
-                                style: TextStyle(
-                                  fontSize: 25,
-                                  color: Constants.background,
-                                  fontWeight: FontWeight.w700,
-                                ),
-                              ),
-                              IconButton(
-                                  onPressed: () async {
-                                    await Navigator.push(context,
-                                        PageTransition(Seniors(userFirstName)));
-                                  },
-                                  icon: const Icon(
-                                    Icons.arrow_forward,
-                                    color: Constants.background,
-                                    size: 25,
-                                  ))
-                            ],
-                          ),
-                          Row(
-                            children: [
-                              Flexible(
-                                child: Text(
-                                  'Chat with your seniors.',
-                                  softWrap: false,
-                                  overflow: TextOverflow.ellipsis,
-                                  style: TextStyle(
-                                    color:
-                                        Constants.background.withOpacity(0.8),
-                                    fontSize: 16,
-                                    fontWeight: FontWeight.w300,
+                  itemBuilder: (context, index) {
+                    return AnimationConfiguration.staggeredList(
+                        position: index,
+                        delay: const Duration(milliseconds: 100),
+                        child: SlideAnimation(
+                          horizontalOffset: 50,
+                          duration: const Duration(milliseconds: 2500),
+                          curve: Curves.fastLinearToSlowEaseIn,
+                          child: FadeInAnimation(
+                            child: Padding(
+                              padding: const EdgeInsets.only(right: 35),
+                              child: Column(
+                                children: [
+                                  HomeTile(
+                                    userFirstName: userFirstName,
+                                    infoList: mp[index + 1],
+                                    colorList: colorList[index + 1]!,
                                   ),
-                                ),
-                              )
-                            ],
-                          )
-                        ],
-                      ),
-                    ),
-                  ]),
+                                ],
+                              ),
+                            ),
+                          ),
+                        ));
+                  },
+                  itemCount: 3,
+                ),
+              ),
             ),
+          )
+        ],
+      ),
+    );
+  }
+}
+
+class HomeTile extends StatelessWidget {
+  const HomeTile(
+      {Key? key,
+      required this.userFirstName,
+      required this.colorList,
+      required this.infoList})
+      : super(key: key);
+
+  final String userFirstName;
+  final List<Color> colorList;
+  final List<String> infoList;
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      margin: EdgeInsets.only(top: 15, bottom: 5, left: 15),
+      padding: const EdgeInsets.only(top: 10, left: 10),
+      height: 120,
+      decoration: BoxDecoration(
+          gradient: LinearGradient(
+              colors: colorList,
+              begin: Alignment.bottomLeft,
+              end: Alignment.topRight),
+          borderRadius: BorderRadius.circular(10),
+          boxShadow: [
+            BoxShadow(
+                color: colorList[1].withOpacity(0.7),
+                blurRadius: 20.0,
+                offset: const Offset(10, 10)),
+          ]),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Text(
+                infoList.first,
+                style: const TextStyle(
+                    fontSize: 30,
+                    color: Constants.background,
+                    fontWeight: FontWeight.w400,
+                    letterSpacing: 0),
+              ),
+              IconButton(
+                  onPressed: () async {
+                    
+                    Navigator.push(
+                        context, PageTransition(Freshers(userFirstName)));
+                  },
+                  icon: const Icon(
+                    Icons.arrow_forward,
+                    color: Constants.background,
+                    size: 25,
+                  ))
+            ],
+          ),
+          Row(
+            children: [
+              Flexible(
+                child: Text(
+                  infoList[1],
+                  softWrap: false,
+                  overflow: TextOverflow.ellipsis,
+                  style: TextStyle(
+                      color: Constants.background.withOpacity(0.8),
+                      fontSize: 16,
+                      fontWeight: FontWeight.w300),
+                ),
+              )
+            ],
           )
         ],
       ),

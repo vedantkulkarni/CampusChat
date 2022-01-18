@@ -40,36 +40,36 @@ class _NewDoubtState extends ConsumerState<NewDoubt> {
       width: mediaQuery.width,
       child: SafeArea(
         child: Scaffold(
-          appBar: AppBar(
-            iconTheme: const IconThemeData(color: Constants.darkText),
-            backgroundColor: Constants.background,
-            elevation: 0,
-            actions: [
-              IconButton(
-                  onPressed: () {
-                    FocusScope.of(context).unfocus();
-                  },
-                  icon: const Icon(
-                    Icons.done,
-                    size: 25,
-                  ))
-            ],
-            title: const Text(
-              'New Doubt',
-              style: TextStyle(
-                  fontSize: 25,
-                  color: Constants.darkText,
-                  fontWeight: FontWeight.bold),
+            appBar: AppBar(
+              iconTheme: const IconThemeData(color: Constants.darkText),
+              backgroundColor: Constants.background,
+              elevation: 0,
+              actions: [
+                IconButton(
+                    onPressed: () {
+                      FocusScope.of(context).unfocus();
+                    },
+                    icon: const Icon(
+                      Icons.done,
+                      size: 25,
+                    ))
+              ],
+              title: const Text(
+                'New Doubt',
+                style: TextStyle(
+                    fontSize: 25,
+                    color: Constants.darkText,
+                    fontWeight: FontWeight.bold),
+              ),
+              leading: IconButton(
+                icon: const Icon(Icons.arrow_back),
+                onPressed: () {
+                  FocusScope.of(context).unfocus();
+                  Navigator.pop(context);
+                },
+              ),
             ),
-            leading: IconButton(
-              icon: const Icon(Icons.arrow_back),
-              onPressed: () {
-                FocusScope.of(context).unfocus();
-                Navigator.pop(context);
-              },
-            ),
-          ),
-          body: Container(
+            body: Container(
               color: Constants.background,
               height: double.maxFinite,
               width: double.maxFinite,
@@ -119,7 +119,7 @@ class _NewDoubtState extends ConsumerState<NewDoubt> {
                         ),
                         Container(
                           width: double.maxFinite,
-                          height: 500,
+                          height: 300,
                           margin: const EdgeInsets.all(20),
                           decoration: BoxDecoration(
                               borderRadius: BorderRadius.circular(30),
@@ -151,16 +151,29 @@ class _NewDoubtState extends ConsumerState<NewDoubt> {
                             mainAxisAlignment: MainAxisAlignment.end,
                             children: [
                               ElevatedButton(
-                                onPressed: () async {
-                                  await uploadDoubt(textEditingController.text);
-                                },
+                                onPressed:
+                                    (textEditingController.text.length == 0)
+                                        ? null
+                                        : () async {
+                                            FocusScope.of(context).unfocus();
+                                            await uploadDoubt(
+                                                textEditingController.text);
+                                            textEditingController.clear();
+                                            Navigator.pop(context);
+                                          },
                                 style: ElevatedButton.styleFrom(
-                                    padding: EdgeInsets.all(10)),
+                                    elevation: 5,
+                                    shape: RoundedRectangleBorder(
+                                      borderRadius: BorderRadius.circular(10),
+                                    ),
+                                    primary: Constants.secondaryThemeColor,
+                                    padding: const EdgeInsets.symmetric(
+                                        vertical: 10, horizontal: 15)),
                                 child: const Text(
                                   'Submit',
                                   style: TextStyle(
                                       color: Constants.background,
-                                      fontSize: 20,
+                                      fontSize: 18,
                                       fontWeight: FontWeight.bold),
                                 ),
                               )
@@ -169,10 +182,10 @@ class _NewDoubtState extends ConsumerState<NewDoubt> {
                         )
                       ],
                     ),
-                  )
+                  ),
                 ],
-              )),
-        ),
+              ),
+            )),
       ),
     );
   }

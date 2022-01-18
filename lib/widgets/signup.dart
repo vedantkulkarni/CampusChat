@@ -26,7 +26,8 @@ class _SignUpState extends State<SignUpForm> {
     FocusScope.of(context).unfocus();
     if (isValid) {
       _signUpKey.currentState!.save();
-      widget.submitAuthForm(user_email, user_name, user_pass, false, context,year);
+      widget.submitAuthForm(user_email, user_name, user_pass, false, context,
+          year: year);
     }
   }
 
