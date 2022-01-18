@@ -37,18 +37,17 @@ class _AuthScreenState extends State<AuthScreen> with TickerProviderStateMixin {
     super.dispose();
   }
 
-  void changeAuthState() async{
+  void changeAuthState() async {
     await animationController.reverse(from: 0.25);
     setState(() {
-      
       isSignUpMode = !isSignUpMode;
-      
     });
     await animationController.forward();
   }
 
   void _submitAuthForm(String email, String name, String password,
-      bool isSignIn, BuildContext ctx) async {
+      bool isSignIn, BuildContext ctx,
+      {int? year}) async {
     final authresult;
     email = email.trim();
     name = name.trim();
@@ -72,10 +71,15 @@ class _AuthScreenState extends State<AuthScreen> with TickerProviderStateMixin {
           content: Text('User created successfully'),
           backgroundColor: Colors.green,
         ));
-        fireInstance
-            .collection('Users')
-            .doc(authresult.user.uid)
-            .set({'username': name, 'email': email});
+        fireInstance.collection('Users').doc(authresult.user.uid).set({
+          'username': name,
+          'email': email,
+          'seniorStatus': year,
+          'ratingValue': 0,
+          'ratingStar': 0,
+          'monthlySolved': 0,
+          'monthlyGoal': 10
+        });
       }
     } on PlatformException catch (e) {
       setState(() {
@@ -110,7 +114,7 @@ class _AuthScreenState extends State<AuthScreen> with TickerProviderStateMixin {
   Widget build(BuildContext context) {
     double h = MediaQuery.of(context).size.height;
     double w = MediaQuery.of(context).size.width;
-    
+
     return SafeArea(
       child: Scaffold(
         backgroundColor: Constants.themeColor,

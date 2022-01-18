@@ -95,9 +95,9 @@ class _FresherDoubtsState extends State<FresherDoubts> {
                                       Container(
                                         height: 70,
                                         width: double.maxFinite,
-                                        child: const Text(
-                                          'descdklsdfjask;ldfjsdjlksdgjlsdajgsoadgh0asjlkasjg;lasdh hgl;kas glk jalkg jsgoasjdgo  alskjgoias g sga;fkljsd gasdk gaklsdjg;alks glkasjg ;laskjg ;lkasjgl;skadjg l;skadjg ;alsk g  asdg;lksjg ;lksjg ;las g laskjglsdk;glgjlksg sd sladkfjsladkfjlksdfjlsdkfsdf sfg lskjglskdjglksd ',
-                                          style: TextStyle(
+                                        child:  Text(
+                                          snapshot.data!.docs[index]['desc'],
+                                          style: const TextStyle(
                                               fontSize: 14,
                                               fontWeight: FontWeight.w300,
                                               color: Colors.grey),
