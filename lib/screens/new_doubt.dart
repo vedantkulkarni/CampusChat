@@ -3,6 +3,7 @@ import 'package:chat_app/utils/providers.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:intl/intl.dart';
 
 class NewDoubt extends ConsumerStatefulWidget {
   @override
@@ -11,11 +12,13 @@ class NewDoubt extends ConsumerStatefulWidget {
 
 class _NewDoubtState extends ConsumerState<NewDoubt> {
   late final TextEditingController textEditingController;
+  late final userProvider;
   @override
   void initState() {
     // TODO: implement initState
     super.initState();
     textEditingController = new TextEditingController();
+    userProvider = ref.read(userDataProvider);
   }
 
   Future<void> uploadDoubt(String s) async {
@@ -25,9 +28,12 @@ class _NewDoubtState extends ConsumerState<NewDoubt> {
     final doubtRef =
         userProvider.firestore.collection('Freshers/Doubts/doubts');
     final result = await doubtRef.add({
-      'desc': s,
-      'timestamp': Timestamp.now().toString(),
-      'uid': userProvider.uid
+      'desc': '${userProvider.userName} :\n$s',
+      'timestamp': Timestamp.now(),
+      'uid': userProvider.uid,
+      'username': userProvider.userName,
+      'seniorStatus': userProvider.seniorStatus,
+      'upvotes': 0
     });
   }
 
@@ -82,6 +88,7 @@ class _NewDoubtState extends ConsumerState<NewDoubt> {
                         Container(
                           margin: const EdgeInsets.only(left: 20, top: 40),
                           child: Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
                             children: [
                               Text(
                                 userProvider.userName,
@@ -90,29 +97,33 @@ class _NewDoubtState extends ConsumerState<NewDoubt> {
                                     color: Constants.darkText,
                                     fontWeight: FontWeight.bold),
                               ),
-                              const SizedBox(
-                                width: 10,
-                              ),
-                              Icon(
-                                Icons.edit,
-                                color: Constants.darkText.withOpacity(0.5),
-                              ),
-                              const SizedBox(
-                                width: 20,
-                              ),
-                              Container(
-                                height: 20,
-                                child: Align(
-                                  alignment: Alignment.bottomLeft,
-                                  child: Text(
-                                    'at ${DateTime.now()}',
-                                    style: TextStyle(
-                                        fontSize: 12,
-                                        color:
-                                            Constants.darkText.withOpacity(0.5),
-                                        fontWeight: FontWeight.w300),
+                              Row(
+                                children: [
+                                  Icon(
+                                    Icons.edit,
+                                    size: 16,
+                                    color: Constants.darkText.withOpacity(0.5),
                                   ),
-                                ),
+                                  Container(
+                                    height: 20,
+                                    child: Align(
+                                      alignment: Alignment.bottomLeft,
+                                      child: Text(
+                                        'on ${DateFormat.yMMMMd(
+                                          'en_US',
+                                        ).format(DateTime.now())} at ${DateFormat.jm().format(DateTime.now())}',
+                                        style: TextStyle(
+                                            fontSize: 12,
+                                            color: Constants.darkText
+                                                .withOpacity(0.5),
+                                            fontWeight: FontWeight.w300),
+                                      ),
+                                    ),
+                                  ),
+                                  const SizedBox(
+                                    width: 20,
+                                  )
+                                ],
                               )
                             ],
                           ),

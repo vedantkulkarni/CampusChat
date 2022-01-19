@@ -9,7 +9,7 @@ class Constants {
   static const Color background = Color.fromARGB(255, 243, 243, 249);
   static const String fontName = 'Roboto';
   static const String mainScreenRoute = '/main';
-
+  
   static BoxShadow boxShadow = BoxShadow(
       color: Constants.secondaryThemeColor.withOpacity(0.5),
       blurRadius: 20.0,

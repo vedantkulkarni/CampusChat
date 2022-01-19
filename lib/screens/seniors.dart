@@ -1,4 +1,4 @@
-import 'package:chat_app/screens/fresher_doubts.dart';
+import 'package:chat_app/screens/doubts.dart';
 import 'package:chat_app/screens/new_doubt.dart';
 import 'package:chat_app/utils/chat_engine.dart';
 import 'package:chat_app/utils/constants.dart';

@@ -1,9 +1,10 @@
-import 'package:chat_app/screens/fresher_doubts.dart';
+import 'package:chat_app/screens/doubts.dart';
 import 'package:chat_app/screens/new_doubt.dart';
 import 'package:chat_app/utils/chat_engine.dart';
 import 'package:chat_app/utils/constants.dart';
 import 'package:chat_app/utils/page_transition.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_staggered_animations/flutter_staggered_animations.dart';
 
 class Freshers extends StatefulWidget {
   String userFirstName;
@@ -14,6 +15,11 @@ class Freshers extends StatefulWidget {
 }
 
 class _FreshersState extends State<Freshers> {
+  List<List<String>> uiInfo = [
+    ['Doubts', '22 doubts raised'],
+    ['Chat', '69 users online'],
+    ['Profiles', '230  available'],
+  ];
   @override
   Widget build(BuildContext context) {
     return SafeArea(
@@ -50,186 +56,34 @@ class _FreshersState extends State<Freshers> {
                   child: Column(
                     children: [
                       Expanded(
-                        child: ListView(
-                          physics: const BouncingScrollPhysics(
-                              parent: AlwaysScrollableScrollPhysics()),
-                          scrollDirection: Axis.horizontal,
-                          children: [
-                            GestureDetector(
-                              onTap: () {
-                                Navigator.push(
-                                    context, PageTransition(FresherDoubts()));
-                              },
-                              child: Container(
-                                padding: const EdgeInsets.all(15),
-                                margin: const EdgeInsets.only(
-                                  left: 15,
-                                  bottom: 20,
-                                  top: 20,
+                        child: AnimationLimiter(
+                          child: ListView.builder(
+                            physics: const BouncingScrollPhysics(),
+                            scrollDirection: Axis.horizontal,
+                            itemBuilder: (context, index) {
+                              return AnimationConfiguration.staggeredList(
+                                position: index,
+                                delay: const Duration(milliseconds: 200),
+                                child: SlideAnimation(
+                                  horizontalOffset: 20,
+                                  duration: const Duration(milliseconds: 2500),
+                                  curve: Curves.fastLinearToSlowEaseIn,
+                                  child: FadeInAnimation(
+                                    child: MyListTile(
+                                        widget.userFirstName, uiInfo, index),
+                                  ),
                                 ),
-                                height: 150,
-                                width: 150,
-                                decoration: BoxDecoration(
-                                    borderRadius: BorderRadius.circular(30),
-                                    color: Colors.white,
-                                    boxShadow: [
-                                      BoxShadow(
-                                          color: Colors.grey.withOpacity(0.3),
-                                          blurRadius: 20,
-                                          offset: const Offset(5, 5))
-                                    ]),
-                                child: Column(
-                                  mainAxisAlignment:
-                                      MainAxisAlignment.spaceEvenly,
-                                  children: [
-                                    Row(
-                                      mainAxisAlignment:
-                                          MainAxisAlignment.spaceEvenly,
-                                      children: const [
-                                        Text(
-                                          'Doubts',
-                                          style: TextStyle(
-                                              color: Constants.darkText,
-                                              fontWeight: FontWeight.bold,
-                                              fontSize: 20),
-                                        ),
-                                        Icon(Icons.arrow_forward)
-                                      ],
-                                    ),
-                                    const Divider(
-                                      indent: 5,
-                                      endIndent: 5,
-                                      color: Colors.orangeAccent,
-                                    ),
-                                    const Text(
-                                      '22 doubts raised ',
-                                      style: TextStyle(
-                                          color: Colors.grey,
-                                          fontWeight: FontWeight.w300,
-                                          fontSize: 15),
-                                    )
-                                  ],
-                                ),
-                              ),
-                            ),
-                            GestureDetector(
-                              onTap: () {
-                                Navigator.push(
-                                    context,
-                                    PageTransition(ChatEngine(
-                                        'Freshers', widget.userFirstName)));
-                              },
-                              child: Container(
-                                padding: const EdgeInsets.all(15),
-                                margin: const EdgeInsets.only(
-                                  left: 15,
-                                  bottom: 20,
-                                  top: 20,
-                                ),
-                                height: 150,
-                                width: 150,
-                                decoration: BoxDecoration(
-                                    borderRadius: BorderRadius.circular(30),
-                                    color: Colors.white,
-                                    boxShadow: [
-                                      BoxShadow(
-                                          color: Colors.grey.withOpacity(0.3),
-                                          blurRadius: 20,
-                                          offset: const Offset(5, 5))
-                                    ]),
-                                child: Column(
-                                  mainAxisAlignment:
-                                      MainAxisAlignment.spaceEvenly,
-                                  children: [
-                                    Row(
-                                      mainAxisAlignment:
-                                          MainAxisAlignment.spaceEvenly,
-                                      children: const [
-                                        Text(
-                                          'Chat',
-                                          style: TextStyle(
-                                              color: Constants.darkText,
-                                              fontWeight: FontWeight.bold,
-                                              fontSize: 20),
-                                        ),
-                                        Icon(Icons.arrow_forward)
-                                      ],
-                                    ),
-                                    const Divider(
-                                      indent: 5,
-                                      endIndent: 5,
-                                      color: Colors.orangeAccent,
-                                    ),
-                                    const Text(
-                                      '223 users online ',
-                                      style: TextStyle(
-                                          color: Colors.grey,
-                                          fontWeight: FontWeight.w300,
-                                          fontSize: 15),
-                                    )
-                                  ],
-                                ),
-                              ),
-                            ),
-                            // Container(
-                            //   padding: const EdgeInsets.all(15),
-                            //   margin: const EdgeInsets.only(
-                            //     left: 15,
-                            //     bottom: 20,
-                            //     top: 20,
-                            //   ),
-                            //   height: 150,
-                            //   width: 150,
-                            //   decoration: BoxDecoration(
-                            //       borderRadius: BorderRadius.circular(30),
-                            //       color: Colors.white,
-                            //       boxShadow: [
-                            //         BoxShadow(
-                            //             color: Colors.grey.withOpacity(0.3),
-                            //             blurRadius: 20,
-                            //             offset: const Offset(5, 5))
-                            //       ]),
-                            //   child: Column(
-                            //     mainAxisAlignment:
-                            //         MainAxisAlignment.spaceEvenly,
-                            //     children:  [
-                            //      Row(
-                            //         mainAxisAlignment:
-                            //             MainAxisAlignment.spaceEvenly,
-                            //         children: const [
-                            //           Text(
-                            //             'Doubts',
-                            //             style: TextStyle(
-                            //                 color: Constants.darkText,
-                            //                 fontWeight: FontWeight.bold,
-                            //                 fontSize: 20),
-                            //           ),
-                            //           Icon(Icons.arrow_forward)
-                            //         ],
-                            //       ),
-                            //       const Divider(
-                            //         indent: 5,
-                            //         endIndent: 5,
-                            //         color: Colors.orangeAccent,
-                            //       ),
-                            //       const Text(
-                            //         '223 users online ',
-                            //         style: TextStyle(
-                            //             color: Colors.grey,
-                            //             fontWeight: FontWeight.w300,
-                            //             fontSize: 15),
-                            //       )
-                            //     ],
-                            //   ),
-                            // ),
-                          ],
+                              );
+                            },
+                            itemCount: 3,
+                          ),
                         ),
-                      ),
+                      )
                     ],
                   ),
                 ),
                 const SizedBox(
-                  height: 50,
+                  height: 20,
                 ),
                 Row(
                   children: [
@@ -302,3 +156,87 @@ class _FreshersState extends State<Freshers> {
     );
   }
 }
+
+class MyListTile extends StatelessWidget {
+  const MyListTile(
+    this.userFirstName,
+    this.list,
+    this.index, {
+    Key? key,
+  }) : super(key: key);
+  final userFirstName;
+  final list;
+  final index;
+  @override
+  Widget build(BuildContext context) {
+    return GestureDetector(
+      onTap: () {
+        if (index == 0) {
+          Navigator.push(context, PageTransition(FresherDoubts()));
+        }
+        else if(index ==1)
+        {
+          Navigator.push(
+                                    context,
+                                    PageTransition(ChatEngine(
+                                        'Freshers', userFirstName)));
+        }
+        
+      },
+      child: Container(
+        padding: const EdgeInsets.all(15),
+        margin: const EdgeInsets.only(
+          left: 15,
+          bottom: 20,
+          top: 20,
+        ),
+        height: 150,
+        width: 150,
+        decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(30),
+            color: Colors.white,
+            boxShadow: [
+              BoxShadow(
+                  color: Colors.grey.withOpacity(0.3),
+                  blurRadius: 20,
+                  offset: const Offset(5, 5))
+            ]),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+          children: [
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+              children: [
+                Text(
+                  list[index][0],
+                  style: const TextStyle(
+                      color: Constants.darkText,
+                      fontWeight: FontWeight.bold,
+                      fontSize: 20),
+                ),
+                const Icon(Icons.arrow_forward)
+              ],
+            ),
+            const Divider(
+              indent: 5,
+              endIndent: 5,
+              color: Colors.orangeAccent,
+            ),
+            Text(
+              list[index][1],
+              style: const TextStyle(
+                  color: Colors.grey,
+                  fontWeight: FontWeight.w300,
+                  fontSize: 15),
+            )
+          ],
+        ),
+      ),
+    );
+  }
+}
+// GestureDetector(
+//                               onTap: () {
+                                
+//                               },
+//                             )

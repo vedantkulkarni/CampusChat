@@ -1,6 +1,6 @@
 import 'package:chat_app/screens/auth.dart';
 import 'package:chat_app/screens/chat_main.dart';
-import 'package:chat_app/screens/fresher_doubts.dart';
+import 'package:chat_app/screens/doubts.dart';
 import 'package:chat_app/screens/freshers.dart';
 import 'package:chat_app/utils/chat_engine.dart';
 import 'package:chat_app/utils/constants.dart';

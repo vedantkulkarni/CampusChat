@@ -1,5 +1,6 @@
 import 'dart:ui';
 
+import 'package:chat_app/screens/details.dart';
 import 'package:chat_app/screens/freshers.dart';
 import 'package:chat_app/screens/seniors.dart';
 import 'package:chat_app/utils/chat_engine.dart';
@@ -253,7 +254,6 @@ class ChatHome extends StatelessWidget {
             height: 40,
           ),
           Expanded(child: ActivityList(ctr, username)),
-          
         ],
       ),
     );
@@ -305,7 +305,7 @@ class UserDashboard extends ConsumerWidget {
                   height: 10,
                 ),
                 Container(
-                    height: 210,
+                    height: MediaQuery.of(context).size.height * 0.27,
                     width: double.maxFinite,
                     decoration: BoxDecoration(
                         gradient: LinearGradient(
@@ -435,7 +435,7 @@ class UserDashboard extends ConsumerWidget {
                               ),
                               GestureDetector(
                                 onTap: () {
-                                  ctr.reverse(from: 0.5);
+                                  Navigator.push(context, PageTransition(Details()));
                                 },
                                 child: Row(
                                   children: [
@@ -518,7 +518,7 @@ class ActivityList extends StatelessWidget {
               width: MediaQuery.of(context).size.width * 0.85,
               child: AnimationLimiter(
                 child: ListView.builder(
-                  physics: const NeverScrollableScrollPhysics(),
+                  physics: const BouncingScrollPhysics(),
                   itemBuilder: (context, index) {
                     return AnimationConfiguration.staggeredList(
                         position: index,
@@ -543,7 +543,7 @@ class ActivityList extends StatelessWidget {
                           ),
                         ));
                   },
-                  itemCount: 3,
+                  itemCount: 2,
                 ),
               ),
             ),
@@ -592,14 +592,13 @@ class HomeTile extends StatelessWidget {
               Text(
                 infoList.first,
                 style: const TextStyle(
-                    fontSize: 30,
+                    fontSize: 25,
                     color: Constants.background,
-                    fontWeight: FontWeight.w400,
+                    fontWeight: FontWeight.w600,
                     letterSpacing: 0),
               ),
               IconButton(
                   onPressed: () async {
-                    
                     Navigator.push(
                         context, PageTransition(Freshers(userFirstName)));
                   },
