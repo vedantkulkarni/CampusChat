@@ -305,7 +305,7 @@ class UserDashboard extends ConsumerWidget {
                   height: 10,
                 ),
                 Container(
-                    height: MediaQuery.of(context).size.height * 0.27,
+                    height: 225,
                     width: double.maxFinite,
                     decoration: BoxDecoration(
                         gradient: LinearGradient(
@@ -322,68 +322,75 @@ class UserDashboard extends ConsumerWidget {
                             bottomLeft: Radius.circular(10),
                             bottomRight: Radius.circular(10))),
                     child: Column(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
                         Container(
-                          padding: const EdgeInsets.only(
-                              top: 20, left: 20, right: 40, bottom: 10),
-                          child: Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          child: Column(
                             children: [
-                              Column(
-                                mainAxisAlignment:
-                                    MainAxisAlignment.spaceBetween,
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  Column(
-                                    crossAxisAlignment:
-                                        CrossAxisAlignment.start,
-                                    children: [
-                                      Text(
-                                        'Doubts',
-                                        style: TextStyle(
-                                            fontSize: 20,
-                                            color: Constants.background
-                                                .withOpacity(0.7),
-                                            fontWeight: FontWeight.w200),
-                                      ),
-                                      const Text(
-                                        'Solved',
-                                        style: TextStyle(
-                                            fontSize: 30,
-                                            color: Constants.background,
-                                            fontWeight: FontWeight.w200),
-                                      ),
-                                      const Divider(
-                                        color: Colors.orangeAccent,
-                                      ),
-                                      Row(
-                                        children: [
-                                          Text(
-                                            myProvider.monthlySolved.toString(),
-                                            style: const TextStyle(
-                                                fontSize: 40,
-                                                color: Constants.background,
-                                                fontWeight: FontWeight.bold),
-                                          ),
-                                          Text(
-                                            '/${myProvider.monthlyGoal}',
-                                            style: const TextStyle(
-                                                fontSize: 40,
-                                                color: Colors.orangeAccent,
-                                                fontWeight: FontWeight.bold),
-                                          ),
-                                        ],
-                                      ),
-                                    ],
-                                  ),
-                                ],
+                              Container(
+                                padding: const EdgeInsets.only(
+                                    top: 20, left: 20, right: 40, bottom: 10),
+                                child: Row(
+                                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                  children: [
+                                    Column(
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.spaceBetween,
+                                      crossAxisAlignment: CrossAxisAlignment.start,
+                                      children: [
+                                        Column(
+                                          crossAxisAlignment:
+                                              CrossAxisAlignment.start,
+                                          children: [
+                                            Text(
+                                              'Doubts',
+                                              style: TextStyle(
+                                                  fontSize: 20,
+                                                  color: Constants.background
+                                                      .withOpacity(0.7),
+                                                  fontWeight: FontWeight.w200),
+                                            ),
+                                            const Text(
+                                              'Solved',
+                                              style: TextStyle(
+                                                  fontSize: 30,
+                                                  color: Constants.background,
+                                                  fontWeight: FontWeight.w200),
+                                            ),
+                                            const Divider(
+                                              color: Colors.orangeAccent,
+                                            ),
+                                            Row(
+                                              children: [
+                                                Text(
+                                                  myProvider.monthlySolved.toString(),
+                                                  style: const TextStyle(
+                                                      fontSize: 40,
+                                                      color: Constants.background,
+                                                      fontWeight: FontWeight.bold),
+                                                ),
+                                                Text(
+                                                  '/${myProvider.monthlyGoal}',
+                                                  style: const TextStyle(
+                                                      fontSize: 40,
+                                                      color: Colors.orangeAccent,
+                                                      fontWeight: FontWeight.bold),
+                                                ),
+                                              ],
+                                            ),
+                                          ],
+                                        ),
+                                      ],
+                                    ),
+                                    SizedBox(
+                                      width: 100,
+                                      height: 100,
+                                      child: Lottie.asset(
+                                          'assets/images/chat_lottie.json'),
+                                    )
+                                  ],
+                                ),
                               ),
-                              SizedBox(
-                                width: 100,
-                                height: 100,
-                                child: Lottie.asset(
-                                    'assets/images/chat_lottie.json'),
-                              )
                             ],
                           ),
                         ),
@@ -435,7 +442,8 @@ class UserDashboard extends ConsumerWidget {
                               ),
                               GestureDetector(
                                 onTap: () {
-                                  Navigator.push(context, PageTransition(Details()));
+                                  Navigator.push(
+                                      context, PageTransition(Details()));
                                 },
                                 child: Row(
                                   children: [
