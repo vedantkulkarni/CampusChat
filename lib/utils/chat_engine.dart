@@ -1,8 +1,10 @@
 import 'package:chat_app/utils/constants.dart';
+import 'package:chat_app/utils/providers.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 class ChatEngine extends StatefulWidget {
   final String status;
@@ -14,13 +16,13 @@ class ChatEngine extends StatefulWidget {
 
 class _ChatEngineState extends State<ChatEngine> {
   late FirebaseFirestore firestore;
-  late String username;
+  late String uid;
 
   @override
   void initState() {
     // TODO: implement initState
     firestore = FirebaseFirestore.instance;
-    username = FirebaseAuth.instance.currentUser!.uid.toString();
+    uid = FirebaseAuth.instance.currentUser!.uid.toString();
 
     super.initState();
   }
@@ -74,11 +76,14 @@ class _ChatEngineState extends State<ChatEngine> {
             color: Constants.background,
             child: Column(
               children: [
-                Expanded(
-                    child: GetMessages(firestore, username, widget.status,
-                        widget.userFirstName)),
-                NewMessage(
-                    firestore, username, widget.status, widget.userFirstName)
+                Expanded(child: GetMessages(firestore, uid, widget.status)),
+                Consumer(
+                  builder: (_, widgetRef, __) {
+                    final username = widgetRef.watch(userDataProvider);
+                    return NewMessage(
+                        firestore, uid, widget.status, username.userName);
+                  },
+                )
               ],
             )),
       ),
@@ -89,15 +94,15 @@ class _ChatEngineState extends State<ChatEngine> {
 class NewMessage extends StatefulWidget {
   NewMessage(
     this.firestore,
-    this.username,
+    this.uid,
     this.status,
-    this.userFirstName, {
+    this.username, {
     Key? key,
   }) : super(key: key);
   FirebaseFirestore firestore;
   String username;
   String status;
-  String userFirstName;
+  String uid;
   @override
   State<NewMessage> createState() => _NewMessageState();
 }
@@ -125,9 +130,9 @@ class _NewMessageState extends State<NewMessage> {
         .collection('${widget.status}/generalChat/messages')
         .add({
       'message': s,
-      'username': widget.username,
+      'uid': widget.uid,
       'timestamp': Timestamp.now(),
-      'userFirstName': widget.userFirstName
+      'username': widget.username
     });
     textcontroller.clear();
   }
@@ -139,15 +144,28 @@ class _NewMessageState extends State<NewMessage> {
       child: Row(
         children: [
           Expanded(
-            child: TextField(
-              onChanged: (value) {
-                setState(() {
-                  keyStroke = value;
-                });
-              },
-              controller: textcontroller,
-              decoration: const InputDecoration(
-                label: Text('Send a message'),
+            child: Container(
+              padding: const EdgeInsets.only(left: 15),
+              height: 40,
+              decoration: BoxDecoration(
+                  color: Colors.white, borderRadius: BorderRadius.circular(40)),
+              child: Align(
+                alignment: Alignment.centerLeft,
+                child: TextField(
+                  cursorHeight: 20,
+                  enableSuggestions: true,
+                  minLines: 1,
+                  maxLines: 30,
+                  onChanged: (value) {
+                    setState(() {
+                      keyStroke = value;
+                    });
+                  },
+                  controller: textcontroller,
+                  decoration: const InputDecoration.collapsed(
+                    hintText: 'Send a message',
+                  ),
+                ),
               ),
             ),
           ),
@@ -167,11 +185,12 @@ class _NewMessageState extends State<NewMessage> {
 class MessageChipUI extends StatelessWidget {
   final String message;
   final bool isMe;
-  String userFirstName;
+  String username;
   String uid;
+  String nextUid;
   final Function checkWithPrevMessage;
-  MessageChipUI(this.message, this.isMe, this.userFirstName, this.uid,
-      this.checkWithPrevMessage);
+  MessageChipUI(this.message, this.isMe, this.username, this.uid,
+      this.checkWithPrevMessage, this.nextUid);
 
   @override
   Widget build(BuildContext context) {
@@ -181,7 +200,7 @@ class MessageChipUI extends StatelessWidget {
         Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            checkWithPrevMessage(uid)
+            checkWithPrevMessage(uid,nextUid)
                 ? Container()
                 : isMe
                     ? Container()
@@ -189,7 +208,7 @@ class MessageChipUI extends StatelessWidget {
                         padding:
                             const EdgeInsets.only(left: 5, right: 5, top: 5),
                         child: Text(
-                          isMe ? 'You' : userFirstName,
+                          isMe ? 'You' : username,
                           style: const TextStyle(
                               color: Constants.darkText,
                               fontWeight: FontWeight.bold),
@@ -237,14 +256,13 @@ class MessageChipUI extends StatelessWidget {
 
 class GetMessages extends StatefulWidget {
   FirebaseFirestore firestore;
-  String username;
+  String uid;
   String status;
-  String userFirstName;
+
   GetMessages(
     this.firestore,
-    this.username,
-    this.status,
-    this.userFirstName, {
+    this.uid,
+    this.status, {
     Key? key,
   }) : super(key: key);
 
@@ -253,19 +271,19 @@ class GetMessages extends StatefulWidget {
 }
 
 class _GetMessagesState extends State<GetMessages> {
-  var prevId = '';
-  bool checkWithPrevMessage(String uid) {
-    if (prevId == '') {
-      print('prevId :$prevId');
-      print('userId :$uid');
-      prevId = uid;
+ 
+  bool checkWithPrevMessage(String uid,String nextUid) {
+    if (nextUid == '') {
+      
+      
       return false;
     }
-    if (prevId != uid) {
-      prevId = uid;
+    if (nextUid != uid) {
+      
+     
       return false;
     }
-    prevId = uid;
+    
     return true;
   }
 
@@ -285,12 +303,12 @@ class _GetMessagesState extends State<GetMessages> {
         }
         if (snapshot.connectionState == ConnectionState.done &&
             snapshot.hasError) {
-          return Center(
+          return const Center(
             child: Text('Something went wrong'),
           );
         }
         if (snapshot.data!.docs == null) {
-          return Center(
+          return const Center(
             child: Text('No data was found'),
           );
         }
@@ -298,18 +316,23 @@ class _GetMessagesState extends State<GetMessages> {
         return ListView.builder(
           cacheExtent: 2,
           shrinkWrap: true,
-          physics:
-              BouncingScrollPhysics(parent: AlwaysScrollableScrollPhysics()),
+          physics: const BouncingScrollPhysics(
+              parent: AlwaysScrollableScrollPhysics()),
           reverse: true,
           itemBuilder: (context, index) {
-            bool isMe =
-                snapshot.data!.docs[index]['username'] == widget.username;
+            String nextUid;
+            bool isMe = snapshot.data!.docs[index]['uid'] == widget.uid;
+            if (index != snapshot.data!.docs.length - 1)
+              nextUid = snapshot.data!.docs[index + 1]['uid'];
+            else
+              nextUid = '';
             return MessageChipUI(
                 snapshot.data!.docs[index]['message'],
                 isMe,
-                snapshot.data!.docs[index]['userFirstName'],
                 snapshot.data!.docs[index]['username'],
-                checkWithPrevMessage);
+                snapshot.data!.docs[index]['uid'],
+                checkWithPrevMessage,
+                nextUid);
           },
           itemCount: snapshot.data!.docs.length,
         );

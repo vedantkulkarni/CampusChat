@@ -142,7 +142,7 @@ class _FresherDoubtsState extends State<FresherDoubts> {
                                                 snapshot.data!.docs[index]
                                                     ['desc'],
                                                 style: TextStyle(
-                                                    fontSize: 14,
+                                                    fontSize: 16,
                                                     fontWeight:
                                                         FontWeight.normal,
                                                     color: Constants.darkText
@@ -268,7 +268,6 @@ class NoDoubts extends StatelessWidget {
     return SafeArea(
       child: Container(
         child: Scaffold(
-          
           body: Container(
             color: Constants.background,
             child: Center(

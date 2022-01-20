@@ -542,7 +542,7 @@ class ActivityList extends StatelessWidget {
               child: AnimationLimiter(
                 child: ListView.builder(
                   shrinkWrap: true,
-                  physics: const BouncingScrollPhysics(),
+                  physics: const NeverScrollableScrollPhysics(),
                   itemBuilder: (context, index) {
                     return AnimationConfiguration.staggeredList(
                         position: index,
@@ -596,7 +596,7 @@ class HomeTile extends StatelessWidget {
         Navigator.push(context, PageTransition(Freshers(userFirstName)));
       },
       child: Container(
-        margin: EdgeInsets.only(
+        margin: const EdgeInsets.only(
           top: 15,
           bottom: 5,
         ),
@@ -628,9 +628,9 @@ class HomeTile extends StatelessWidget {
                       fontWeight: FontWeight.w600,
                       letterSpacing: 0),
                 ),
-               const  Padding(
-                  padding:  EdgeInsets.only(right: 15),
-                  child:  Icon(
+                const Padding(
+                  padding: EdgeInsets.only(right: 15),
+                  child: Icon(
                     Icons.arrow_forward,
                     color: Constants.background,
                     size: 25,

@@ -17,6 +17,7 @@ class UserInfoProvider {
   late int ratingValue;
   late int monthlyGoal;
   int monthlySolved = 1;
+  bool vis = false; // Password form field visibility icon
 
   Future<bool> initializeFirebase() async {
     auth = FirebaseAuth.instance;
@@ -36,7 +37,7 @@ class UserInfoProvider {
       }
       return documentSnapshot.data();
     });
-    
+
     userName = userData!['username'];
     seniorStatus = userData['seniorStatus'];
     ratingStar = userData['ratingStar'];
@@ -45,5 +46,13 @@ class UserInfoProvider {
     monthlySolved = userData['monthlySolved'];
 
     return true;
+  }
+
+  void resetVisIcon() {
+    vis = false;
+  }
+
+  void toggleVisIcon() {
+    vis = !vis;
   }
 }
