@@ -331,12 +331,14 @@ class UserDashboard extends ConsumerWidget {
                                 padding: const EdgeInsets.only(
                                     top: 20, left: 20, right: 40, bottom: 10),
                                 child: Row(
-                                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                  mainAxisAlignment:
+                                      MainAxisAlignment.spaceBetween,
                                   children: [
                                     Column(
                                       mainAxisAlignment:
                                           MainAxisAlignment.spaceBetween,
-                                      crossAxisAlignment: CrossAxisAlignment.start,
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.start,
                                       children: [
                                         Column(
                                           crossAxisAlignment:
@@ -363,18 +365,23 @@ class UserDashboard extends ConsumerWidget {
                                             Row(
                                               children: [
                                                 Text(
-                                                  myProvider.monthlySolved.toString(),
+                                                  myProvider.monthlySolved
+                                                      .toString(),
                                                   style: const TextStyle(
                                                       fontSize: 40,
-                                                      color: Constants.background,
-                                                      fontWeight: FontWeight.bold),
+                                                      color:
+                                                          Constants.background,
+                                                      fontWeight:
+                                                          FontWeight.bold),
                                                 ),
                                                 Text(
                                                   '/${myProvider.monthlyGoal}',
                                                   style: const TextStyle(
                                                       fontSize: 40,
-                                                      color: Colors.orangeAccent,
-                                                      fontWeight: FontWeight.bold),
+                                                      color:
+                                                          Colors.orangeAccent,
+                                                      fontWeight:
+                                                          FontWeight.bold),
                                                 ),
                                               ],
                                             ),
@@ -394,79 +401,87 @@ class UserDashboard extends ConsumerWidget {
                             ],
                           ),
                         ),
-                        const Divider(
-                          indent: 20,
-                          endIndent: 20,
-                          // color: Constants.background,
-                          color: Colors.orangeAccent,
-                        ),
-                        Container(
-                          width: double.maxFinite,
-                          padding: const EdgeInsets.only(
-                              top: 10, right: 10, left: 20, bottom: 10),
-                          child: Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                            children: [
-                              Row(
+                        Column(
+                          children: [
+                            const Divider(
+                              indent: 20,
+                              endIndent: 20,
+                              // color: Constants.background,
+                              color: Colors.orangeAccent,
+                            ),
+                            Container(
+                              width: double.maxFinite,
+                              padding: const EdgeInsets.only(
+                                  top: 10, right: 10, left: 20, bottom: 10),
+                              child: Row(
+                                mainAxisAlignment:
+                                    MainAxisAlignment.spaceBetween,
                                 children: [
-                                  Text(
-                                    'Rating :',
-                                    style: TextStyle(
-                                        color: Constants.background
-                                            .withOpacity(0.7),
-                                        fontWeight: FontWeight.w200,
-                                        fontSize: 17),
-                                  ),
                                   Row(
-                                    children: List.generate(
-                                      5,
-                                      (index) {
-                                        if (index + 1 <=
-                                            myProvider.ratingStar) {
-                                          return const Icon(
-                                            Icons.star,
-                                            color: Colors.orangeAccent,
-                                            size: 15,
-                                          );
-                                        }
+                                    children: [
+                                      Text(
+                                        'Rating :',
+                                        style: TextStyle(
+                                            color: Constants.background
+                                                .withOpacity(0.7),
+                                            fontWeight: FontWeight.w200,
+                                            fontSize: 17),
+                                      ),
+                                      Row(
+                                        children: List.generate(
+                                          5,
+                                          (index) {
+                                            if (index + 1 <=
+                                                myProvider.ratingStar) {
+                                              return const Icon(
+                                                Icons.star,
+                                                color: Colors.orangeAccent,
+                                                size: 15,
+                                              );
+                                            }
 
-                                        return const Icon(
-                                          Icons.star_border,
+                                            return const Icon(
+                                              Icons.star_border,
+                                              color: Colors.orangeAccent,
+                                              size: 19,
+                                            );
+                                          },
+                                        ),
+                                      )
+                                    ],
+                                  ),
+                                  GestureDetector(
+                                    onTap: () {
+                                      Navigator.push(
+                                          context, PageTransition(Details()));
+                                    },
+                                    child: Row(
+                                      children: [
+                                        Text(
+                                          'Details',
+                                          style: TextStyle(
+                                              color: Constants.background
+                                                  .withOpacity(0.7),
+                                              fontSize: 17,
+                                              fontWeight: FontWeight.w200),
+                                        ),
+                                        const SizedBox(
+                                          width: 10,
+                                        ),
+                                        const Icon(
+                                          Icons.arrow_forward,
                                           color: Colors.orangeAccent,
-                                          size: 19,
-                                        );
-                                      },
+                                        )
+                                      ],
                                     ),
                                   )
                                 ],
                               ),
-                              GestureDetector(
-                                onTap: () {
-                                  Navigator.push(
-                                      context, PageTransition(Details()));
-                                },
-                                child: Row(
-                                  children: [
-                                    Text(
-                                      'Details',
-                                      style: TextStyle(
-                                          color: Constants.background
-                                              .withOpacity(0.7),
-                                          fontSize: 17,
-                                          fontWeight: FontWeight.w200),
-                                    ),
-                                    const SizedBox(
-                                      width: 10,
-                                    ),
-                                    const Icon(
-                                      Icons.arrow_forward,
-                                      color: Colors.orangeAccent,
-                                    )
-                                  ],
-                                ),
-                              )
-                            ],
-                          ),
+                            ),
+                            SizedBox(
+                              height: 10,
+                            )
+                          ],
                         ),
                       ],
                     )),
@@ -526,6 +541,7 @@ class ActivityList extends StatelessWidget {
               width: MediaQuery.of(context).size.width * 0.85,
               child: AnimationLimiter(
                 child: ListView.builder(
+                  shrinkWrap: true,
                   physics: const BouncingScrollPhysics(),
                   itemBuilder: (context, index) {
                     return AnimationConfiguration.staggeredList(
@@ -575,64 +591,70 @@ class HomeTile extends StatelessWidget {
   final List<String> infoList;
   @override
   Widget build(BuildContext context) {
-    return Container(
-      margin: EdgeInsets.only(top: 15, bottom: 5, left: 15),
-      padding: const EdgeInsets.only(top: 10, left: 10),
-      height: 120,
-      decoration: BoxDecoration(
-          gradient: LinearGradient(
-              colors: colorList,
-              begin: Alignment.bottomLeft,
-              end: Alignment.topRight),
-          borderRadius: BorderRadius.circular(10),
-          boxShadow: [
-            BoxShadow(
-                color: colorList[1].withOpacity(0.7),
-                blurRadius: 20.0,
-                offset: const Offset(10, 10)),
-          ]),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              Text(
-                infoList.first,
-                style: const TextStyle(
-                    fontSize: 25,
-                    color: Constants.background,
-                    fontWeight: FontWeight.w600,
-                    letterSpacing: 0),
-              ),
-              IconButton(
-                  onPressed: () async {
-                    Navigator.push(
-                        context, PageTransition(Freshers(userFirstName)));
-                  },
-                  icon: const Icon(
+    return GestureDetector(
+      onTap: () {
+        Navigator.push(context, PageTransition(Freshers(userFirstName)));
+      },
+      child: Container(
+        margin: EdgeInsets.only(
+          top: 15,
+          bottom: 5,
+        ),
+        padding: const EdgeInsets.only(top: 10, left: 10),
+        height: 120,
+        decoration: BoxDecoration(
+            gradient: LinearGradient(
+                colors: colorList,
+                begin: Alignment.bottomLeft,
+                end: Alignment.topRight),
+            borderRadius: BorderRadius.circular(10),
+            boxShadow: [
+              BoxShadow(
+                  color: colorList[1].withOpacity(0.7),
+                  blurRadius: 20.0,
+                  offset: const Offset(10, 10)),
+            ]),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Text(
+                  infoList.first,
+                  style: const TextStyle(
+                      fontSize: 25,
+                      color: Constants.background,
+                      fontWeight: FontWeight.w600,
+                      letterSpacing: 0),
+                ),
+               const  Padding(
+                  padding:  EdgeInsets.only(right: 15),
+                  child:  Icon(
                     Icons.arrow_forward,
                     color: Constants.background,
                     size: 25,
-                  ))
-            ],
-          ),
-          Row(
-            children: [
-              Flexible(
-                child: Text(
-                  infoList[1],
-                  softWrap: false,
-                  overflow: TextOverflow.ellipsis,
-                  style: TextStyle(
-                      color: Constants.background.withOpacity(0.8),
-                      fontSize: 16,
-                      fontWeight: FontWeight.w300),
-                ),
-              )
-            ],
-          )
-        ],
+                  ),
+                )
+              ],
+            ),
+            Row(
+              children: [
+                Flexible(
+                  child: Text(
+                    infoList[1],
+                    softWrap: false,
+                    overflow: TextOverflow.ellipsis,
+                    style: TextStyle(
+                        color: Constants.background.withOpacity(0.8),
+                        fontSize: 16,
+                        fontWeight: FontWeight.w300),
+                  ),
+                )
+              ],
+            )
+          ],
+        ),
       ),
     );
   }

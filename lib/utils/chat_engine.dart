@@ -168,7 +168,10 @@ class MessageChipUI extends StatelessWidget {
   final String message;
   final bool isMe;
   String userFirstName;
-  MessageChipUI(this.message, this.isMe, this.userFirstName);
+  String uid;
+  final Function checkWithPrevMessage;
+  MessageChipUI(this.message, this.isMe, this.userFirstName, this.uid,
+      this.checkWithPrevMessage);
 
   @override
   Widget build(BuildContext context) {
@@ -178,41 +181,53 @@ class MessageChipUI extends StatelessWidget {
         Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 5),
-              child: Text(
-                isMe ? 'You' : userFirstName,
-                style: TextStyle(
-                    color: Constants.darkText, fontWeight: FontWeight.bold),
-              ),
-            ),
-            Container(
-              margin: EdgeInsets.symmetric(horizontal: 5, vertical: 2),
-              padding: EdgeInsets.all(10.0),
-              width: 150,
-              decoration: BoxDecoration(
-                  color: isMe ? Colors.grey.shade300 : Constants.themeColor,
-                  borderRadius: BorderRadius.only(
-                      topLeft: Radius.circular(10),
-                      topRight: Radius.circular(10),
-                      bottomLeft:
-                          isMe ? Radius.circular(10) : Radius.circular(2),
-                      bottomRight:
-                          isMe ? Radius.circular(2) : Radius.circular(10)),
-                  boxShadow: [
-                    BoxShadow(
-                        color: isMe
-                            ? Colors.grey.shade300.withOpacity(0.8)
-                            : Constants.themeColor.withOpacity(0.5),
-                        blurRadius: 40)
-                  ]),
-              child: Text(
-                message,
-                style: TextStyle(
-                  color: isMe ? Constants.darkText : Constants.background,
+            checkWithPrevMessage(uid)
+                ? Container()
+                : isMe
+                    ? Container()
+                    : Padding(
+                        padding:
+                            const EdgeInsets.only(left: 5, right: 5, top: 5),
+                        child: Text(
+                          isMe ? 'You' : userFirstName,
+                          style: const TextStyle(
+                              color: Constants.darkText,
+                              fontWeight: FontWeight.bold),
+                        ),
+                      ),
+            Flex(direction: Axis.horizontal, children: [
+              Container(
+                constraints: BoxConstraints(
+                  maxWidth: MediaQuery.of(context).size.width * 0.7,
+                ),
+                margin: const EdgeInsets.symmetric(horizontal: 5, vertical: 2),
+                padding: const EdgeInsets.all(10.0),
+                decoration: BoxDecoration(
+                    color: isMe ? Colors.grey.shade300 : Constants.themeColor,
+                    borderRadius: BorderRadius.only(
+                        topLeft: const Radius.circular(10),
+                        topRight: const Radius.circular(10),
+                        bottomLeft: isMe
+                            ? const Radius.circular(10)
+                            : const Radius.circular(2),
+                        bottomRight: isMe
+                            ? const Radius.circular(2)
+                            : const Radius.circular(10)),
+                    boxShadow: [
+                      BoxShadow(
+                          color: isMe
+                              ? Colors.grey.shade300.withOpacity(0.8)
+                              : Constants.themeColor.withOpacity(0.5),
+                          blurRadius: 40)
+                    ]),
+                child: Text(
+                  message,
+                  style: TextStyle(
+                      color: isMe ? Constants.darkText : Constants.background,
+                      fontSize: 17),
                 ),
               ),
-            ),
+            ]),
           ],
         ),
       ],
@@ -238,6 +253,22 @@ class GetMessages extends StatefulWidget {
 }
 
 class _GetMessagesState extends State<GetMessages> {
+  var prevId = '';
+  bool checkWithPrevMessage(String uid) {
+    if (prevId == '') {
+      print('prevId :$prevId');
+      print('userId :$uid');
+      prevId = uid;
+      return false;
+    }
+    if (prevId != uid) {
+      prevId = uid;
+      return false;
+    }
+    prevId = uid;
+    return true;
+  }
+
   @override
   Widget build(BuildContext context) {
     final Stream<QuerySnapshot> messageStream = widget.firestore
@@ -248,7 +279,7 @@ class _GetMessagesState extends State<GetMessages> {
       stream: messageStream,
       builder: (context, AsyncSnapshot<QuerySnapshot> snapshot) {
         if (snapshot.connectionState == ConnectionState.waiting) {
-          return Center(
+          return const Center(
             child: CircularProgressIndicator(),
           );
         }
@@ -273,8 +304,12 @@ class _GetMessagesState extends State<GetMessages> {
           itemBuilder: (context, index) {
             bool isMe =
                 snapshot.data!.docs[index]['username'] == widget.username;
-            return MessageChipUI(snapshot.data!.docs[index]['message'], isMe,
-                snapshot.data!.docs[index]['userFirstName']);
+            return MessageChipUI(
+                snapshot.data!.docs[index]['message'],
+                isMe,
+                snapshot.data!.docs[index]['userFirstName'],
+                snapshot.data!.docs[index]['username'],
+                checkWithPrevMessage);
           },
           itemCount: snapshot.data!.docs.length,
         );
