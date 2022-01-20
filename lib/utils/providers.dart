@@ -27,8 +27,9 @@ class UserInfoProvider {
   }
 
   Future<bool> getUserData() async {
+    print('comming here');
     final userData = await firestore
-        .collection('Users')
+        .collection('Colleges/PICT/Users')
         .doc(uid.toString())
         .get()
         .then((documentSnapshot) {
@@ -37,8 +38,8 @@ class UserInfoProvider {
       }
       return documentSnapshot.data();
     });
-
-    userName = userData!['username'];
+    if (userData == null || userData.isEmpty) return false;
+    userName = userData['username'];
     seniorStatus = userData['seniorStatus'];
     ratingStar = userData['ratingStar'];
     ratingValue = userData['ratingValue'];

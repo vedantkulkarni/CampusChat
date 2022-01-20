@@ -21,7 +21,7 @@ class ChatMain extends StatefulWidget {
 
 class _ChatMainState extends State<ChatMain>
     with SingleTickerProviderStateMixin {
-  final user = FirebaseFirestore.instance.collection('Users');
+  final user = FirebaseFirestore.instance.collection('Colleges/PICT/Users');
   late final AnimationController animationController;
   late final Animation<double> fadeAnimation;
 
@@ -104,10 +104,26 @@ class _ChatMainState extends State<ChatMain>
       future: user.doc(FirebaseAuth.instance.currentUser!.uid).get(),
       builder: (context, AsyncSnapshot<DocumentSnapshot> documentSnapshot) {
         if (documentSnapshot.hasError) {
-          return const Text('Something went wrong!');
+          ctr.forward();
+          return   Container(
+              child:  const Center(child: Text('Something went wrong!')));
         } else if (documentSnapshot.hasData && !documentSnapshot.data!.exists) {
-          return const Text('User does not exist');
+          ctr.forward();
+
+          return Container(
+              child: Center(
+                  child: Column(
+            children: [
+              const Text('There was a problem \nPlease Sign Up again'),
+              ElevatedButton(
+                  onPressed: () {
+                    FirebaseAuth.instance.currentUser!.delete();
+                  },
+                  child: const Text('Sign Up again'))
+            ],
+          )));
         } else if (documentSnapshot.connectionState == ConnectionState.done) {
+          ctr.reset();
           Map<String, dynamic> data =
               documentSnapshot.data!.data() as Map<String, dynamic>;
 
@@ -123,111 +139,7 @@ class _ChatMainState extends State<ChatMain>
   }
 }
 
-class DrawerContent extends StatelessWidget {
-  const DrawerContent({
-    Key? key,
-  }) : super(key: key);
-
-  @override
-  Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 10),
-      child: Column(
-        children: [
-          Container(
-            height: 200,
-            // color: Colors.blue.withOpacity(0.5),
-          ),
-          Divider(
-            color: Constants.darkText.withOpacity(0.4),
-          ),
-          Expanded(
-              child: ListView(
-            children: [
-              GestureDetector(
-                child: Container(
-                  padding: const EdgeInsets.symmetric(vertical: 15),
-                  child: Row(
-                    children: const [
-                      Icon(Icons.person),
-                      SizedBox(
-                        width: 50,
-                      ),
-                      Text(
-                        'Profile',
-                        style: TextStyle(
-                            fontSize: 17, fontWeight: FontWeight.bold),
-                      )
-                    ],
-                  ),
-                ),
-              ),
-              GestureDetector(
-                child: Container(
-                  padding: const EdgeInsets.symmetric(vertical: 15),
-                  child: Row(
-                    children: const [
-                      Icon(
-                        Icons.settings,
-                        color: Constants.darkText,
-                      ),
-                      SizedBox(
-                        width: 50,
-                      ),
-                      Text(
-                        'Settings',
-                        style: TextStyle(
-                            fontSize: 17,
-                            fontWeight: FontWeight.bold,
-                            color: Constants.darkText),
-                      )
-                    ],
-                  ),
-                ),
-              ),
-              GestureDetector(
-                child: Container(
-                  padding: const EdgeInsets.symmetric(vertical: 15),
-                  child: Row(
-                    children: const [
-                      Icon(Icons.inbox),
-                      SizedBox(
-                        width: 50,
-                      ),
-                      Text(
-                        'Inbox',
-                        style: TextStyle(
-                            fontSize: 17, fontWeight: FontWeight.bold),
-                      )
-                    ],
-                  ),
-                ),
-              ),
-              GestureDetector(
-                child: Container(
-                  padding: const EdgeInsets.symmetric(vertical: 15),
-                  child: Row(
-                    children: const [
-                      Icon(Icons.help),
-                      SizedBox(
-                        width: 50,
-                      ),
-                      Text(
-                        'Help',
-                        style: TextStyle(
-                            fontSize: 17, fontWeight: FontWeight.bold),
-                      )
-                    ],
-                  ),
-                ),
-              ),
-            ],
-          ))
-        ],
-      ),
-    );
-  }
-} //Gets User's first name and passes down to ChatHome widget.
+//Gets User's first name and passes down to ChatHome widget.
 
 class ChatHome extends StatelessWidget {
   final String username;
@@ -279,10 +191,16 @@ class UserDashboard extends ConsumerWidget {
             return Container(
               height: 240,
               child: Center(
-                  // child: CircularProgressIndicator(),
-                  ),
+                child: CircularProgressIndicator(),
+              ),
             );
           // ctr.reset();
+          if (snapshot.data == false)
+            return Container(
+              child: Center(
+                child: Text('No users found'),
+              ),
+            );
           ctr.forward();
           return Container(
             child: Column(
@@ -682,6 +600,113 @@ class GreetingMessage extends StatelessWidget {
             height: 10,
           ),
           Text(username, style: Constants.display1)
+        ],
+      ),
+    );
+  }
+}
+
+//Drawer
+class DrawerContent extends StatelessWidget {
+  const DrawerContent({
+    Key? key,
+  }) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 10),
+      child: Column(
+        children: [
+          Container(
+            height: 200,
+            // color: Colors.blue.withOpacity(0.5),
+          ),
+          Divider(
+            color: Constants.darkText.withOpacity(0.4),
+          ),
+          Expanded(
+              child: ListView(
+            children: [
+              GestureDetector(
+                child: Container(
+                  padding: const EdgeInsets.symmetric(vertical: 15),
+                  child: Row(
+                    children: const [
+                      Icon(Icons.person),
+                      SizedBox(
+                        width: 50,
+                      ),
+                      Text(
+                        'Profile',
+                        style: TextStyle(
+                            fontSize: 17, fontWeight: FontWeight.bold),
+                      )
+                    ],
+                  ),
+                ),
+              ),
+              GestureDetector(
+                child: Container(
+                  padding: const EdgeInsets.symmetric(vertical: 15),
+                  child: Row(
+                    children: const [
+                      Icon(
+                        Icons.settings,
+                        color: Constants.darkText,
+                      ),
+                      SizedBox(
+                        width: 50,
+                      ),
+                      Text(
+                        'Settings',
+                        style: TextStyle(
+                            fontSize: 17,
+                            fontWeight: FontWeight.bold,
+                            color: Constants.darkText),
+                      )
+                    ],
+                  ),
+                ),
+              ),
+              GestureDetector(
+                child: Container(
+                  padding: const EdgeInsets.symmetric(vertical: 15),
+                  child: Row(
+                    children: const [
+                      Icon(Icons.inbox),
+                      SizedBox(
+                        width: 50,
+                      ),
+                      Text(
+                        'Inbox',
+                        style: TextStyle(
+                            fontSize: 17, fontWeight: FontWeight.bold),
+                      )
+                    ],
+                  ),
+                ),
+              ),
+              GestureDetector(
+                child: Container(
+                  padding: const EdgeInsets.symmetric(vertical: 15),
+                  child: Row(
+                    children: const [
+                      Icon(Icons.help),
+                      SizedBox(
+                        width: 50,
+                      ),
+                      Text(
+                        'Help',
+                        style: TextStyle(
+                            fontSize: 17, fontWeight: FontWeight.bold),
+                      )
+                    ],
+                  ),
+                ),
+              ),
+            ],
+          ))
         ],
       ),
     );

@@ -1,5 +1,7 @@
 import 'package:chat_app/utils/constants.dart';
+import 'package:chat_app/utils/providers.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 class SignUpForm extends StatefulWidget {
   Function changeToSignIn;
@@ -17,8 +19,10 @@ class _SignUpState extends State<SignUpForm> {
   String user_email = '';
   String user_pass = '';
   String user_name = '';
-  int year = 1;
+  late int year;
+  late String college;
   late TextEditingController tctr;
+  late TextEditingController tctr2;
 
   void _trySubmit() {
     final isValid = _signUpKey.currentState!.validate();
@@ -27,7 +31,7 @@ class _SignUpState extends State<SignUpForm> {
     if (isValid) {
       _signUpKey.currentState!.save();
       widget.submitAuthForm(user_email, user_name, user_pass, false, context,
-          year: year);
+          year: year, college: college);
     }
   }
 
@@ -35,6 +39,7 @@ class _SignUpState extends State<SignUpForm> {
   void initState() {
     // TODO: implement initState
     tctr = new TextEditingController();
+    tctr2 = new TextEditingController();
     super.initState();
   }
 
@@ -43,6 +48,7 @@ class _SignUpState extends State<SignUpForm> {
     // TODO: implement dispose
     super.dispose();
     tctr.dispose();
+    tctr2.dispose();
   }
 
   void setYear(String s) {
@@ -51,6 +57,10 @@ class _SignUpState extends State<SignUpForm> {
         : s == 'Second Year'
             ? 2
             : 3;
+  }
+
+  void setCollege(String s) {
+    college = s;
   }
 
   @override
@@ -119,26 +129,91 @@ class _SignUpState extends State<SignUpForm> {
                 height: 10,
               ),
               Container(
-                decoration: BoxDecoration(
-                    color: Colors.white,
-                    borderRadius: BorderRadius.circular(5)),
-                width: 300,
-                child: TextFormField(
-                  validator: (value) {
-                    if (value!.isEmpty || value.length < 8) {
-                      return 'Enter valid password containing atleast 8 characters';
-                    }
-                    return null;
-                  },
-                  decoration: const InputDecoration(
-                    border: OutlineInputBorder(),
-                    hintText: 'Password',
+                  decoration: BoxDecoration(
+                      color: Colors.white,
+                      borderRadius: BorderRadius.circular(5)),
+                  width: 300,
+                  child: Consumer(builder: (_, ref, __) {
+                    final showPass = ref.watch(userDataProvider);
+                    return TextFormField(
+                      validator: (value) {
+                        if (value!.isEmpty || value.length < 8) {
+                          return 'Enter valid password containing atleast 8 characters';
+                        }
+                        return null;
+                      },
+                      decoration: InputDecoration(
+                        suffixIcon: IconButton(
+                            onPressed: () {
+                              setState(() {
+                                showPass.toggleVisIcon();
+                              });
+                            },
+                            icon: showPass.vis
+                                ? const Icon(
+                                    Icons.visibility,
+                                    color: Constants.secondaryThemeColor,
+                                  )
+                                : const Icon(
+                                    Icons.visibility_off,
+                                    color: Colors.grey,
+                                  )),
+                        border: OutlineInputBorder(),
+                        hintText: 'Password',
+                      ),
+                      obscureText: !showPass.vis,
+                      autofocus: false,
+                      onSaved: (newValue) {
+                        user_pass = newValue!;
+                      },
+                    );
+                  })),
+              const SizedBox(
+                height: 10,
+              ),
+              PopupMenuButton<String>(
+                onSelected: (value) {
+                  setState(() {
+                    tctr2.text = value;
+                  });
+                },
+                itemBuilder: (context) => <PopupMenuEntry<String>>[
+                  const PopupMenuItem<String>(
+                    value: 'PICT',
+                    child: Text('PICT'),
                   ),
-                  obscureText: true,
-                  autofocus: false,
-                  onSaved: (newValue) {
-                    user_pass = newValue!;
-                  },
+                  // const PopupMenuItem<String>(
+                  //   value: 'Second Year',
+                  //   child: Text('VIT'),
+                  // ),
+                  // const PopupMenuItem<String>(
+                  //   value: 'Third Year',
+                  //   child: Text(''),
+                  // ),
+                ],
+                child: Container(
+                  decoration: BoxDecoration(
+                      color: Colors.white,
+                      borderRadius: BorderRadius.circular(5)),
+                  width: 300,
+                  child: TextFormField(
+                    enabled: false,
+                    controller: tctr2,
+                    validator: (value) {
+                      if (value!.isEmpty) {
+                        return 'College not found';
+                      }
+                      return null;
+                    },
+                    decoration: const InputDecoration(
+                      border: OutlineInputBorder(),
+                      hintText: 'Select your college',
+                    ),
+                    autofocus: false,
+                    onSaved: (newValue) {
+                      setCollege(newValue!);
+                    },
+                  ),
                 ),
               ),
               const SizedBox(
@@ -189,7 +264,6 @@ class _SignUpState extends State<SignUpForm> {
                   ),
                 ),
               ),
-              //Here
             ],
           ),
         ),

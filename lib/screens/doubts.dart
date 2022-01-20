@@ -1,4 +1,6 @@
+import 'package:chat_app/screens/reply_to_doubt.dart';
 import 'package:chat_app/utils/constants.dart';
+import 'package:chat_app/utils/page_transition.dart';
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter_staggered_animations/flutter_staggered_animations.dart';
@@ -79,168 +81,180 @@ class _FresherDoubtsState extends State<FresherDoubts> {
                               duration: const Duration(milliseconds: 2500),
                               curve: Curves.fastLinearToSlowEaseIn,
                               child: FadeInAnimation(
-                                child: Container(
-                                  height: 180,
-                                  margin: const EdgeInsets.all(10),
-                                  padding: const EdgeInsets.only(
-                                      left: 0, top: 10, right: 0),
-                                  decoration: BoxDecoration(
-                                      borderRadius: const BorderRadius.all(
-                                          Radius.circular(10)),
-                                      color: Colors.white,
-                                      boxShadow: [
-                                        BoxShadow(
-                                            color: Colors.grey.withOpacity(0.5),
-                                            blurRadius: 20,
-                                            offset: const Offset(5, 5)),
-                                      ]),
-                                  child: Column(
-                                    mainAxisAlignment:
-                                        MainAxisAlignment.spaceBetween,
-                                    crossAxisAlignment:
-                                        CrossAxisAlignment.start,
-                                    children: [
-                                      Container(
-                                        padding: const EdgeInsets.only(
-                                            left: 10, right: 10),
-                                        child: Column(
-                                          children: [
-                                            Container(
-                                              child: Row(
-                                                mainAxisAlignment:
-                                                    MainAxisAlignment
-                                                        .spaceBetween,
+                                child: GestureDetector(
+                                  onTap: () {
+                                    Navigator.push(context,
+                                        PageTransition(ReplyToDoubt()));
+                                  },
+                                  child: Container(
+                                    height: 180,
+                                    margin: const EdgeInsets.all(10),
+                                    padding: const EdgeInsets.only(
+                                        left: 0, top: 10, right: 0),
+                                    decoration: BoxDecoration(
+                                        borderRadius: const BorderRadius.all(
+                                            Radius.circular(10)),
+                                        color: Colors.white,
+                                        boxShadow: [
+                                          BoxShadow(
+                                              color:
+                                                  Colors.grey.withOpacity(0.5),
+                                              blurRadius: 20,
+                                              offset: const Offset(5, 5)),
+                                        ]),
+                                    child: Column(
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.spaceBetween,
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.start,
+                                      children: [
+                                        Container(
+                                          padding: const EdgeInsets.only(
+                                              left: 10, right: 10),
+                                          child: Column(
+                                            children: [
+                                              Container(
+                                                child: Row(
+                                                  mainAxisAlignment:
+                                                      MainAxisAlignment
+                                                          .spaceBetween,
+                                                  children: [
+                                                    Text(
+                                                      snapshot.data!.docs[index]
+                                                          ['username'],
+                                                      overflow:
+                                                          TextOverflow.ellipsis,
+                                                      style: const TextStyle(
+                                                        color: Constants
+                                                            .secondaryThemeColor,
+                                                        fontSize: 20,
+                                                        fontWeight:
+                                                            FontWeight.bold,
+                                                      ),
+                                                    ),
+                                                    Text(daysBetween(snapshot
+                                                        .data!
+                                                        .docs[index]
+                                                            ['timestamp']
+                                                        .toDate()))
+                                                  ],
+                                                ),
+                                              ),
+                                              Divider(
+                                                thickness: 1,
+                                                color: Constants.themeColor
+                                                    .withOpacity(0.7),
+                                              ),
+                                              Container(
+                                                height: 80,
+                                                width: double.maxFinite,
+                                                child: Text(
+                                                  snapshot.data!.docs[index]
+                                                      ['desc'],
+                                                  style: TextStyle(
+                                                      fontSize: 16,
+                                                      fontWeight:
+                                                          FontWeight.normal,
+                                                      color: Constants.darkText
+                                                          .withOpacity(0.8)),
+                                                  overflow:
+                                                      TextOverflow.ellipsis,
+                                                  maxLines: 4,
+                                                ),
+                                              ),
+                                            ],
+                                          ),
+                                        ),
+                                        Container(
+                                          padding: const EdgeInsets.symmetric(
+                                              horizontal: 10),
+                                          decoration: const BoxDecoration(
+                                              color:
+                                                  Constants.secondaryThemeColor,
+                                              borderRadius: BorderRadius.only(
+                                                  bottomLeft:
+                                                      Radius.circular(10),
+                                                  bottomRight:
+                                                      Radius.circular(10))),
+                                          width: double.maxFinite,
+                                          child: Row(
+                                            mainAxisAlignment:
+                                                MainAxisAlignment.spaceBetween,
+                                            children: [
+                                              Column(
+                                                crossAxisAlignment:
+                                                    CrossAxisAlignment.start,
                                                 children: [
                                                   const Text(
-                                                    'Topic',
-                                                    overflow:
-                                                        TextOverflow.ellipsis,
+                                                    'IT Student',
                                                     style: TextStyle(
-                                                      color: Constants
-                                                          .secondaryThemeColor,
-                                                      fontSize: 20,
+                                                      color:
+                                                          Constants.background,
+                                                      letterSpacing: 0,
+                                                      fontSize: 16,
                                                       fontWeight:
-                                                          FontWeight.bold,
+                                                          FontWeight.w600,
                                                     ),
                                                   ),
-                                                  Text(daysBetween(snapshot
-                                                      .data!
-                                                      .docs[index]['timestamp']
-                                                      .toDate()))
+                                                  Text(
+                                                    snapshot.data!.docs[index][
+                                                                'seniorStatus'] ==
+                                                            1
+                                                        ? 'Fresher'
+                                                        : 'Senior ',
+                                                    overflow: TextOverflow.fade,
+                                                    style: TextStyle(
+                                                      fontSize: 14,
+                                                      color: Constants
+                                                          .background
+                                                          .withOpacity(0.7),
+                                                      fontWeight:
+                                                          FontWeight.w300,
+                                                    ),
+                                                  ),
                                                 ],
                                               ),
-                                            ),
-                                            Divider(
-                                              thickness: 1,
-                                              color: Constants.themeColor
-                                                  .withOpacity(0.7),
-                                            ),
-                                            Container(
-                                              height: 80,
-                                              width: double.maxFinite,
-                                              child: Text(
-                                                snapshot.data!.docs[index]
-                                                    ['desc'],
-                                                style: TextStyle(
-                                                    fontSize: 16,
-                                                    fontWeight:
-                                                        FontWeight.normal,
-                                                    color: Constants.darkText
-                                                        .withOpacity(0.8)),
-                                                overflow: TextOverflow.ellipsis,
-                                                maxLines: 4,
-                                              ),
-                                            ),
-                                          ],
-                                        ),
-                                      ),
-                                      Container(
-                                        padding: EdgeInsets.symmetric(
-                                            horizontal: 10),
-                                        decoration: const BoxDecoration(
-                                            color:
-                                                Constants.secondaryThemeColor,
-                                            borderRadius: BorderRadius.only(
-                                                bottomLeft: Radius.circular(10),
-                                                bottomRight:
-                                                    Radius.circular(10))),
-                                        width: double.maxFinite,
-                                        child: Row(
-                                          mainAxisAlignment:
-                                              MainAxisAlignment.spaceBetween,
-                                          children: [
-                                            Column(
-                                              crossAxisAlignment:
-                                                  CrossAxisAlignment.start,
-                                              children: [
-                                                Text(
-                                                  snapshot.data!.docs[index]
-                                                      ['username'],
-                                                  style: const TextStyle(
-                                                    color: Constants.background,
-                                                    letterSpacing: 0,
-                                                    fontSize: 16,
-                                                    fontWeight: FontWeight.w600,
-                                                  ),
-                                                ),
-                                                Text(
-                                                  snapshot.data!.docs[index][
-                                                              'seniorStatus'] ==
-                                                          1
-                                                      ? 'Fresher'
-                                                      : 'Senior ',
-                                                  overflow: TextOverflow.fade,
-                                                  style: TextStyle(
-                                                    fontSize: 14,
-                                                    color: Constants.background
-                                                        .withOpacity(0.7),
-                                                    fontWeight: FontWeight.w300,
-                                                  ),
-                                                ),
-                                              ],
-                                            ),
-                                            Container(
-                                              child: Column(
-                                                mainAxisAlignment:
-                                                    MainAxisAlignment.start,
-                                                children: [
-                                                  Row(
-                                                    children: [
-                                                      IconButton(
-                                                        onPressed: () {},
-                                                        icon: const Icon(
-                                                          Icons.thumb_up,
-                                                          color: Constants
-                                                              .background,
-                                                          size: 20,
+                                              Container(
+                                                child: Column(
+                                                  mainAxisAlignment:
+                                                      MainAxisAlignment.start,
+                                                  children: [
+                                                    Row(
+                                                      children: [
+                                                        IconButton(
+                                                          onPressed: () {},
+                                                          icon: const Icon(
+                                                            Icons.thumb_up,
+                                                            color: Constants
+                                                                .background,
+                                                            size: 20,
+                                                          ),
                                                         ),
-                                                      ),
-                                                      IconButton(
-                                                        onPressed: () {},
-                                                        icon: const Icon(
+                                                        const Icon(
                                                           Icons
                                                               .arrow_forward_ios,
                                                           size: 20,
                                                           color: Constants
                                                               .background,
                                                         ),
-                                                      ),
-                                                      // IconButton(
-                                                      //     onPressed: () {},
-                                                      //     icon: const Icon(
-                                                      //       Icons
-                                                      //           .favorite_border,
-                                                      //       size: 20,
-                                                      //     ))
-                                                    ],
-                                                  )
-                                                ],
-                                              ),
-                                            )
-                                          ],
-                                        ),
-                                      )
-                                    ],
+
+                                                        // IconButton(
+                                                        //     onPressed: () {},
+                                                        //     icon: const Icon(
+                                                        //       Icons
+                                                        //           .favorite_border,
+                                                        //       size: 20,
+                                                        //     ))
+                                                      ],
+                                                    )
+                                                  ],
+                                                ),
+                                              )
+                                            ],
+                                          ),
+                                        )
+                                      ],
+                                    ),
                                   ),
                                 ),
                                 curve: Curves.fastLinearToSlowEaseIn,

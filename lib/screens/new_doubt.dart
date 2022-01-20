@@ -28,7 +28,7 @@ class _NewDoubtState extends ConsumerState<NewDoubt> {
     final doubtRef =
         userProvider.firestore.collection('Freshers/Doubts/doubts');
     final result = await doubtRef.add({
-      'desc': '${userProvider.userName} :\n$s',
+      'desc': ' $s',
       'timestamp': Timestamp.now(),
       'uid': userProvider.uid,
       'username': userProvider.userName,

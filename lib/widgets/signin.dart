@@ -86,9 +86,16 @@ class _SignInFormState extends State<SignInForm> {
                                 setState(() {
                                   showPass.toggleVisIcon();
                                 });
-
                               },
-                              icon: showPass.vis?const Icon(Icons.visibility,color: Constants.secondaryThemeColor,): const Icon(Icons.visibility_off,color: Colors.grey,)),
+                              icon: showPass.vis
+                                  ? const Icon(
+                                      Icons.visibility,
+                                      color: Constants.secondaryThemeColor,
+                                    )
+                                  : const Icon(
+                                      Icons.visibility_off,
+                                      color: Colors.grey,
+                                    )),
                           border: const OutlineInputBorder(),
                           hintText: 'Password',
                         ),
@@ -123,18 +130,23 @@ class _SignInFormState extends State<SignInForm> {
               ),
         (widget.isLoading)
             ? Container()
-            : TextButton(
-                onPressed: () {
-                  widget.changeToSignUp();
+            : Consumer(
+                builder: (_, ref, __) {
+                  return TextButton(
+                    onPressed: () {
+                      ref.watch(userDataProvider).resetVisIcon();
+                      widget.changeToSignUp();
+                    },
+                    child: const Text(
+                      "Don't have an account? SignUp!",
+                      style: Constants.subtitle,
+                    ),
+                    style: ButtonStyle(
+                      overlayColor: MaterialStateColor.resolveWith(
+                          (states) => Constants.secondaryThemeColor),
+                    ),
+                  );
                 },
-                child: const Text(
-                  "Don't have an account? SignUp!",
-                  style: Constants.subtitle,
-                ),
-                style: ButtonStyle(
-                  overlayColor: MaterialStateColor.resolveWith(
-                      (states) => Constants.secondaryThemeColor),
-                ),
               )
       ],
     ));
