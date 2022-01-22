@@ -47,7 +47,7 @@ class _AuthScreenState extends State<AuthScreen> with TickerProviderStateMixin {
 
   void _submitAuthForm(String email, String name, String password,
       bool isSignIn, BuildContext ctx,
-      { required int year,required String college}) async {
+      {  int? year, String? college}) async {
     final authresult;
     email = email.trim();
     name = name.trim();

@@ -25,8 +25,7 @@ class _NewDoubtState extends ConsumerState<NewDoubt> {
     final userProvider = ref.read(userDataProvider);
     String seniorStatus =
         userProvider.seniorStatus == 1 ? 'Freshers' : 'Seniors';
-    final doubtRef =
-        userProvider.firestore.collection('Freshers/Doubts/doubts');
+    final doubtRef = userProvider.firestore.collection('Colleges/PICT/Doubts');
     final result = await doubtRef.add({
       'desc': ' $s',
       'timestamp': Timestamp.now(),
@@ -35,6 +34,7 @@ class _NewDoubtState extends ConsumerState<NewDoubt> {
       'seniorStatus': userProvider.seniorStatus,
       'upvotes': 0
     });
+    
   }
 
   @override

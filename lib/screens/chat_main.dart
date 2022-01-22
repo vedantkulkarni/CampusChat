@@ -105,8 +105,8 @@ class _ChatMainState extends State<ChatMain>
       builder: (context, AsyncSnapshot<DocumentSnapshot> documentSnapshot) {
         if (documentSnapshot.hasError) {
           ctr.forward();
-          return   Container(
-              child:  const Center(child: Text('Something went wrong!')));
+          return Container(
+              child: const Center(child: Text('Something went wrong!')));
         } else if (documentSnapshot.hasData && !documentSnapshot.data!.exists) {
           ctr.forward();
 
@@ -118,6 +118,8 @@ class _ChatMainState extends State<ChatMain>
               ElevatedButton(
                   onPressed: () {
                     FirebaseAuth.instance.currentUser!.delete();
+                    FirebaseAuth.instance.signOut();
+                    
                   },
                   child: const Text('Sign Up again'))
             ],

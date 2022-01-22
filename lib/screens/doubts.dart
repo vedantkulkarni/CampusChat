@@ -14,10 +14,12 @@ class FresherDoubts extends StatefulWidget {
 
 class _FresherDoubtsState extends State<FresherDoubts> {
   late FirebaseFirestore firestore;
+
   @override
   void initState() {
     // TODO: implement initState
     super.initState();
+
     firestore = FirebaseFirestore.instance;
   }
 
@@ -58,7 +60,7 @@ class _FresherDoubtsState extends State<FresherDoubts> {
           color: Constants.background,
           child: FutureBuilder<QuerySnapshot>(
               future: firestore
-                  .collection('Freshers/Doubts/doubts')
+                  .collection('Colleges/PICT/Doubts')
                   .orderBy('timestamp', descending: true)
                   .get(),
               builder: (context, AsyncSnapshot<QuerySnapshot> snapshot) {
@@ -66,6 +68,7 @@ class _FresherDoubtsState extends State<FresherDoubts> {
                   return Center(child: CircularProgressIndicator());
                 if (snapshot.hasData && snapshot.data!.docs.isEmpty)
                   return NoDoubts();
+
                 return Container(
                   padding: const EdgeInsets.all(20),
                   child: AnimationLimiter(
@@ -74,6 +77,13 @@ class _FresherDoubtsState extends State<FresherDoubts> {
                       physics: const BouncingScrollPhysics(
                           parent: AlwaysScrollableScrollPhysics()),
                       itemBuilder: (context, index) {
+                        String doubtId = snapshot.data!.docs[index].id;
+                        
+                        String desc = snapshot.data!.docs[index]['desc'];
+                        String username =
+                            snapshot.data!.docs[index]['username'];
+                        String timePosted = daysBetween(
+                            snapshot.data!.docs[index]['timestamp'].toDate());
                         return AnimationConfiguration.staggeredList(
                             delay: const Duration(milliseconds: 100),
                             position: index,
@@ -83,8 +93,10 @@ class _FresherDoubtsState extends State<FresherDoubts> {
                               child: FadeInAnimation(
                                 child: GestureDetector(
                                   onTap: () {
-                                    Navigator.push(context,
-                                        PageTransition(ReplyToDoubt()));
+                                    Navigator.push(
+                                        context,
+                                        PageTransition(ReplyToDoubt(
+                                            desc, username, timePosted,doubtId)));
                                   },
                                   child: Container(
                                     height: 180,
@@ -120,8 +132,7 @@ class _FresherDoubtsState extends State<FresherDoubts> {
                                                           .spaceBetween,
                                                   children: [
                                                     Text(
-                                                      snapshot.data!.docs[index]
-                                                          ['username'],
+                                                      username,
                                                       overflow:
                                                           TextOverflow.ellipsis,
                                                       style: const TextStyle(
@@ -132,11 +143,7 @@ class _FresherDoubtsState extends State<FresherDoubts> {
                                                             FontWeight.bold,
                                                       ),
                                                     ),
-                                                    Text(daysBetween(snapshot
-                                                        .data!
-                                                        .docs[index]
-                                                            ['timestamp']
-                                                        .toDate()))
+                                                    Text(timePosted)
                                                   ],
                                                 ),
                                               ),
@@ -149,8 +156,7 @@ class _FresherDoubtsState extends State<FresherDoubts> {
                                                 height: 80,
                                                 width: double.maxFinite,
                                                 child: Text(
-                                                  snapshot.data!.docs[index]
-                                                      ['desc'],
+                                                  desc,
                                                   style: TextStyle(
                                                       fontSize: 16,
                                                       fontWeight:
