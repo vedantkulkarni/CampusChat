@@ -1,8 +1,9 @@
 import 'dart:ui';
 
 import 'package:chat_app/screens/details.dart';
+import 'package:chat_app/screens/doubts.dart';
 import 'package:chat_app/screens/freshers.dart';
-import 'package:chat_app/screens/seniors.dart';
+
 import 'package:chat_app/utils/chat_engine.dart';
 import 'package:chat_app/utils/constants.dart';
 import 'package:chat_app/utils/page_transition.dart';
@@ -119,7 +120,6 @@ class _ChatMainState extends State<ChatMain>
                   onPressed: () {
                     FirebaseAuth.instance.currentUser!.delete();
                     FirebaseAuth.instance.signOut();
-                    
                   },
                   child: const Text('Sign Up again'))
             ],
@@ -424,8 +424,8 @@ class ActivityList extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     const Map<int, dynamic> mp = {
-      1: ['Freshers', 'Interact with freshers and solve their \ndoubts'],
-      2: ['Seniors', 'Chat and get to know your Seniors'],
+      1: ['Doubts', 'Ask and solve some doubts'],
+      2: ['General Chat', 'Chat and interact with students on campus'],
       3: ['Teachers', 'Consult some faculty'],
       4: ['Alumni', 'Get guidance from expert alumni']
     };
@@ -480,6 +480,7 @@ class ActivityList extends StatelessWidget {
                                     userFirstName: userFirstName,
                                     infoList: mp[index + 1],
                                     colorList: colorList[index + 1]!,
+                                    index:index
                                   ),
                                 ],
                               ),
@@ -503,17 +504,22 @@ class HomeTile extends StatelessWidget {
       {Key? key,
       required this.userFirstName,
       required this.colorList,
-      required this.infoList})
+      required this.infoList,required this.index})
       : super(key: key);
 
   final String userFirstName;
   final List<Color> colorList;
   final List<String> infoList;
+  final index;
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
       onTap: () {
+        if(index ==0)
         Navigator.push(context, PageTransition(Freshers(userFirstName)));
+        else 
+        Navigator.push(
+              context, PageTransition(ChatEngine('Freshers', userFirstName)));
       },
       child: Container(
         margin: const EdgeInsets.only(
@@ -649,6 +655,10 @@ class DrawerContent extends StatelessWidget {
                 ),
               ),
               GestureDetector(
+                onTap: () {
+                  Navigator.pop(context);
+                  Navigator.push(context, PageTransition(Doubts(true)));
+                },
                 child: Container(
                   padding: const EdgeInsets.symmetric(vertical: 15),
                   child: Row(
@@ -661,7 +671,7 @@ class DrawerContent extends StatelessWidget {
                         width: 50,
                       ),
                       Text(
-                        'Settings',
+                        'My Doubts',
                         style: TextStyle(
                             fontSize: 17,
                             fontWeight: FontWeight.bold,

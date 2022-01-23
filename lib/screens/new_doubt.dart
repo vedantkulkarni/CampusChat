@@ -6,6 +6,9 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart';
 
 class NewDoubt extends ConsumerStatefulWidget {
+  bool isReply;
+  final String? doubtId;
+  NewDoubt(this.isReply, {this.doubtId});
   @override
   _NewDoubtState createState() => _NewDoubtState();
 }
@@ -21,6 +24,39 @@ class _NewDoubtState extends ConsumerState<NewDoubt> {
     userProvider = ref.read(userDataProvider);
   }
 
+  Future<void> uploadReply(String s) async {
+    final userProvider = ref.read(userDataProvider);
+    final doubtRef = userProvider.firestore
+        .collection('Colleges/PICT/Doubts')
+        .doc(widget.doubtId)
+        .collection('Replies');
+    final result = await doubtRef.add({
+      'username': userProvider.userName,
+      'uid': userProvider.uid,
+      'desc': s,
+      'timestamp': Timestamp.now(),
+      'upvotes': 0,
+      'isAckwnoledgedByUser': false
+    });
+    final int replyNumber = await userProvider.firestore
+        .collection('Colleges/PICT/Doubts')
+        .doc(widget.doubtId)
+        .get()
+        .then((value) {
+      print(value.data()!['replies']);
+      return value.data()!['replies'];
+    });
+    await userProvider.firestore
+        .collection('Colleges/PICT/Doubts')
+        .doc(widget.doubtId)
+        .update({'replies': replyNumber + 1});
+
+    await userProvider.firestore
+        .collection('Colleges/PICT/Users/MyDoubts')
+        .doc(widget.doubtId)
+        .update({'replies': replyNumber + 1});
+  }
+
   Future<void> uploadDoubt(String s) async {
     final userProvider = ref.read(userDataProvider);
     String seniorStatus =
@@ -32,9 +68,9 @@ class _NewDoubtState extends ConsumerState<NewDoubt> {
       'uid': userProvider.uid,
       'username': userProvider.userName,
       'seniorStatus': userProvider.seniorStatus,
-      'upvotes': 0
+      'upvotes': 0,
+      'replies': 0
     });
-    
   }
 
   @override
@@ -144,6 +180,7 @@ class _NewDoubtState extends ConsumerState<NewDoubt> {
                           child: Padding(
                             padding: const EdgeInsets.all(15),
                             child: TextField(
+                              style: TextStyle(fontSize: 17),
                               controller: textEditingController,
                               autocorrect: true,
                               decoration: const InputDecoration(
@@ -167,8 +204,11 @@ class _NewDoubtState extends ConsumerState<NewDoubt> {
                                         ? null
                                         : () async {
                                             FocusScope.of(context).unfocus();
-                                            await uploadDoubt(
-                                                textEditingController.text);
+                                            widget.isReply
+                                                ? await uploadReply(
+                                                    textEditingController.text)
+                                                : await uploadDoubt(
+                                                    textEditingController.text);
                                             textEditingController.clear();
                                             Navigator.pop(context);
                                           },

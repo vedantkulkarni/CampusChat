@@ -8,6 +8,7 @@ import 'package:flutter_staggered_animations/flutter_staggered_animations.dart';
 
 class Freshers extends StatefulWidget {
   String userFirstName;
+
   Freshers(this.userFirstName, {Key? key}) : super(key: key);
 
   @override
@@ -17,7 +18,6 @@ class Freshers extends StatefulWidget {
 class _FreshersState extends State<Freshers> {
   List<List<String>> uiInfo = [
     ['Doubts', '22 doubts raised'],
-    ['Chat', '69 users online'],
     ['Profiles', '230  available'],
   ];
   @override
@@ -75,7 +75,7 @@ class _FreshersState extends State<Freshers> {
                                 ),
                               );
                             },
-                            itemCount: 3,
+                            itemCount: 2,
                           ),
                         ),
                       )
@@ -89,7 +89,8 @@ class _FreshersState extends State<Freshers> {
                   children: [
                     GestureDetector(
                       onTap: () {
-                        Navigator.push(context, PageTransition(NewDoubt()));
+                        Navigator.push(
+                            context, PageTransition(NewDoubt(false)));
                       },
                       child: Container(
                         padding: const EdgeInsets.symmetric(
@@ -172,16 +173,11 @@ class MyListTile extends StatelessWidget {
     return GestureDetector(
       onTap: () {
         if (index == 0) {
-          Navigator.push(context, PageTransition(FresherDoubts()));
-        }
-        else if(index ==1)
-        {
+          Navigator.push(context, PageTransition(Doubts(false)));
+        } else if (index == 1) {
           Navigator.push(
-                                    context,
-                                    PageTransition(ChatEngine(
-                                        'Freshers', userFirstName)));
+              context, PageTransition(ChatEngine('Freshers', userFirstName)));
         }
-        
       },
       child: Container(
         padding: const EdgeInsets.all(15),

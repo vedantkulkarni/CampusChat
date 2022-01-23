@@ -1,18 +1,22 @@
 import 'package:chat_app/screens/reply_to_doubt.dart';
 import 'package:chat_app/utils/constants.dart';
 import 'package:chat_app/utils/page_transition.dart';
+import 'package:chat_app/utils/providers.dart';
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_staggered_animations/flutter_staggered_animations.dart';
 import 'package:intl/intl.dart';
 import 'package:lottie/lottie.dart';
 
-class FresherDoubts extends StatefulWidget {
+class Doubts extends ConsumerStatefulWidget {
+  final bool isMyDoubts;
+  Doubts(this.isMyDoubts);
   @override
-  _FresherDoubtsState createState() => _FresherDoubtsState();
+  _DoubtsState createState() => _DoubtsState();
 }
 
-class _FresherDoubtsState extends State<FresherDoubts> {
+class _DoubtsState extends ConsumerState<Doubts> {
   late FirebaseFirestore firestore;
 
   @override
@@ -38,13 +42,14 @@ class _FresherDoubtsState extends State<FresherDoubts> {
 
   @override
   Widget build(BuildContext context) {
+    final myProvider = ref.watch(userDataProvider);
     return SafeArea(
       child: Scaffold(
         appBar: AppBar(
           backgroundColor: Constants.background,
           elevation: 0,
           title: const Text(
-            'Fresher Doubts',
+            ' Doubts',
             style: TextStyle(
                 color: Constants.darkText, fontWeight: FontWeight.bold),
           ),
@@ -57,20 +62,28 @@ class _FresherDoubtsState extends State<FresherDoubts> {
         ),
         body: Container(
           height: double.maxFinite,
+          width: MediaQuery.of(context).size.width,
           color: Constants.background,
-          child: FutureBuilder<QuerySnapshot>(
-              future: firestore
-                  .collection('Colleges/PICT/Doubts')
-                  .orderBy('timestamp', descending: true)
-                  .get(),
+          child: StreamBuilder<QuerySnapshot>(
+              stream: widget.isMyDoubts
+                  ? firestore //1fYZzZBotnX2gxEuL2aSZPNQPD53
+                      .collection('Colleges/PICT/Doubts')
+                      .where('uid', isEqualTo: myProvider.uid)
+                      // .orderBy('timestamp', descending: true)
+                      .snapshots()
+                  : firestore
+                      .collection('Colleges/PICT/Doubts')
+                      .orderBy('timestamp', descending: true)
+                      .snapshots(),
               builder: (context, AsyncSnapshot<QuerySnapshot> snapshot) {
                 if (snapshot.connectionState == ConnectionState.waiting)
                   return Center(child: CircularProgressIndicator());
+                if (snapshot.data == null) return Text('Null was returned');
                 if (snapshot.hasData && snapshot.data!.docs.isEmpty)
                   return NoDoubts();
 
+                
                 return Container(
-                  padding: const EdgeInsets.all(20),
                   child: AnimationLimiter(
                     child: ListView.builder(
                       cacheExtent: 5,
@@ -78,12 +91,18 @@ class _FresherDoubtsState extends State<FresherDoubts> {
                           parent: AlwaysScrollableScrollPhysics()),
                       itemBuilder: (context, index) {
                         String doubtId = snapshot.data!.docs[index].id;
-                        
+
                         String desc = snapshot.data!.docs[index]['desc'];
                         String username =
                             snapshot.data!.docs[index]['username'];
                         String timePosted = daysBetween(
                             snapshot.data!.docs[index]['timestamp'].toDate());
+                        String replies = snapshot.data!.docs[index]
+                                    ['replies'] ==
+                                1
+                            ? '1 Reply'
+                            : '${snapshot.data!.docs[index]['replies'].toString()} replies';
+
                         return AnimationConfiguration.staggeredList(
                             delay: const Duration(milliseconds: 100),
                             position: index,
@@ -96,13 +115,17 @@ class _FresherDoubtsState extends State<FresherDoubts> {
                                     Navigator.push(
                                         context,
                                         PageTransition(ReplyToDoubt(
-                                            desc, username, timePosted,doubtId)));
+                                            desc,
+                                            username,
+                                            timePosted,
+                                            doubtId,
+                                            widget.isMyDoubts)));
                                   },
                                   child: Container(
-                                    height: 180,
-                                    margin: const EdgeInsets.all(10),
-                                    padding: const EdgeInsets.only(
-                                        left: 0, top: 10, right: 0),
+                                    // constraints: BoxConstraints(maxHeight: 180),
+                                    margin: const EdgeInsets.symmetric(
+                                        horizontal: 20, vertical: 10),
+
                                     decoration: BoxDecoration(
                                         borderRadius: const BorderRadius.all(
                                             Radius.circular(10)),
@@ -121,144 +144,124 @@ class _FresherDoubtsState extends State<FresherDoubts> {
                                           CrossAxisAlignment.start,
                                       children: [
                                         Container(
-                                          padding: const EdgeInsets.only(
-                                              left: 10, right: 10),
                                           child: Column(
                                             children: [
                                               Container(
+                                                padding: const EdgeInsets.only(
+                                                    top: 10,
+                                                    left: 10,
+                                                    right: 10,
+                                                    bottom: 10),
+                                                decoration: const BoxDecoration(
+                                                    borderRadius:
+                                                        BorderRadius.only(
+                                                            topLeft: Radius
+                                                                .circular(10),
+                                                            topRight:
+                                                                Radius.circular(
+                                                                    10)),
+                                                    gradient: LinearGradient(
+                                                        colors: [
+                                                          Color(0xfff97a80),
+                                                          Color(0xfffeb094)
+                                                        ])),
                                                 child: Row(
                                                   mainAxisAlignment:
                                                       MainAxisAlignment
                                                           .spaceBetween,
                                                   children: [
-                                                    Text(
-                                                      username,
-                                                      overflow:
-                                                          TextOverflow.ellipsis,
-                                                      style: const TextStyle(
+                                                    Column(
+                                                      crossAxisAlignment:
+                                                          CrossAxisAlignment
+                                                              .start,
+                                                      children: [
+                                                        Text(
+                                                          username,
+                                                          overflow: TextOverflow
+                                                              .ellipsis,
+                                                          style:
+                                                              const TextStyle(
+                                                            fontSize: 20,
+                                                            fontWeight:
+                                                                FontWeight.bold,
+                                                            color: Constants
+                                                                .background,
+                                                          ),
+                                                        ),
+                                                        const SizedBox(
+                                                          height: 5,
+                                                        ),
+                                                        Row(
+                                                          children: [
+                                                            Text(
+                                                              timePosted,
+                                                              style: TextStyle(
+                                                                fontSize: 12,
+                                                                fontWeight:
+                                                                    FontWeight
+                                                                        .bold,
+                                                                color: Constants
+                                                                    .background
+                                                                    .withOpacity(
+                                                                        0.6),
+                                                              ),
+                                                            ),
+                                                            const SizedBox(
+                                                              width: 10,
+                                                            ),
+                                                            Text(
+                                                              replies,
+                                                              style: TextStyle(
+                                                                color: Constants
+                                                                    .background
+                                                                    .withOpacity(
+                                                                        0.6),
+                                                                letterSpacing:
+                                                                    0,
+                                                                fontSize: 12,
+                                                                fontWeight:
+                                                                    FontWeight
+                                                                        .w600,
+                                                              ),
+                                                            ),
+                                                          ],
+                                                        )
+                                                      ],
+                                                    ),
+                                                    IconButton(
+                                                      onPressed: () {},
+                                                      icon: const Icon(
+                                                        Icons.thumb_up,
                                                         color: Constants
-                                                            .secondaryThemeColor,
-                                                        fontSize: 20,
-                                                        fontWeight:
-                                                            FontWeight.bold,
+                                                            .background,
+                                                        size: 20,
                                                       ),
                                                     ),
-                                                    Text(timePosted)
                                                   ],
-                                                ),
-                                              ),
-                                              Divider(
-                                                thickness: 1,
-                                                color: Constants.themeColor
-                                                    .withOpacity(0.7),
-                                              ),
-                                              Container(
-                                                height: 80,
-                                                width: double.maxFinite,
-                                                child: Text(
-                                                  desc,
-                                                  style: TextStyle(
-                                                      fontSize: 16,
-                                                      fontWeight:
-                                                          FontWeight.normal,
-                                                      color: Constants.darkText
-                                                          .withOpacity(0.8)),
-                                                  overflow:
-                                                      TextOverflow.ellipsis,
-                                                  maxLines: 4,
                                                 ),
                                               ),
                                             ],
                                           ),
                                         ),
-                                        Container(
-                                          padding: const EdgeInsets.symmetric(
-                                              horizontal: 10),
-                                          decoration: const BoxDecoration(
-                                              color:
-                                                  Constants.secondaryThemeColor,
-                                              borderRadius: BorderRadius.only(
-                                                  bottomLeft:
-                                                      Radius.circular(10),
-                                                  bottomRight:
-                                                      Radius.circular(10))),
-                                          width: double.maxFinite,
-                                          child: Row(
-                                            mainAxisAlignment:
-                                                MainAxisAlignment.spaceBetween,
-                                            children: [
-                                              Column(
-                                                crossAxisAlignment:
-                                                    CrossAxisAlignment.start,
-                                                children: [
-                                                  const Text(
-                                                    'IT Student',
-                                                    style: TextStyle(
-                                                      color:
-                                                          Constants.background,
-                                                      letterSpacing: 0,
-                                                      fontSize: 16,
-                                                      fontWeight:
-                                                          FontWeight.w600,
-                                                    ),
-                                                  ),
-                                                  Text(
-                                                    snapshot.data!.docs[index][
-                                                                'seniorStatus'] ==
-                                                            1
-                                                        ? 'Fresher'
-                                                        : 'Senior ',
-                                                    overflow: TextOverflow.fade,
-                                                    style: TextStyle(
-                                                      fontSize: 14,
-                                                      color: Constants
-                                                          .background
-                                                          .withOpacity(0.7),
-                                                      fontWeight:
-                                                          FontWeight.w300,
-                                                    ),
-                                                  ),
-                                                ],
-                                              ),
-                                              Container(
-                                                child: Column(
-                                                  mainAxisAlignment:
-                                                      MainAxisAlignment.start,
-                                                  children: [
-                                                    Row(
-                                                      children: [
-                                                        IconButton(
-                                                          onPressed: () {},
-                                                          icon: const Icon(
-                                                            Icons.thumb_up,
-                                                            color: Constants
-                                                                .background,
-                                                            size: 20,
-                                                          ),
-                                                        ),
-                                                        const Icon(
-                                                          Icons
-                                                              .arrow_forward_ios,
-                                                          size: 20,
-                                                          color: Constants
-                                                              .background,
-                                                        ),
-
-                                                        // IconButton(
-                                                        //     onPressed: () {},
-                                                        //     icon: const Icon(
-                                                        //       Icons
-                                                        //           .favorite_border,
-                                                        //       size: 20,
-                                                        //     ))
-                                                      ],
-                                                    )
-                                                  ],
-                                                ),
-                                              )
-                                            ],
+                                        Padding(
+                                          padding: const EdgeInsets.only(
+                                              left: 10,
+                                              bottom: 10,
+                                              top: 10,
+                                              right: 5),
+                                          child: Container(
+                                            child: Text(
+                                              desc,
+                                              style: TextStyle(
+                                                  fontSize: 16,
+                                                  fontWeight: FontWeight.normal,
+                                                  color: Constants.darkText
+                                                      .withOpacity(0.8)),
+                                              overflow: TextOverflow.ellipsis,
+                                              maxLines: 6,
+                                            ),
                                           ),
-                                        )
+                                        ),
                                       ],
                                     ),
                                   ),
