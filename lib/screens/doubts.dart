@@ -2,6 +2,7 @@ import 'package:chat_app/screens/reply_to_doubt.dart';
 import 'package:chat_app/utils/constants.dart';
 import 'package:chat_app/utils/page_transition.dart';
 import 'package:chat_app/utils/providers.dart';
+import 'package:chat_app/utils/upvote.dart';
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -25,6 +26,13 @@ class _DoubtsState extends ConsumerState<Doubts> {
     super.initState();
 
     firestore = FirebaseFirestore.instance;
+  }
+
+  String sorting = 'timestamp';
+  void defineSorting(String value) {
+    setState(() {
+      sorting = value;
+    });
   }
 
   String daysBetween(DateTime from) {
@@ -53,6 +61,30 @@ class _DoubtsState extends ConsumerState<Doubts> {
             style: TextStyle(
                 color: Constants.darkText, fontWeight: FontWeight.bold),
           ),
+          actions: [
+            Center(
+              child: Text(
+                'Sorting',
+                style: TextStyle(
+                    color: Colors.black,
+                    fontSize: 17,
+                    fontWeight: FontWeight.bold),
+              ),
+            ),
+            PopupMenuButton<String>(
+                onSelected: (value) => defineSorting(value),
+                icon: const Icon(Icons.sort),
+                itemBuilder: (context) => [
+                      const PopupMenuItem(
+                        child: Text("Upload Date"),
+                        value: 'timestamp',
+                      ),
+                      const PopupMenuItem(
+                        child: Text("Upvotes"),
+                        value: 'upvotes',
+                      )
+                    ])
+          ],
           leading: IconButton(
               onPressed: () {
                 Navigator.of(context).pop();
@@ -73,7 +105,7 @@ class _DoubtsState extends ConsumerState<Doubts> {
                       .snapshots()
                   : firestore
                       .collection('Colleges/PICT/Doubts')
-                      .orderBy('timestamp', descending: true)
+                      .orderBy(sorting, descending: true)
                       .snapshots(),
               builder: (context, AsyncSnapshot<QuerySnapshot> snapshot) {
                 if (snapshot.connectionState == ConnectionState.waiting)
@@ -82,7 +114,6 @@ class _DoubtsState extends ConsumerState<Doubts> {
                 if (snapshot.hasData && snapshot.data!.docs.isEmpty)
                   return NoDoubts();
 
-                
                 return Container(
                   child: AnimationLimiter(
                     child: ListView.builder(
@@ -91,8 +122,12 @@ class _DoubtsState extends ConsumerState<Doubts> {
                           parent: AlwaysScrollableScrollPhysics()),
                       itemBuilder: (context, index) {
                         String doubtId = snapshot.data!.docs[index].id;
-
+                        bool isUpvoted = snapshot
+                            .data!.docs[index]['Upvoted By']
+                            .contains(myProvider.uid);
                         String desc = snapshot.data!.docs[index]['desc'];
+                        String upvotes =
+                            snapshot.data!.docs[index]['upvotes'].toString();
                         String username =
                             snapshot.data!.docs[index]['username'];
                         String timePosted = daysBetween(
@@ -153,18 +188,15 @@ class _DoubtsState extends ConsumerState<Doubts> {
                                                     right: 10,
                                                     bottom: 10),
                                                 decoration: const BoxDecoration(
-                                                    borderRadius:
-                                                        BorderRadius.only(
-                                                            topLeft: Radius
-                                                                .circular(10),
-                                                            topRight:
-                                                                Radius.circular(
-                                                                    10)),
-                                                    gradient: LinearGradient(
-                                                        colors: [
-                                                          Color(0xfff97a80),
-                                                          Color(0xfffeb094)
-                                                        ])),
+                                                  borderRadius:
+                                                      BorderRadius.only(
+                                                          topLeft:
+                                                              Radius.circular(
+                                                                  10),
+                                                          topRight:
+                                                              Radius.circular(
+                                                                  10)),
+                                                ),
                                                 child: Row(
                                                   mainAxisAlignment:
                                                       MainAxisAlignment
@@ -181,11 +213,11 @@ class _DoubtsState extends ConsumerState<Doubts> {
                                                               .ellipsis,
                                                           style:
                                                               const TextStyle(
-                                                            fontSize: 20,
+                                                            fontSize: 17,
                                                             fontWeight:
                                                                 FontWeight.bold,
                                                             color: Constants
-                                                                .background,
+                                                                .darkText,
                                                           ),
                                                         ),
                                                         const SizedBox(
@@ -196,47 +228,24 @@ class _DoubtsState extends ConsumerState<Doubts> {
                                                             Text(
                                                               timePosted,
                                                               style: TextStyle(
-                                                                fontSize: 12,
+                                                                fontSize: 14,
                                                                 fontWeight:
                                                                     FontWeight
                                                                         .bold,
                                                                 color: Constants
-                                                                    .background
+                                                                    .darkText
                                                                     .withOpacity(
-                                                                        0.6),
+                                                                        0.3),
                                                               ),
                                                             ),
                                                             const SizedBox(
                                                               width: 10,
                                                             ),
-                                                            Text(
-                                                              replies,
-                                                              style: TextStyle(
-                                                                color: Constants
-                                                                    .background
-                                                                    .withOpacity(
-                                                                        0.6),
-                                                                letterSpacing:
-                                                                    0,
-                                                                fontSize: 12,
-                                                                fontWeight:
-                                                                    FontWeight
-                                                                        .w600,
-                                                              ),
-                                                            ),
                                                           ],
                                                         )
                                                       ],
                                                     ),
-                                                    IconButton(
-                                                      onPressed: () {},
-                                                      icon: const Icon(
-                                                        Icons.thumb_up,
-                                                        color: Constants
-                                                            .background,
-                                                        size: 20,
-                                                      ),
-                                                    ),
+                                                    UpVote(doubtId, isUpvoted)
                                                   ],
                                                 ),
                                               ),
@@ -262,6 +271,36 @@ class _DoubtsState extends ConsumerState<Doubts> {
                                             ),
                                           ),
                                         ),
+                                        Padding(
+                                          padding: const EdgeInsets.symmetric(
+                                              horizontal: 10, vertical: 10),
+                                          child: Row(
+                                            mainAxisAlignment:
+                                                MainAxisAlignment.spaceBetween,
+                                            children: [
+                                              Text(
+                                                replies,
+                                                style: TextStyle(
+                                                  color: Constants.darkText
+                                                      .withOpacity(0.4),
+                                                  letterSpacing: 0,
+                                                  fontSize: 15,
+                                                  fontWeight: FontWeight.w300,
+                                                ),
+                                              ),
+                                              Text(
+                                                '$upvotes Upvotes',
+                                                style: TextStyle(
+                                                  color: Constants.darkText
+                                                      .withOpacity(0.4),
+                                                  letterSpacing: 0,
+                                                  fontSize: 15,
+                                                  fontWeight: FontWeight.w300,
+                                                ),
+                                              ),
+                                            ],
+                                          ),
+                                        )
                                       ],
                                     ),
                                   ),

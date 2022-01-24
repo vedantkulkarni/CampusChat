@@ -3,6 +3,7 @@ import 'package:chat_app/screens/new_doubt.dart';
 import 'package:chat_app/utils/chat_engine.dart';
 import 'package:chat_app/utils/constants.dart';
 import 'package:chat_app/utils/page_transition.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_staggered_animations/flutter_staggered_animations.dart';
 
@@ -16,12 +17,36 @@ class Freshers extends StatefulWidget {
 }
 
 class _FreshersState extends State<Freshers> {
-  List<List<String>> uiInfo = [
-    ['Doubts', '22 doubts raised'],
-    ['Profiles', '230  available'],
-  ];
+   var no_of_doubts=0;
+   var no_of_profiles=0;
+
+  @override
+  void didChangeDependencies() {
+    // TODO: implement didChangeDependencies
+    super.didChangeDependencies();
+    FirebaseFirestore.instance
+        .collection('Colleges/PICT/Doubts')
+        .get()
+        .then((value) {
+      no_of_doubts = value.docs.length;
+      setState(() {});
+    });
+
+    FirebaseFirestore.instance
+        .collection('Colleges/PICT/Users')
+        .get()
+        .then((value) {
+      no_of_profiles = value.docs.length;
+      setState(() {});
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
+    List<List<String>> uiInfo = [
+      ['Doubts', '${no_of_doubts} doubts raised'],
+      ['Profiles', '${no_of_profiles}  available'],
+    ];
     return SafeArea(
       child: Container(
         child: Scaffold(

@@ -8,6 +8,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart';
+import 'package:lottie/lottie.dart';
 
 class ReplyToDoubt extends ConsumerStatefulWidget {
   final String desc;
@@ -241,9 +242,25 @@ class _GetRepliesState extends State<GetReplies> {
           if (snapshot.hasData && snapshot.data!.docs.isEmpty)
             return Container(
               child: Center(
-                child: Text(
-                  'Nothing found',
-                  style: TextStyle(fontSize: 20, fontWeight: FontWeight.w400),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: [
+                    Container(
+                      height: 250,
+                      width: 250,
+                      child: Lottie.network(
+                          'https://assets3.lottiefiles.com/packages/lf20_r71cen62.json',
+                          fit: BoxFit.contain),
+                    ),
+                     Text(
+                      'Nope! Not a single reply.',
+                      textAlign: TextAlign.center,
+                      style: TextStyle(
+                          fontSize: 15,
+                          fontWeight: FontWeight.w600,
+                          color: Constants.darkText),
+                    ),
+                  ],
                 ),
               ),
             );

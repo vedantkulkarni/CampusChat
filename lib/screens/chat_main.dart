@@ -48,7 +48,7 @@ class _ChatMainState extends State<ChatMain>
     return SafeArea(
       child: Scaffold(
         drawer: Drawer(
-          child: DrawerContent(),
+          child: DrawerContent(user),
         ),
         appBar: AppBar(
           actions: [
@@ -159,9 +159,9 @@ class ChatHome extends StatelessWidget {
           const SizedBox(
             height: 20,
           ),
-          GreetingMessage(username: username),
+          // GreetingMessage(username: username),
           const SizedBox(
-            height: 30,
+            height: 10,
           ),
           UserDashboard(ctr),
           const SizedBox(
@@ -225,7 +225,6 @@ class UserDashboard extends ConsumerWidget {
                   height: 10,
                 ),
                 Container(
-                    height: 225,
                     width: double.maxFinite,
                     decoration: BoxDecoration(
                         gradient: LinearGradient(
@@ -477,11 +476,10 @@ class ActivityList extends StatelessWidget {
                               child: Column(
                                 children: [
                                   HomeTile(
-                                    userFirstName: userFirstName,
-                                    infoList: mp[index + 1],
-                                    colorList: colorList[index + 1]!,
-                                    index:index
-                                  ),
+                                      userFirstName: userFirstName,
+                                      infoList: mp[index + 1],
+                                      colorList: colorList[index + 1]!,
+                                      index: index),
                                 ],
                               ),
                             ),
@@ -504,7 +502,8 @@ class HomeTile extends StatelessWidget {
       {Key? key,
       required this.userFirstName,
       required this.colorList,
-      required this.infoList,required this.index})
+      required this.infoList,
+      required this.index})
       : super(key: key);
 
   final String userFirstName;
@@ -515,10 +514,10 @@ class HomeTile extends StatelessWidget {
   Widget build(BuildContext context) {
     return GestureDetector(
       onTap: () {
-        if(index ==0)
-        Navigator.push(context, PageTransition(Freshers(userFirstName)));
-        else 
-        Navigator.push(
+        if (index == 0)
+          Navigator.push(context, PageTransition(Freshers(userFirstName)));
+        else
+          Navigator.push(
               context, PageTransition(ChatEngine('Freshers', userFirstName)));
       },
       child: Container(
@@ -600,14 +599,14 @@ class GreetingMessage extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          const Text(
-            "Hi ,",
-            style: Constants.hi,
+          SizedBox(
+            height: 20,
           ),
-          const SizedBox(
-            height: 10,
-          ),
-          Text(username, style: Constants.display1)
+          Text(username,
+              style: TextStyle(
+                  fontSize: 20,
+                  fontWeight: FontWeight.bold,
+                  color: Constants.darkText))
         ],
       ),
     );
@@ -616,7 +615,9 @@ class GreetingMessage extends StatelessWidget {
 
 //Drawer
 class DrawerContent extends StatelessWidget {
-  const DrawerContent({
+  CollectionReference user;
+  DrawerContent(
+    this.user, {
     Key? key,
   }) : super(key: key);
 
@@ -627,9 +628,35 @@ class DrawerContent extends StatelessWidget {
       child: Column(
         children: [
           Container(
-            height: 200,
-            // color: Colors.blue.withOpacity(0.5),
-          ),
+              width: double.maxFinite,
+              margin: EdgeInsets.symmetric(vertical: 20),
+              child: Column(
+                children: [
+                  Container(
+                    height: 100,
+                    width: 100,
+                    decoration: BoxDecoration(
+                        color: Colors.blue,
+                        borderRadius: BorderRadius.circular(150)),
+                  ),
+                  FutureBuilder<DocumentSnapshot>(
+                    future:
+                        user.doc(FirebaseAuth.instance.currentUser!.uid).get(),
+                    builder:
+                        (context, AsyncSnapshot<DocumentSnapshot> snapshot) {
+                      if (snapshot.connectionState == ConnectionState.waiting)
+                        return Center(
+                          child: CircularProgressIndicator(),
+                        );
+
+                      return GreetingMessage(
+                          username: snapshot.data!.get('username'));
+                    },
+                  ),
+                ],
+              )
+              // color: Colors.blue.withOpacity(0.5),
+              ),
           Divider(
             color: Constants.darkText.withOpacity(0.4),
           ),
@@ -638,17 +665,21 @@ class DrawerContent extends StatelessWidget {
             children: [
               GestureDetector(
                 child: Container(
+                  width: double.maxFinite,
                   padding: const EdgeInsets.symmetric(vertical: 15),
                   child: Row(
-                    children: const [
-                      Icon(Icons.person),
-                      SizedBox(
+                    children: [
+                      Icon(
+                        Icons.notifications,
+                        color: Constants.darkText.withOpacity(0.5),
+                      ),
+                      const SizedBox(
                         width: 50,
                       ),
-                      Text(
-                        'Profile',
+                      const Text(
+                        'Notifications',
                         style: TextStyle(
-                            fontSize: 17, fontWeight: FontWeight.bold),
+                            fontSize: 18, fontWeight: FontWeight.w300),
                       )
                     ],
                   ),
@@ -660,22 +691,21 @@ class DrawerContent extends StatelessWidget {
                   Navigator.push(context, PageTransition(Doubts(true)));
                 },
                 child: Container(
+                  width: double.maxFinite,
                   padding: const EdgeInsets.symmetric(vertical: 15),
                   child: Row(
-                    children: const [
+                    children: [
                       Icon(
-                        Icons.settings,
-                        color: Constants.darkText,
+                        Icons.book,
+                        color: Constants.darkText.withOpacity(0.5),
                       ),
-                      SizedBox(
+                      const SizedBox(
                         width: 50,
                       ),
-                      Text(
+                      const Text(
                         'My Doubts',
                         style: TextStyle(
-                            fontSize: 17,
-                            fontWeight: FontWeight.bold,
-                            color: Constants.darkText),
+                            fontSize: 18, fontWeight: FontWeight.w300),
                       )
                     ],
                   ),
@@ -683,17 +713,21 @@ class DrawerContent extends StatelessWidget {
               ),
               GestureDetector(
                 child: Container(
+                  width: double.maxFinite,
                   padding: const EdgeInsets.symmetric(vertical: 15),
                   child: Row(
-                    children: const [
-                      Icon(Icons.inbox),
-                      SizedBox(
+                    children: [
+                      Icon(
+                        Icons.person,
+                        color: Constants.darkText.withOpacity(0.5),
+                      ),
+                      const SizedBox(
                         width: 50,
                       ),
-                      Text(
-                        'Inbox',
+                      const Text(
+                        'Teachers',
                         style: TextStyle(
-                            fontSize: 17, fontWeight: FontWeight.bold),
+                            fontSize: 18, fontWeight: FontWeight.w300),
                       )
                     ],
                   ),
@@ -701,17 +735,21 @@ class DrawerContent extends StatelessWidget {
               ),
               GestureDetector(
                 child: Container(
+                  width: double.maxFinite,
                   padding: const EdgeInsets.symmetric(vertical: 15),
                   child: Row(
-                    children: const [
-                      Icon(Icons.help),
-                      SizedBox(
+                    children: [
+                      Icon(
+                        Icons.help,
+                        color: Constants.darkText.withOpacity(0.5),
+                      ),
+                      const SizedBox(
                         width: 50,
                       ),
-                      Text(
+                      const Text(
                         'Help',
                         style: TextStyle(
-                            fontSize: 17, fontWeight: FontWeight.bold),
+                            fontSize: 18, fontWeight: FontWeight.w300),
                       )
                     ],
                   ),

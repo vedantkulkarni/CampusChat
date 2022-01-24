@@ -51,10 +51,7 @@ class _NewDoubtState extends ConsumerState<NewDoubt> {
         .doc(widget.doubtId)
         .update({'replies': replyNumber + 1});
 
-    await userProvider.firestore
-        .collection('Colleges/PICT/Users/MyDoubts')
-        .doc(widget.doubtId)
-        .update({'replies': replyNumber + 1});
+    
   }
 
   Future<void> uploadDoubt(String s) async {
@@ -69,7 +66,8 @@ class _NewDoubtState extends ConsumerState<NewDoubt> {
       'username': userProvider.userName,
       'seniorStatus': userProvider.seniorStatus,
       'upvotes': 0,
-      'replies': 0
+      'replies': 0,
+      'Upvoted By':[]
     });
   }
 
@@ -96,9 +94,9 @@ class _NewDoubtState extends ConsumerState<NewDoubt> {
                       size: 25,
                     ))
               ],
-              title: const Text(
-                'New Doubt',
-                style: TextStyle(
+              title: Text(
+                widget.isReply ? 'Reply' : 'New Doubt',
+                style: const TextStyle(
                     fontSize: 25,
                     color: Constants.darkText,
                     fontWeight: FontWeight.bold),
@@ -199,16 +197,22 @@ class _NewDoubtState extends ConsumerState<NewDoubt> {
                             mainAxisAlignment: MainAxisAlignment.end,
                             children: [
                               ElevatedButton(
-                                onPressed:
-                                    (textEditingController.text.length == 0)
-                                        ? null
+                                onPressed: (textEditingController.text.length ==
+                                        0)
+                                    ? null
+                                    : widget.isReply
+                                        ? () async {
+                                            FocusScope.of(context).unfocus();
+                                            await uploadReply(
+                                                textEditingController.text);
+                                            textEditingController.clear();
+                                            Navigator.pop(context);
+                                          }
                                         : () async {
                                             FocusScope.of(context).unfocus();
-                                            widget.isReply
-                                                ? await uploadReply(
-                                                    textEditingController.text)
-                                                : await uploadDoubt(
-                                                    textEditingController.text);
+
+                                            await uploadDoubt(
+                                                textEditingController.text);
                                             textEditingController.clear();
                                             Navigator.pop(context);
                                           },
