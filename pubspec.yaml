@@ -87,7 +87,9 @@ flutter:
     - family: Roboto
       fonts:
         - asset: assets\fonts/Roboto-Regular.ttf
-        
+    - family: Chirp
+      fonts:
+        - asset: assets/fonts/chirp_regular.otf   
   #   - family: Trajan Pro
   #     fonts:
   #       - asset: fonts/TrajanPro.ttf

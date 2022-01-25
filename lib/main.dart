@@ -2,8 +2,10 @@ import 'package:chat_app/screens/auth.dart';
 import 'package:chat_app/screens/chat_main.dart';
 import 'package:chat_app/screens/doubts.dart';
 import 'package:chat_app/screens/freshers.dart';
+import 'package:chat_app/screens/teacher_list.dart';
 import 'package:chat_app/utils/chat_engine.dart';
 import 'package:chat_app/utils/constants.dart';
+import 'package:chat_app/utils/teacher_model.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
@@ -14,7 +16,7 @@ void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp();
 
-  runApp(const  ProviderScope(child: MyApp()));
+  runApp(const ProviderScope(child: MyApp()));
 }
 
 class MyApp extends StatelessWidget {
@@ -27,13 +29,14 @@ class MyApp extends StatelessWidget {
       title: 'Flutter Demo',
       theme: ThemeData(
         primarySwatch: Colors.blue,
+        fontFamily: 'Chirp'
       ),
       debugShowCheckedModeBanner: false,
       home: StreamBuilder(
         stream: FirebaseAuth.instance.userChanges(),
         builder: (context, userSnapShot) {
           if (userSnapShot.hasData) {
-            return ChatMain( );
+            return ChatMain();
           }
           return AuthScreen();
         },

@@ -3,6 +3,7 @@ import 'dart:ui';
 import 'package:chat_app/screens/details.dart';
 import 'package:chat_app/screens/doubts.dart';
 import 'package:chat_app/screens/freshers.dart';
+import 'package:chat_app/screens/teacher_list.dart';
 
 import 'package:chat_app/utils/chat_engine.dart';
 import 'package:chat_app/utils/constants.dart';
@@ -397,7 +398,7 @@ class UserDashboard extends ConsumerWidget {
                                 ],
                               ),
                             ),
-                            SizedBox(
+                            const SizedBox(
                               height: 10,
                             )
                           ],
@@ -424,7 +425,7 @@ class ActivityList extends StatelessWidget {
   Widget build(BuildContext context) {
     const Map<int, dynamic> mp = {
       1: ['Doubts', 'Ask and solve some doubts'],
-      2: ['General Chat', 'Chat and interact with students on campus'],
+      2: ['My Attendance', 'Check your attendance and know your teachers'],
       3: ['Teachers', 'Consult some faculty'],
       4: ['Alumni', 'Get guidance from expert alumni']
     };
@@ -644,10 +645,11 @@ class DrawerContent extends StatelessWidget {
                         user.doc(FirebaseAuth.instance.currentUser!.uid).get(),
                     builder:
                         (context, AsyncSnapshot<DocumentSnapshot> snapshot) {
-                      if (snapshot.connectionState == ConnectionState.waiting)
-                        return Center(
+                      if (snapshot.connectionState == ConnectionState.waiting) {
+                        return const Center(
                           child: CircularProgressIndicator(),
                         );
+                      }
 
                       return GreetingMessage(
                           username: snapshot.data!.get('username'));
@@ -712,6 +714,10 @@ class DrawerContent extends StatelessWidget {
                 ),
               ),
               GestureDetector(
+                onTap: () {
+                  Navigator.pop(context);
+                  Navigator.push(context, PageTransition(TeacherList()));
+                },
                 child: Container(
                   width: double.maxFinite,
                   padding: const EdgeInsets.symmetric(vertical: 15),

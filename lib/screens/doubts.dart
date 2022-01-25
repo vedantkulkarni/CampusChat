@@ -100,8 +100,8 @@ class _DoubtsState extends ConsumerState<Doubts> {
               stream: widget.isMyDoubts
                   ? firestore //1fYZzZBotnX2gxEuL2aSZPNQPD53
                       .collection('Colleges/PICT/Doubts')
-                      .where('uid', isEqualTo: myProvider.uid)
                       // .orderBy('timestamp', descending: true)
+                      .where('uid', isEqualTo: myProvider.uid)
                       .snapshots()
                   : firestore
                       .collection('Colleges/PICT/Doubts')
@@ -132,11 +132,8 @@ class _DoubtsState extends ConsumerState<Doubts> {
                             snapshot.data!.docs[index]['username'];
                         String timePosted = daysBetween(
                             snapshot.data!.docs[index]['timestamp'].toDate());
-                        String replies = snapshot.data!.docs[index]
-                                    ['replies'] ==
-                                1
-                            ? '1 Reply'
-                            : '${snapshot.data!.docs[index]['replies'].toString()} replies';
+                        String replies =
+                            snapshot.data!.docs[index]['replies'].toString();
 
                         return AnimationConfiguration.staggeredList(
                             delay: const Duration(milliseconds: 100),
@@ -159,7 +156,7 @@ class _DoubtsState extends ConsumerState<Doubts> {
                                   child: Container(
                                     // constraints: BoxConstraints(maxHeight: 180),
                                     margin: const EdgeInsets.symmetric(
-                                        horizontal: 20, vertical: 10),
+                                        horizontal: 20, vertical: 5),
 
                                     decoration: BoxDecoration(
                                         borderRadius: const BorderRadius.all(
@@ -186,7 +183,7 @@ class _DoubtsState extends ConsumerState<Doubts> {
                                                     top: 10,
                                                     left: 10,
                                                     right: 10,
-                                                    bottom: 10),
+                                                    bottom: 5),
                                                 decoration: const BoxDecoration(
                                                   borderRadius:
                                                       BorderRadius.only(
@@ -211,31 +208,30 @@ class _DoubtsState extends ConsumerState<Doubts> {
                                                           username,
                                                           overflow: TextOverflow
                                                               .ellipsis,
-                                                          style:
-                                                              const TextStyle(
-                                                            fontSize: 17,
-                                                            fontWeight:
-                                                                FontWeight.bold,
-                                                            color: Constants
-                                                                .darkText,
-                                                          ),
+                                                          style: const TextStyle(
+                                                              fontSize: 16,
+                                                              fontWeight:
+                                                                  FontWeight
+                                                                      .bold,
+                                                              color: Constants
+                                                                  .secondaryThemeColor),
                                                         ),
                                                         const SizedBox(
-                                                          height: 5,
+                                                          height: 2,
                                                         ),
                                                         Row(
                                                           children: [
                                                             Text(
                                                               timePosted,
                                                               style: TextStyle(
-                                                                fontSize: 14,
+                                                                fontSize: 12,
                                                                 fontWeight:
                                                                     FontWeight
                                                                         .bold,
                                                                 color: Constants
                                                                     .darkText
                                                                     .withOpacity(
-                                                                        0.3),
+                                                                        0.6),
                                                               ),
                                                             ),
                                                             const SizedBox(
@@ -254,18 +250,14 @@ class _DoubtsState extends ConsumerState<Doubts> {
                                         ),
                                         Padding(
                                           padding: const EdgeInsets.only(
-                                              left: 10,
-                                              bottom: 10,
-                                              top: 10,
-                                              right: 5),
+                                              left: 10, bottom: 10, right: 5),
                                           child: Container(
                                             child: Text(
                                               desc,
-                                              style: TextStyle(
-                                                  fontSize: 16,
-                                                  fontWeight: FontWeight.normal,
-                                                  color: Constants.darkText
-                                                      .withOpacity(0.8)),
+                                              style: const TextStyle(
+                                                  fontSize: 15,
+                                                  fontWeight: FontWeight.w300,
+                                                  color: Colors.black),
                                               overflow: TextOverflow.ellipsis,
                                               maxLines: 6,
                                             ),
@@ -276,27 +268,58 @@ class _DoubtsState extends ConsumerState<Doubts> {
                                               horizontal: 10, vertical: 10),
                                           child: Row(
                                             mainAxisAlignment:
-                                                MainAxisAlignment.spaceBetween,
+                                                MainAxisAlignment.end,
                                             children: [
-                                              Text(
-                                                replies,
-                                                style: TextStyle(
-                                                  color: Constants.darkText
-                                                      .withOpacity(0.4),
-                                                  letterSpacing: 0,
-                                                  fontSize: 15,
-                                                  fontWeight: FontWeight.w300,
-                                                ),
+                                              Row(
+                                                children: [
+                                                  Icon(
+                                                    Icons.mode_comment,
+                                                    size: 15,
+                                                    color: Constants.darkText
+                                                        .withOpacity(0.8),
+                                                  ),
+                                                  const SizedBox(
+                                                    width: 5,
+                                                  ),
+                                                  Text(
+                                                    replies,
+                                                    style: TextStyle(
+                                                      color: Constants.darkText
+                                                          .withOpacity(0.8),
+                                                      letterSpacing: 0,
+                                                      fontSize: 13,
+                                                      fontWeight:
+                                                          FontWeight.w300,
+                                                    ),
+                                                  ),
+                                                ],
                                               ),
-                                              Text(
-                                                '$upvotes Upvotes',
-                                                style: TextStyle(
-                                                  color: Constants.darkText
-                                                      .withOpacity(0.4),
-                                                  letterSpacing: 0,
-                                                  fontSize: 15,
-                                                  fontWeight: FontWeight.w300,
-                                                ),
+                                              const SizedBox(
+                                                width: 10,
+                                              ),
+                                              Row(
+                                                children: [
+                                                  Icon(
+                                                    Icons.favorite_border,
+                                                    size: 15,
+                                                    color: Constants.darkText
+                                                        .withOpacity(0.8),
+                                                  ),
+                                                  const SizedBox(
+                                                    width: 5,
+                                                  ),
+                                                  Text(
+                                                    upvotes,
+                                                    style: TextStyle(
+                                                      color: Constants.darkText
+                                                          .withOpacity(0.8),
+                                                      letterSpacing: 0,
+                                                      fontSize: 13,
+                                                      fontWeight:
+                                                          FontWeight.w300,
+                                                    ),
+                                                  ),
+                                                ],
                                               ),
                                             ],
                                           ),

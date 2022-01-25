@@ -17,8 +17,8 @@ class Freshers extends StatefulWidget {
 }
 
 class _FreshersState extends State<Freshers> {
-   var no_of_doubts=0;
-   var no_of_profiles=0;
+  var no_of_doubts = 0;
+  var no_of_profiles = 0;
 
   @override
   void didChangeDependencies() {
@@ -60,121 +60,126 @@ class _FreshersState extends State<Freshers> {
                 icon: const Icon(Icons.arrow_back)),
             iconTheme: const IconThemeData(color: Constants.darkText),
           ),
-          body: Container(
-            color: Constants.background,
-            padding: const EdgeInsets.only(),
-            child: Column(
-              children: [
-                Container(
-                  height: 250,
-                  width: double.maxFinite,
-                  child: Image.asset(
-                    'assets/images/business-leader.png',
-                    fit: BoxFit.cover,
+          body: SingleChildScrollView(
+            child: Container(
+              color: Constants.background,
+              padding: const EdgeInsets.only(),
+              child: Column(
+                children: [
+                  Container(
+                    height: 250,
+                    width: double.maxFinite,
+                    child: Image.asset(
+                      'assets/images/business-leader.png',
+                      fit: BoxFit.cover,
+                    ),
                   ),
-                ),
-                const SizedBox(
-                  height: 20,
-                ),
-                SizedBox(
-                  height: 180,
-                  child: Column(
-                    children: [
-                      Expanded(
-                        child: AnimationLimiter(
-                          child: ListView.builder(
-                            physics: const BouncingScrollPhysics(),
-                            scrollDirection: Axis.horizontal,
-                            itemBuilder: (context, index) {
-                              return AnimationConfiguration.staggeredList(
-                                position: index,
-                                delay: const Duration(milliseconds: 200),
-                                child: SlideAnimation(
-                                  horizontalOffset: 20,
-                                  duration: const Duration(milliseconds: 2500),
-                                  curve: Curves.fastLinearToSlowEaseIn,
-                                  child: FadeInAnimation(
-                                    child: MyListTile(
-                                        widget.userFirstName, uiInfo, index),
+                  const SizedBox(
+                    height: 20,
+                  ),
+                  SizedBox(
+                    height: 180,
+                    child: Column(
+                      children: [
+                        Expanded(
+                          child: AnimationLimiter(
+                            child: ListView.builder(
+                              physics: const BouncingScrollPhysics(),
+                              scrollDirection: Axis.horizontal,
+                              itemBuilder: (context, index) {
+                                return AnimationConfiguration.staggeredList(
+                                  position: index,
+                                  delay: const Duration(milliseconds: 200),
+                                  child: SlideAnimation(
+                                    horizontalOffset: 20,
+                                    duration:
+                                        const Duration(milliseconds: 2500),
+                                    curve: Curves.fastLinearToSlowEaseIn,
+                                    child: FadeInAnimation(
+                                      child: MyListTile(
+                                          widget.userFirstName, uiInfo, index),
+                                    ),
                                   ),
+                                );
+                              },
+                              itemCount: 1,
+                            ),
+                          ),
+                        )
+                      ],
+                    ),
+                  ),
+                  const SizedBox(
+                    height: 20,
+                  ),
+                  Row(
+                    children: [
+                      GestureDetector(
+                        onTap: () {
+                          Navigator.push(
+                              context, PageTransition(NewDoubt(false)));
+                        },
+                        child: Container(
+                          padding: const EdgeInsets.symmetric(
+                              vertical: 20, horizontal: 20),
+                          margin: const EdgeInsets.symmetric(horizontal: 20),
+                          height: 120,
+                          width: 300,
+                          decoration: BoxDecoration(
+                              borderRadius: BorderRadius.circular(20),
+                              gradient: const LinearGradient(
+                                  colors: [
+                                    Constants.secondaryThemeColor,
+                                    Constants.themeColor,
+                                  ],
+                                  begin: Alignment.bottomLeft,
+                                  end: Alignment.topRight),
+                              boxShadow: [
+                                BoxShadow(
+                                    color:
+                                        Constants.themeColor.withOpacity(0.5),
+                                    blurRadius: 20,
+                                    offset: const Offset(10, 10))
+                              ]),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Row(
+                                mainAxisAlignment:
+                                    MainAxisAlignment.spaceBetween,
+                                children: const [
+                                  Text(
+                                    'Have a doubt?',
+                                    style: TextStyle(
+                                        color: Constants.background,
+                                        fontSize: 25,
+                                        fontWeight: FontWeight.bold),
+                                  ),
+                                  Icon(
+                                    Icons.arrow_forward_ios,
+                                    color: Colors.white,
+                                  )
+                                ],
+                              ),
+                              const SizedBox(
+                                height: 10,
+                              ),
+                              Text(
+                                'Ask a helpful community of talented \nseniors!',
+                                style: TextStyle(
+                                  color: Colors.white.withOpacity(0.6),
+                                  fontSize: 14,
+                                  fontWeight: FontWeight.w300,
                                 ),
-                              );
-                            },
-                            itemCount: 2,
+                              )
+                            ],
                           ),
                         ),
-                      )
-                    ],
-                  ),
-                ),
-                const SizedBox(
-                  height: 20,
-                ),
-                Row(
-                  children: [
-                    GestureDetector(
-                      onTap: () {
-                        Navigator.push(
-                            context, PageTransition(NewDoubt(false)));
-                      },
-                      child: Container(
-                        padding: const EdgeInsets.symmetric(
-                            vertical: 20, horizontal: 20),
-                        margin: const EdgeInsets.symmetric(horizontal: 20),
-                        height: 120,
-                        width: 300,
-                        decoration: BoxDecoration(
-                            borderRadius: BorderRadius.circular(20),
-                            gradient: const LinearGradient(
-                                colors: [
-                                  Constants.secondaryThemeColor,
-                                  Constants.themeColor,
-                                ],
-                                begin: Alignment.bottomLeft,
-                                end: Alignment.topRight),
-                            boxShadow: [
-                              BoxShadow(
-                                  color: Constants.themeColor.withOpacity(0.5),
-                                  blurRadius: 20,
-                                  offset: const Offset(10, 10))
-                            ]),
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Row(
-                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                              children: const [
-                                Text(
-                                  'Have a doubt?',
-                                  style: TextStyle(
-                                      color: Constants.background,
-                                      fontSize: 25,
-                                      fontWeight: FontWeight.bold),
-                                ),
-                                Icon(
-                                  Icons.arrow_forward_ios,
-                                  color: Colors.white,
-                                )
-                              ],
-                            ),
-                            const SizedBox(
-                              height: 10,
-                            ),
-                            Text(
-                              'Ask a helpful community of talented \nseniors!',
-                              style: TextStyle(
-                                color: Colors.white.withOpacity(0.6),
-                                fontSize: 14,
-                                fontWeight: FontWeight.w300,
-                              ),
-                            )
-                          ],
-                        ),
                       ),
-                    ),
-                  ],
-                )
-              ],
+                    ],
+                  )
+                ],
+              ),
             ),
           ),
         ),

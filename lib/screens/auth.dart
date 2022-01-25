@@ -47,7 +47,7 @@ class _AuthScreenState extends State<AuthScreen> with TickerProviderStateMixin {
 
   void _submitAuthForm(String email, String name, String password,
       bool isSignIn, BuildContext ctx,
-      {  int? year, String? college}) async {
+      {int? year, String? college}) async {
     final authresult;
     email = email.trim();
     name = name.trim();
@@ -71,7 +71,10 @@ class _AuthScreenState extends State<AuthScreen> with TickerProviderStateMixin {
           content: Text('User created successfully'),
           backgroundColor: Colors.green,
         ));
-        fireInstance.collection('Colleges/PICT/Users').doc(authresult.user.uid).set({
+        fireInstance
+            .collection('Colleges/PICT/Users')
+            .doc(authresult.user.uid)
+            .set({
           'username': name,
           'email': email,
           'seniorStatus': year,
@@ -123,8 +126,6 @@ class _AuthScreenState extends State<AuthScreen> with TickerProviderStateMixin {
           child: FadeTransition(
             opacity: animationController,
             child: Container(
-              height: h,
-              width: w,
               child: Column(
                   mainAxisAlignment: MainAxisAlignment.center,
                   crossAxisAlignment: CrossAxisAlignment.center,

@@ -22,10 +22,11 @@ class _UpVoteState extends ConsumerState<UpVote> {
     return Container(
         child: IconButton(
             icon: Icon(
-              Icons.thumb_up,
+              Icons.favorite,
               color: widget.isUpvoted
                   ? Colors.orangeAccent
                   : Constants.darkText.withOpacity(0.3),
+              size: 20,
             ),
             onPressed: () {
               if (!widget.isUpvoted) {

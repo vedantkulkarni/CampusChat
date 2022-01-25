@@ -120,7 +120,7 @@ class _ReplyToDoubtState extends ConsumerState<ReplyToDoubt> {
                             boxShadow: [
                               BoxShadow(
                                   blurRadius: 20,
-                                  color: Colors.grey.withOpacity(0.6),
+                                  color: Colors.grey.withOpacity(0.4),
                                   offset: const Offset(10, 10))
                             ]),
                         child: Column(
@@ -131,22 +131,19 @@ class _ReplyToDoubtState extends ConsumerState<ReplyToDoubt> {
                               height: 70,
                               width: double.maxFinite,
                               decoration: const BoxDecoration(
-                                  borderRadius: BorderRadius.only(
-                                      topLeft: Radius.circular(10),
-                                      topRight: Radius.circular(10)),
-                                  gradient: LinearGradient(colors: [
-                                    Color(0xfff97a80),
-                                    Color(0xfffeb094),
-                                  ])),
+                                borderRadius: BorderRadius.only(
+                                    topLeft: Radius.circular(10),
+                                    topRight: Radius.circular(10)),
+                              ),
                               child: Column(
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
                                   Text(
                                     widget.username,
                                     style: const TextStyle(
-                                      fontSize: 25,
+                                      fontSize: 20,
                                       fontWeight: FontWeight.bold,
-                                      color: Constants.background,
+                                      color: Constants.secondaryThemeColor,
                                     ),
                                   ),
                                   const SizedBox(
@@ -155,10 +152,10 @@ class _ReplyToDoubtState extends ConsumerState<ReplyToDoubt> {
                                   Text(
                                     'Posted ${widget.timePosted}',
                                     style: TextStyle(
-                                      fontSize: 15,
+                                      fontSize: 13,
                                       fontWeight: FontWeight.w400,
                                       color:
-                                          Constants.background.withOpacity(0.6),
+                                          Constants.darkText.withOpacity(0.6),
                                     ),
                                   ),
                                 ],
@@ -235,7 +232,7 @@ class _GetRepliesState extends State<GetReplies> {
         stream: widget.replyReference
             .doc(widget.doubtId)
             .collection('Replies')
-            .orderBy('timestamp')
+            .orderBy('timestamp', descending: true)
             .snapshots(),
         builder: (BuildContext context, AsyncSnapshot snapshot) {
           if (snapshot.data == null) return Text('Not found vrons!');
@@ -252,7 +249,7 @@ class _GetRepliesState extends State<GetReplies> {
                           'https://assets3.lottiefiles.com/packages/lf20_r71cen62.json',
                           fit: BoxFit.contain),
                     ),
-                     Text(
+                    Text(
                       'Nope! Not a single reply.',
                       textAlign: TextAlign.center,
                       style: TextStyle(
@@ -269,76 +266,72 @@ class _GetRepliesState extends State<GetReplies> {
             physics: const NeverScrollableScrollPhysics(),
             shrinkWrap: true,
             itemBuilder: (context, index) {
-              return Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 20),
-                child: Container(
-                  margin: EdgeInsets.symmetric(vertical: 10),
-                  decoration: BoxDecoration(
-                    color: Colors.white,
-                    borderRadius: BorderRadius.circular(10),
-                  ),
-                  child: Padding(
-                    padding: const EdgeInsets.symmetric(
-                        horizontal: 10, vertical: 10),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text(
-                              snapshot.data!.docs[index]['username'],
-                              style: const TextStyle(
-                                  color: Constants.secondaryThemeColor,
-                                  fontSize: 15,
-                                  fontWeight: FontWeight.bold),
+              return Container(
+                decoration: BoxDecoration(
+                  color: Constants.background,
+                  borderRadius: BorderRadius.circular(10),
+                ),
+                child: Padding(
+                  padding: const EdgeInsets.only(left: 50, right: 10),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      const Divider(
+                        thickness: 0.1,
+                        height: 30,
+                        color: Constants.darkText,
+                      ),
+                      Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            snapshot.data!.docs[index]['username'],
+                            style: const TextStyle(
+                                color: Constants.secondaryThemeColor,
+                                fontSize: 15,
+                                fontWeight: FontWeight.bold),
+                          ),
+                          const SizedBox(
+                            height: 5,
+                          ),
+                          Text(
+                            DateFormat.MMMd()
+                                .format(snapshot.data!.docs[index]['timestamp']
+                                    .toDate())
+                                .toString(),
+                            style: TextStyle(
+                                color: Colors.grey.withOpacity(0.6),
+                                fontSize: 12),
+                          )
+                        ],
+                      ),
+                      const SizedBox(
+                        height: 10,
+                      ),
+                      Flex(
+                        direction: Axis.vertical,
+                        children: [
+                          Text(
+                            snapshot.data!.docs[index]['desc'],
+                            style: const TextStyle(
+                              fontSize: 17,
+                              fontWeight: FontWeight.w300,
                             ),
-                            const SizedBox(
-                              height: 5,
-                            ),
-                            Text(
-                              DateFormat.MMMd()
-                                  .format(snapshot
-                                      .data!.docs[index]['timestamp']
-                                      .toDate())
-                                  .toString(),
-                              style: TextStyle(
-                                  color: Colors.grey.withOpacity(0.6),
-                                  fontSize: 12),
+                          )
+                        ],
+                      ),
+                      widget.isMyDoubt &&
+                              !snapshot.data!.docs[index]
+                                  ['isAckwnoledgedByUser'] &&
+                              !(snapshot.data!.docs[index]['uid'] ==
+                                  FirebaseAuth.instance.currentUser!.uid)
+                          ? ReplyFeedback(
+                              snapshot.data!.docs[index]['uid'],
+                              widget.doubtId,
+                              snapshot.data!.docs[index].id,
                             )
-                          ],
-                        ),
-                        const SizedBox(
-                          height: 10,
-                        ),
-                        Flex(
-                          direction: Axis.vertical,
-                          children: [
-                            Text(
-                              snapshot.data!.docs[index]['desc'],
-                              style: const TextStyle(
-                                fontSize: 17,
-                                fontWeight: FontWeight.w300,
-                              ),
-                            )
-                          ],
-                        ),
-                        const SizedBox(
-                          height: 10,
-                        ),
-                        widget.isMyDoubt &&
-                                !snapshot.data!.docs[index]
-                                    ['isAckwnoledgedByUser'] &&
-                                !(snapshot.data!.docs[index]['uid'] ==
-                                    FirebaseAuth.instance.currentUser!.uid)
-                            ? ReplyFeedback(
-                                snapshot.data!.docs[index]['uid'],
-                                widget.doubtId,
-                                snapshot.data!.docs[index].id,
-                              )
-                            : Container()
-                      ],
-                    ),
+                          : Container()
+                    ],
                   ),
                 ),
               );
