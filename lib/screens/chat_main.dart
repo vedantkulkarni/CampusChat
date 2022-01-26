@@ -9,6 +9,7 @@ import 'package:chat_app/utils/chat_engine.dart';
 import 'package:chat_app/utils/constants.dart';
 import 'package:chat_app/utils/page_transition.dart';
 import 'package:chat_app/utils/providers.dart';
+import 'package:chat_app/utils/user_data.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
@@ -16,12 +17,12 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_staggered_animations/flutter_staggered_animations.dart';
 import 'package:lottie/lottie.dart';
 
-class ChatMain extends StatefulWidget {
+class ChatMain extends ConsumerStatefulWidget {
   @override
   _ChatMainState createState() => _ChatMainState();
 }
 
-class _ChatMainState extends State<ChatMain>
+class _ChatMainState extends ConsumerState<ChatMain>
     with SingleTickerProviderStateMixin {
   final user = FirebaseFirestore.instance.collection('Colleges/PICT/Users');
   late final AnimationController animationController;
@@ -34,6 +35,7 @@ class _ChatMainState extends State<ChatMain>
     animationController = AnimationController(
         vsync: this, duration: const Duration(milliseconds: 500));
     fadeAnimation = Tween(begin: 0.0, end: 1.0).animate(animationController);
+    ref.read(attendanceDataProvider).authAndRequestApi();
   }
 
   @override
@@ -185,6 +187,7 @@ class UserDashboard extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final myProvider = ref.watch(userDataProvider);
+
     myProvider.initializeFirebase();
     myProvider.getUserData();
     return FutureBuilder(
@@ -564,20 +567,21 @@ class HomeTile extends StatelessWidget {
                 )
               ],
             ),
-            Row(
-              children: [
-                Flexible(
-                  child: Text(
-                    infoList[1],
-                    softWrap: false,
-                    overflow: TextOverflow.ellipsis,
-                    style: TextStyle(
-                        color: Constants.background.withOpacity(0.8),
-                        fontSize: 16,
-                        fontWeight: FontWeight.w300),
-                  ),
-                )
-              ],
+            Padding(
+              padding: const EdgeInsets.only(right: 15),
+              child: Row(
+                children: [
+                  Flexible(
+                    child: Text(
+                      infoList[1],
+                      style: TextStyle(
+                          color: Constants.background.withOpacity(0.8),
+                          fontSize: 16,
+                          fontWeight: FontWeight.w300),
+                    ),
+                  )
+                ],
+              ),
             )
           ],
         ),

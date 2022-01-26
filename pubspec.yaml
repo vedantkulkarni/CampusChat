@@ -43,6 +43,11 @@ dependencies:
   flutter_staggered_animations: ^1.0.0
   flutter_riverpod: ^1.0.3
   intl: ^0.17.0
+  http: ^0.13.4
+  html: ^0.15.0
+  cookie_jar: ^3.0.1
+  dio: ^4.0.4
+  dio_cookie_manager: ^2.0.0
   
 
 dev_dependencies:

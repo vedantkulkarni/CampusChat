@@ -2,6 +2,7 @@ import 'package:chat_app/screens/auth.dart';
 import 'package:chat_app/screens/chat_main.dart';
 import 'package:chat_app/screens/doubts.dart';
 import 'package:chat_app/screens/freshers.dart';
+import 'package:chat_app/screens/profile.dart';
 import 'package:chat_app/screens/teacher_list.dart';
 import 'package:chat_app/utils/chat_engine.dart';
 import 'package:chat_app/utils/constants.dart';
@@ -36,7 +37,7 @@ class MyApp extends StatelessWidget {
         stream: FirebaseAuth.instance.userChanges(),
         builder: (context, userSnapShot) {
           if (userSnapShot.hasData) {
-            return ChatMain();
+            return Profile();
           }
           return AuthScreen();
         },
