@@ -114,7 +114,10 @@ class _ChatMainState extends ConsumerState<ChatMain>
                                         const SizedBox(
                                           height: 20,
                                         ),
-                                        const Text('Couldn\'t find anything for you',style: Constants.errorText,)
+                                        const Text(
+                                          'Couldn\'t find anything for you',
+                                          style: Constants.errorText,
+                                        )
                                       ],
                                     ),
                                   );
@@ -562,141 +565,181 @@ class DrawerContent extends ConsumerWidget {
         padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 10),
         child: Column(
           children: [
-            Container(
-                width: double.maxFinite,
-                margin: EdgeInsets.symmetric(vertical: 20),
-                child: Column(
-                  children: [
-                    Container(
-                      width: double.maxFinite,
-                      decoration: BoxDecoration(
-                          borderRadius: BorderRadius.circular(150)),
-                      child: Lottie.asset('assets/images/person_lottie.json',
-                          fit: BoxFit.fill),
-                    ),
-                    Padding(
-                      padding: const EdgeInsets.symmetric(
-                          horizontal: 20, vertical: 10),
-                      child: Text(
-                        myProvider.isLoaded ? myProvider.userName : 'User',
-                        style: TextStyle(
-                            fontSize: 25, fontWeight: FontWeight.bold),
-                        overflow: TextOverflow.fade,
-                      ),
-                    )
-                  ],
-                )
-                // color: Colors.blue.withOpacity(0.5),
-                ),
-            // Divider(
-            //   color: Constants.darkText.withOpacity(0.4),
-            // ),
             Expanded(
-                child: ListView(
-              children: [
-                GestureDetector(
-                  child: Container(
-                    width: double.maxFinite,
-                    padding: const EdgeInsets.symmetric(vertical: 15),
-                    child: Row(
+              child: Column(
+                children: [
+                  Container(
+                      width: double.maxFinite,
+                      margin: EdgeInsets.symmetric(vertical: 20),
+                      child: Column(
+                        children: [
+                          Container(
+                            width: double.maxFinite,
+                            decoration: BoxDecoration(
+                                borderRadius: BorderRadius.circular(150)),
+                            child: Lottie.asset(
+                                'assets/images/person_lottie.json',
+                                fit: BoxFit.fill),
+                          ),
+                          Padding(
+                            padding: const EdgeInsets.symmetric(
+                                horizontal: 20, vertical: 10),
+                            child: Text(
+                              myProvider.isLoaded
+                                  ? myProvider.userName
+                                  : 'User',
+                              style: const TextStyle(
+                                  fontSize: 25, fontWeight: FontWeight.bold),
+                              overflow: TextOverflow.fade,
+                            ),
+                          )
+                        ],
+                      )
+                      // color: Colors.blue.withOpacity(0.5),
+                      ),
+                  // Divider(
+                  //   color: Constants.darkText.withOpacity(0.4),
+                  // ),
+                  Expanded(
+                    child: ListView(
                       children: [
-                        Icon(
-                          Icons.notifications,
-                          color: Constants.darkText.withOpacity(0.5),
+                        GestureDetector(
+                          child: Container(
+                            width: double.maxFinite,
+                            padding: const EdgeInsets.symmetric(vertical: 15),
+                            child: Row(
+                              children: [
+                                Icon(
+                                  Icons.notifications,
+                                  color: Constants.darkText.withOpacity(0.5),
+                                ),
+                                const SizedBox(
+                                  width: 50,
+                                ),
+                                const Text(
+                                  'Notifications',
+                                  style: TextStyle(
+                                      fontSize: 18,
+                                      fontWeight: FontWeight.w300),
+                                )
+                              ],
+                            ),
+                          ),
                         ),
-                        const SizedBox(
-                          width: 50,
+                        GestureDetector(
+                          onTap: () {
+                            Navigator.pop(context);
+                            Navigator.push(
+                                context, PageTransition(Doubts(true)));
+                          },
+                          child: Container(
+                            width: double.maxFinite,
+                            padding: const EdgeInsets.symmetric(vertical: 15),
+                            child: Row(
+                              children: [
+                                Icon(
+                                  Icons.book,
+                                  color: Constants.darkText.withOpacity(0.5),
+                                ),
+                                const SizedBox(
+                                  width: 50,
+                                ),
+                                const Text(
+                                  'My Doubts',
+                                  style: TextStyle(
+                                      fontSize: 18,
+                                      fontWeight: FontWeight.w300),
+                                )
+                              ],
+                            ),
+                          ),
                         ),
-                        const Text(
-                          'Notifications',
-                          style: TextStyle(
-                              fontSize: 18, fontWeight: FontWeight.w300),
-                        )
+                        GestureDetector(
+                          onTap: () {
+                            Navigator.pop(context);
+                            Navigator.push(
+                                context, PageTransition(TeacherList()));
+                          },
+                          child: Container(
+                            width: double.maxFinite,
+                            padding: const EdgeInsets.symmetric(vertical: 15),
+                            child: Row(
+                              children: [
+                                Icon(
+                                  Icons.person,
+                                  color: Constants.darkText.withOpacity(0.5),
+                                ),
+                                const SizedBox(
+                                  width: 50,
+                                ),
+                                const Text(
+                                  'Teachers',
+                                  style: TextStyle(
+                                      fontSize: 18,
+                                      fontWeight: FontWeight.w300),
+                                )
+                              ],
+                            ),
+                          ),
+                        ),
+                        GestureDetector(
+                          onTap: () {
+                            Navigator.pop(context);
+                            Navigator.push(
+                                context,
+                                PageTransition(
+                                    ChatEngine('Freshers', 'Vedant')));
+                          },
+                          child: Container(
+                            width: double.maxFinite,
+                            padding: const EdgeInsets.symmetric(vertical: 15),
+                            child: Row(
+                              children: [
+                                Icon(
+                                  Icons.chat,
+                                  color: Constants.darkText.withOpacity(0.5),
+                                ),
+                                const SizedBox(
+                                  width: 50,
+                                ),
+                                const Text(
+                                  'Chat',
+                                  style: TextStyle(
+                                      fontSize: 18,
+                                      fontWeight: FontWeight.w300),
+                                )
+                              ],
+                            ),
+                          ),
+                        ),
                       ],
                     ),
                   ),
-                ),
-                GestureDetector(
-                  onTap: () {
-                    Navigator.pop(context);
-                    Navigator.push(context, PageTransition(Doubts(true)));
-                  },
-                  child: Container(
-                    width: double.maxFinite,
-                    padding: const EdgeInsets.symmetric(vertical: 15),
-                    child: Row(
-                      children: [
-                        Icon(
-                          Icons.book,
-                          color: Constants.darkText.withOpacity(0.5),
-                        ),
-                        const SizedBox(
-                          width: 50,
-                        ),
-                        const Text(
-                          'My Doubts',
+
+                  Column(
+                    children: [
+                      const Divider(),
+                      const SizedBox(
+                        height: 5,
+                      ),
+                      Text(
+                        'Developed By',
+                        style: TextStyle(
+                            color: Constants.darkText.withOpacity(0.6)),
+                      ),
+                      const SizedBox(
+                        height: 5,
+                      ),
+                      const Text('Vedant Kulkarni',
                           style: TextStyle(
-                              fontSize: 18, fontWeight: FontWeight.w300),
-                        )
-                      ],
-                    ),
-                  ),
-                ),
-                GestureDetector(
-                  onTap: () {
-                    Navigator.pop(context);
-                    Navigator.push(context, PageTransition(TeacherList()));
-                  },
-                  child: Container(
-                    width: double.maxFinite,
-                    padding: const EdgeInsets.symmetric(vertical: 15),
-                    child: Row(
-                      children: [
-                        Icon(
-                          Icons.person,
-                          color: Constants.darkText.withOpacity(0.5),
-                        ),
-                        const SizedBox(
-                          width: 50,
-                        ),
-                        const Text(
-                          'Teachers',
-                          style: TextStyle(
-                              fontSize: 18, fontWeight: FontWeight.w300),
-                        )
-                      ],
-                    ),
-                  ),
-                ),
-                GestureDetector(
-                  onTap: () {
-                    Navigator.pop(context);
-                    Navigator.push(context,
-                        PageTransition(ChatEngine('Freshers', 'Vedant')));
-                  },
-                  child: Container(
-                    width: double.maxFinite,
-                    padding: const EdgeInsets.symmetric(vertical: 15),
-                    child: Row(
-                      children: [
-                        Icon(
-                          Icons.chat,
-                          color: Constants.darkText.withOpacity(0.5),
-                        ),
-                        const SizedBox(
-                          width: 50,
-                        ),
-                        const Text(
-                          'Chat',
-                          style: TextStyle(
-                              fontSize: 18, fontWeight: FontWeight.w300),
-                        )
-                      ],
-                    ),
-                  ),
-                ),
-              ],
-            ))
+                            fontSize: 22,
+                            fontWeight: FontWeight.bold,
+                          ))
+                    ],
+                  )
+                ],
+              ),
+            )
           ],
         ),
       ),

@@ -266,7 +266,7 @@ class _AttendanceBodyState extends State<AttendanceBody> {
                           curve: Curves.fastLinearToSlowEaseIn,
                           flipAxis: FlipAxis.y,
                           child: FadeInAnimation(
-                            duration: Duration(milliseconds: 2000),
+                            duration: const Duration(milliseconds: 2000),
                             child: AttendanceCard(
                                 widget.provider.subjectList[index]),
                           ),

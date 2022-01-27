@@ -62,7 +62,7 @@ class _DoubtsState extends ConsumerState<Doubts> {
                 color: Constants.darkText, fontWeight: FontWeight.bold),
           ),
           actions: [
-            Center(
+            const Center(
               child: Text(
                 'Sorting',
                 style: TextStyle(
@@ -109,7 +109,9 @@ class _DoubtsState extends ConsumerState<Doubts> {
                       .snapshots(),
               builder: (context, AsyncSnapshot<QuerySnapshot> snapshot) {
                 if (snapshot.connectionState == ConnectionState.waiting)
-                  return Center(child: CircularProgressIndicator());
+                  {
+                    return Container(child:Constants.progressIndicator,);
+                  }
                 if (snapshot.data == null) return Text('Null was returned');
                 if (snapshot.hasData && snapshot.data!.docs.isEmpty)
                   return NoDoubts();

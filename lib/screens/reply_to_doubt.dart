@@ -255,7 +255,7 @@ class _GetRepliesState extends State<GetReplies> {
         builder: (BuildContext context, AsyncSnapshot snapshot) {
           if (snapshot.data == null) return Text('Not found vrons!');
           if (snapshot.hasData && snapshot.data!.docs.isEmpty) {
-            Container(
+           return Container(
               child: Column(
                 children: [
                   Constants.errorLottie,

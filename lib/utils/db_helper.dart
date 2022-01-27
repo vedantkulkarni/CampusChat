@@ -12,13 +12,16 @@ class DBHelper {
 
   static Future<void> insert(String loginId, String password) async {
     final db = await DBHelper.database();
-    db.insert('creds', {'id':loginId,'pass':password},
+    db.insert('creds', {'id': loginId, 'pass': password},
         conflictAlgorithm: sql.ConflictAlgorithm.replace);
+
+    db.close();
   }
 
   static Future<List<Map<String, dynamic>>> getData() async {
     final db = await DBHelper.database();
     final res = await db.query('creds');
+    db.close();
     return res;
   }
 }
