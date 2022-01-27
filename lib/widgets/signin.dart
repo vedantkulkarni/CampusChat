@@ -46,14 +46,14 @@ class _SignInFormState extends State<SignInForm> {
                 child: TextFormField(
                   validator: (value) {
                     print("value is : $value");
-                    if (value!.isEmpty || !value.contains('@')) {
+                    if (value!.isEmpty || value.contains('@')) {
                       return 'Please enter a valid email address.';
                     }
                     return null;
                   },
                   decoration: const InputDecoration(
                     border: OutlineInputBorder(),
-                    hintText: 'Email',
+                    hintText: 'MIS Portal LoginId',
                   ),
                   keyboardType: TextInputType.emailAddress,
                   autofocus: false,
@@ -97,7 +97,7 @@ class _SignInFormState extends State<SignInForm> {
                                       color: Colors.grey,
                                     )),
                           border: const OutlineInputBorder(),
-                          hintText: 'Password',
+                          hintText: 'MIS Portal Password',
                         ),
                         obscureText: !showPass.vis,
                         autofocus: false,

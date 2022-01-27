@@ -3,6 +3,7 @@ import 'dart:ui';
 import 'package:chat_app/screens/details.dart';
 import 'package:chat_app/screens/doubts.dart';
 import 'package:chat_app/screens/freshers.dart';
+import 'package:chat_app/screens/profile.dart';
 import 'package:chat_app/screens/teacher_list.dart';
 
 import 'package:chat_app/utils/chat_engine.dart';
@@ -35,7 +36,7 @@ class _ChatMainState extends ConsumerState<ChatMain>
     animationController = AnimationController(
         vsync: this, duration: const Duration(milliseconds: 500));
     fadeAnimation = Tween(begin: 0.0, end: 1.0).animate(animationController);
-    ref.read(attendanceDataProvider).authAndRequestApi();
+    
   }
 
   @override
@@ -131,7 +132,7 @@ class _ChatMainState extends ConsumerState<ChatMain>
           ctr.reset();
           Map<String, dynamic> data =
               documentSnapshot.data!.data() as Map<String, dynamic>;
-
+              ref.read(attendanceDataProvider).authAndRequestApi();
           return ChatHome(data['username'].toString().split(' ')[0], ctr);
         } else {
           ctr.reset();
@@ -163,9 +164,7 @@ class ChatHome extends StatelessWidget {
             height: 20,
           ),
           // GreetingMessage(username: username),
-          const SizedBox(
-            height: 10,
-          ),
+         
           UserDashboard(ctr),
           const SizedBox(
             height: 40,
@@ -188,8 +187,6 @@ class UserDashboard extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final myProvider = ref.watch(userDataProvider);
 
-    myProvider.initializeFirebase();
-    myProvider.getUserData();
     return FutureBuilder(
         future: myProvider.getUserData(),
         builder: (context, snapshot) {
@@ -201,6 +198,14 @@ class UserDashboard extends ConsumerWidget {
               ),
             );
           // ctr.reset();
+          if (snapshot.hasError) {
+            ctr.forward();
+            return Container(
+              child: Center(
+                child: Text('No users found'),
+              ),
+            );
+          }
           if (snapshot.data == false)
             return Container(
               child: Center(
@@ -521,8 +526,7 @@ class HomeTile extends StatelessWidget {
         if (index == 0)
           Navigator.push(context, PageTransition(Freshers(userFirstName)));
         else
-          Navigator.push(
-              context, PageTransition(ChatEngine('Freshers', userFirstName)));
+          Navigator.push(context, PageTransition(Profile()));
       },
       child: Container(
         margin: const EdgeInsets.only(
@@ -590,33 +594,7 @@ class HomeTile extends StatelessWidget {
   }
 }
 
-class GreetingMessage extends StatelessWidget {
-  const GreetingMessage({
-    Key? key,
-    required this.username,
-  }) : super(key: key);
 
-  final String username;
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          SizedBox(
-            height: 20,
-          ),
-          Text(username,
-              style: TextStyle(
-                  fontSize: 20,
-                  fontWeight: FontWeight.bold,
-                  color: Constants.darkText))
-        ],
-      ),
-    );
-  }
-}
 
 //Drawer
 class DrawerContent extends StatelessWidget {
@@ -634,31 +612,20 @@ class DrawerContent extends StatelessWidget {
         children: [
           Container(
               width: double.maxFinite,
+              height: 250,
               margin: EdgeInsets.symmetric(vertical: 20),
               child: Column(
                 children: [
                   Container(
-                    height: 100,
-                    width: 100,
-                    decoration: BoxDecoration(
-                        color: Colors.blue,
-                        borderRadius: BorderRadius.circular(150)),
+                    width: double.maxFinite,
+                    decoration:
+                        BoxDecoration(borderRadius: BorderRadius.circular(150)),
+                    child: Lottie.asset(
+                        'assets/images/person_lottie.json',
+                        fit: BoxFit.fill),
                   ),
-                  FutureBuilder<DocumentSnapshot>(
-                    future:
-                        user.doc(FirebaseAuth.instance.currentUser!.uid).get(),
-                    builder:
-                        (context, AsyncSnapshot<DocumentSnapshot> snapshot) {
-                      if (snapshot.connectionState == ConnectionState.waiting) {
-                        return const Center(
-                          child: CircularProgressIndicator(),
-                        );
-                      }
-
-                      return GreetingMessage(
-                          username: snapshot.data!.get('username'));
-                    },
-                  ),
+                  const SizedBox(height: 10,),
+                  Text('')
                 ],
               )
               // color: Colors.blue.withOpacity(0.5),
@@ -744,20 +711,25 @@ class DrawerContent extends StatelessWidget {
                 ),
               ),
               GestureDetector(
+                onTap: () {
+                  Navigator.pop(context);
+                  Navigator.push(context,
+                      PageTransition(ChatEngine('Freshers', 'Vedant')));
+                },
                 child: Container(
                   width: double.maxFinite,
                   padding: const EdgeInsets.symmetric(vertical: 15),
                   child: Row(
                     children: [
                       Icon(
-                        Icons.help,
+                        Icons.chat,
                         color: Constants.darkText.withOpacity(0.5),
                       ),
                       const SizedBox(
                         width: 50,
                       ),
                       const Text(
-                        'Help',
+                        'Chat',
                         style: TextStyle(
                             fontSize: 18, fontWeight: FontWeight.w300),
                       )

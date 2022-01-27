@@ -1,4 +1,5 @@
 import 'package:chat_app/utils/constants.dart';
+import 'package:chat_app/utils/db_helper.dart';
 import 'package:chat_app/widgets/signin.dart';
 import 'package:chat_app/widgets/signup.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -45,13 +46,18 @@ class _AuthScreenState extends State<AuthScreen> with TickerProviderStateMixin {
     await animationController.forward();
   }
 
-  void _submitAuthForm(String email, String name, String password,
-      bool isSignIn, BuildContext ctx,
-      {int? year, String? college}) async {
+  void _submitAuthForm(
+    String misId,
+    String name,
+    String password,
+    bool isSignIn,
+    BuildContext ctx,
+  ) async {
     final authresult;
-    email = email.trim();
+    misId = misId.trim().toUpperCase();
     name = name.trim();
     password = password.trim();
+    final String email = '$misId@gmail.com';
     setState(() {
       isLoading = true;
     });
@@ -59,14 +65,16 @@ class _AuthScreenState extends State<AuthScreen> with TickerProviderStateMixin {
       if (isSignIn) {
         authresult = await auth.signInWithEmailAndPassword(
             email: email, password: password);
+            await DBHelper.insert(misId, password);
         setState(() {
           isLoading = false;
         });
         ScaffoldMessenger.of(ctx)
-            .showSnackBar(const SnackBar(content: Text('Login Successfull!')));
+            .showSnackBar(const SnackBar(content: Text('Login Successfull!'),backgroundColor: Colors.green,));
       } else {
         authresult = await auth.createUserWithEmailAndPassword(
             email: email, password: password);
+        
         ScaffoldMessenger.of(ctx).showSnackBar(const SnackBar(
           content: Text('User created successfully'),
           backgroundColor: Colors.green,
@@ -77,13 +85,13 @@ class _AuthScreenState extends State<AuthScreen> with TickerProviderStateMixin {
             .set({
           'username': name,
           'email': email,
-          'seniorStatus': year,
+          'loginId': misId,
           'ratingValue': 0,
           'ratingStar': 0,
           'monthlySolved': 0,
           'monthlyGoal': 10,
-          'college': college
         });
+        await DBHelper.insert(misId, password);
       }
     } on PlatformException catch (e) {
       setState(() {
@@ -126,6 +134,7 @@ class _AuthScreenState extends State<AuthScreen> with TickerProviderStateMixin {
           child: FadeTransition(
             opacity: animationController,
             child: Container(
+              height: MediaQuery.of(context).size.height,
               child: Column(
                   mainAxisAlignment: MainAxisAlignment.center,
                   crossAxisAlignment: CrossAxisAlignment.center,
@@ -133,14 +142,14 @@ class _AuthScreenState extends State<AuthScreen> with TickerProviderStateMixin {
                     const Center(
                         child: Text("Welcome!", style: Constants.headline)),
                     const SizedBox(height: 5),
-                    const Center(
+                    Center(
                         child: Text(
-                      "To continue using the app,\n please sign in first.",
+                      "To continue using the app,\n please ${isSignUpMode ? 'SignUp' : 'SignIn'} first.",
                       style: Constants.body1,
                       textAlign: TextAlign.center,
                     )),
                     (isSignUpMode)
-                        ? Center(
+                        ? Container(
                             child: SignUpForm(
                                 changeAuthState, _submitAuthForm, isLoading),
                           )

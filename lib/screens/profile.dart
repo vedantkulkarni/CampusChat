@@ -23,40 +23,184 @@ class _ProfileState extends ConsumerState<Profile> {
   @override
   Widget build(BuildContext context) {
     final provider = ref.watch(attendanceDataProvider);
-    return Scaffold(
-      body: SingleChildScrollView(
-          child: FutureBuilder(
-        future: provider.authAndRequestApi(),
-        builder: (context, snapshot) {
-          if (snapshot.connectionState == ConnectionState.waiting)
-            return Container(
-              height: MediaQuery.of(context).size.height,
-              child: Center(
-                child: CircularProgressIndicator(),
-              ),
-            );
+    return SafeArea(
+      child: Scaffold(
+        appBar: AppBar(
+          backgroundColor: Constants.background,
+          elevation: 0,
+          title: Text(
+            'Profile',
+            style: TextStyle(
+                color: Constants.darkText, fontWeight: FontWeight.bold),
+          ),
+          leading: IconButton(
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+              icon: const Icon(Icons.arrow_back)),
+          iconTheme: const IconThemeData(color: Constants.darkText),
+        ),
+        body: SingleChildScrollView(
+            child: provider.isLoaded
+                ? AttendanceBody(provider: provider)
+                : FutureBuilder(
+                    future: provider.authAndRequestApi(),
+                    builder: (context, snapshot) {
+                      if (snapshot.connectionState == ConnectionState.waiting)
+                        return Container(
+                          color: Constants.background,
+                          height: MediaQuery.of(context).size.height,
+                          child: Center(
+                            child: CircularProgressIndicator(),
+                          ),
+                        );
+                      if (snapshot.hasError)
+                        return Container(
+                          child: Center(
+                            child: Text("Error occured"),
+                          ),
+                        );
 
-          return Container(
-            height: MediaQuery.of(context).size.height,
-            child: Column(
-              children: [
-                Expanded(
-                  child: ListView.builder(
-                    itemBuilder: (context, index) {
-                      return AttendanceCard(provider.subjectList[index]);
+                      return AttendanceBody(provider: provider);
                     },
-                    itemCount: provider.subjectList.length,
+                  )),
+      ),
+    );
+  }
+}
+
+class AttendanceBody extends StatelessWidget {
+  const AttendanceBody({
+    Key? key,
+    required this.provider,
+  }) : super(key: key);
+
+  final AttendanceData provider;
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      color: Constants.background,
+      height: MediaQuery.of(context).size.height,
+      child: Column(
+        children: [
+          Container(
+            margin: EdgeInsets.all(10),
+            width: MediaQuery.of(context).size.width,
+            decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(10),
+                gradient: const LinearGradient(colors: [
+                  Color(0xfff97a80),
+                  Color(0xfffeb094),
+                ])),
+            child: Padding(
+              padding: EdgeInsets.all(10),
+              child: Column(
+                children: [
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Container(
+                        child: Column(
+                          mainAxisAlignment: MainAxisAlignment.start,
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Flex(
+                                direction: Axis.vertical,
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Text(
+                                    provider.username.trim(),
+                                    style: const TextStyle(
+                                        color: Constants.background,
+                                        fontSize: 20,
+                                        fontWeight: FontWeight.bold),
+                                  ),
+                                ]),
+                            Text(
+                              '${provider.grade.trim()}   DIV-${provider.division.trim()}',
+                              style: TextStyle(
+                                  color: Constants.background.withOpacity(0.6),
+                                  fontSize: 14,
+                                  fontWeight: FontWeight.w100),
+                            ),
+                            // Text(
+                            //   'Division ${provider.division.trim()}',
+                            //   style: TextStyle(
+                            //       color: Constants.background.withOpacity(0.6),
+                            //       fontSize: 14,
+                            //       fontWeight: FontWeight.w100),
+                            // )
+                          ],
+                        ),
+                      ),
+                    ],
                   ),
-                ),
-                const SizedBox(
-                  height: 40,
-                ),
-                Text(provider.averageAttendance)
-              ],
+                  const SizedBox(
+                    height: 10,
+                  ),
+                  Container(
+                    decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(10),
+                        color: Colors.white),
+                    child: Padding(
+                      padding: const EdgeInsets.all(8.0),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          Flexible(
+                            flex: 2,
+                            child:
+                                Flex(direction: Axis.vertical, children: const [
+                              Text(
+                                'Avg. Attendance ',
+                                style: TextStyle(
+                                    color: Constants.darkText,
+                                    fontSize: 20,
+                                    fontWeight: FontWeight.bold),
+                              ),
+                            ]),
+                          ),
+                          Flexible(
+                            flex: 1,
+                            child: Text(
+                              '${provider.averageAttendance}%',
+                              style: const TextStyle(
+                                  color: Constants.darkText,
+                                  fontSize: 25,
+                                  fontWeight: FontWeight.bold),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  )
+                ],
+              ),
             ),
-          );
-        },
-      )),
+          ),
+          Container(
+            width: double.maxFinite,
+            padding: const EdgeInsets.symmetric(horizontal: 15, vertical: 10),
+            child: Text(
+              'Subject Attendance',
+              style: TextStyle(
+                  color: Constants.darkText.withOpacity(0.7),
+                  fontSize: 25,
+                  fontWeight: FontWeight.bold),
+            ),
+          ),
+          Expanded(
+            child: ListView.builder(
+              physics: const BouncingScrollPhysics(),
+              itemBuilder: (context, index) {
+                return AttendanceCard(provider.subjectList[index]);
+              },
+              itemCount: provider.subjectList.length,
+            ),
+          ),
+        ],
+      ),
     );
   }
 }
@@ -108,7 +252,7 @@ class AttendanceCard extends StatelessWidget {
                           style: TextStyle(
                               fontSize: 15,
                               fontWeight: FontWeight.w500,
-                              color: Constants.darkText.withOpacity(0.7)),
+                              color: Color(0xfff97a80)),
                         ),
                       ),
                     ),
@@ -120,7 +264,9 @@ class AttendanceCard extends StatelessWidget {
                         child: Text(
                           sub.attendedLecs,
                           style: const TextStyle(
-                              fontSize: 15, fontWeight: FontWeight.w500),
+                              color: Color(0xfff97a80),
+                              fontSize: 15,
+                              fontWeight: FontWeight.w500),
                         ),
                       ),
                     ),
@@ -158,6 +304,26 @@ class AttendanceCard extends StatelessWidget {
                   ],
                 ),
               ]),
+              const SizedBox(
+                height: 10,
+              ),
+              Text(
+                'Teachers',
+                style: TextStyle(
+                    fontSize: 15,
+                    fontWeight: FontWeight.w500,
+                    color: Constants.darkText.withOpacity(0.7)),
+              ),
+              const SizedBox(
+                height: 5,
+              ),
+              Text(
+                sub.subjectTeachers,
+                style: const TextStyle(
+                    fontSize: 15,
+                    fontWeight: FontWeight.w500,
+                    color: Constants.darkText),
+              ),
             ],
           ),
         ));

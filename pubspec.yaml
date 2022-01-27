@@ -48,6 +48,8 @@ dependencies:
   cookie_jar: ^3.0.1
   dio: ^4.0.4
   dio_cookie_manager: ^2.0.0
+  shared_preferences: ^2.0.12
+  sqflite: ^2.0.2
   
 
 dev_dependencies:

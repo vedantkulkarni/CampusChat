@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:riverpod/riverpod.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -7,30 +8,33 @@ final userDataProvider = Provider<UserInfoProvider>((ref) {
   return UserInfoProvider();
 });
 
-class UserInfoProvider {
+class UserInfoProvider  {
+  bool isLoaded = false;
   late FirebaseAuth auth;
   late FirebaseFirestore firestore;
   late String userName;
   late String uid;
-  late int seniorStatus;
+  int seniorStatus = 1;
+
   late int ratingStar;
   late int ratingValue;
-  late int monthlyGoal;
+  int monthlyGoal = 10;
   int monthlySolved = 1;
   bool vis = false; // Password form field visibility icon
 
-  Future<bool> initializeFirebase() async {
+  Future<void> initializeFirebase() async {
     auth = FirebaseAuth.instance;
     firestore = FirebaseFirestore.instance;
     uid = auth.currentUser!.uid;
-    return true;
   }
 
-  Future<bool> getUserData() async {
-    print('comming here');
+  Future<void> getUserData() async {
+    await initializeFirebase();
+    print('firebase initialized');
+    print('uid is $uid');
     final userData = await firestore
         .collection('Colleges/PICT/Users')
-        .doc(uid.toString())
+        .doc(uid)
         .get()
         .then((documentSnapshot) {
       if (!documentSnapshot.exists) {
@@ -38,15 +42,17 @@ class UserInfoProvider {
       }
       return documentSnapshot.data();
     });
-    if (userData == null || userData.isEmpty) return false;
+    if (userData == null || userData.isEmpty) {
+      throw Exception();
+    }
     userName = userData['username'];
-    seniorStatus = userData['seniorStatus'];
+
     ratingStar = userData['ratingStar'];
     ratingValue = userData['ratingValue'];
     monthlyGoal = userData['monthlyGoal'];
     monthlySolved = userData['monthlySolved'];
-
-    return true;
+   
+    isLoaded = true;
   }
 
   void resetVisIcon() {
