@@ -127,8 +127,8 @@ class _ReplyToDoubtState extends ConsumerState<ReplyToDoubt> {
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             Container(
-                              padding: const EdgeInsets.only(top: 10, left: 10),
-                              height: 70,
+                              padding: const EdgeInsets.only(
+                                  top: 10, left: 10, right: 10),
                               width: double.maxFinite,
                               decoration: const BoxDecoration(
                                 borderRadius: BorderRadius.only(
@@ -138,19 +138,34 @@ class _ReplyToDoubtState extends ConsumerState<ReplyToDoubt> {
                               child: Column(
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
-                                  Text(
-                                    widget.username,
-                                    style: const TextStyle(
-                                      fontSize: 20,
-                                      fontWeight: FontWeight.bold,
-                                      color: Constants.secondaryThemeColor,
-                                    ),
+                                  Row(
+                                    mainAxisAlignment:
+                                        MainAxisAlignment.spaceBetween,
+                                    children: [
+                                      Text(
+                                        widget.username,
+                                        style: const TextStyle(
+                                          fontSize: 20,
+                                          fontWeight: FontWeight.bold,
+                                          color: Constants.secondaryThemeColor,
+                                        ),
+                                      ),
+                                      Text(
+                                        'Posted ${widget.timePosted}',
+                                        style: TextStyle(
+                                          fontSize: 13,
+                                          fontWeight: FontWeight.w400,
+                                          color: Constants.darkText
+                                              .withOpacity(0.6),
+                                        ),
+                                      ),
+                                    ],
                                   ),
                                   const SizedBox(
                                     height: 5,
                                   ),
                                   Text(
-                                    'Posted ${widget.timePosted}',
+                                    'SE IT',
                                     style: TextStyle(
                                       fontSize: 13,
                                       fontWeight: FontWeight.w400,
@@ -160,6 +175,9 @@ class _ReplyToDoubtState extends ConsumerState<ReplyToDoubt> {
                                   ),
                                 ],
                               ),
+                            ),
+                            const SizedBox(
+                              height: 5,
                             ),
                             Flex(
                               direction: Axis.vertical,
@@ -236,31 +254,22 @@ class _GetRepliesState extends State<GetReplies> {
             .snapshots(),
         builder: (BuildContext context, AsyncSnapshot snapshot) {
           if (snapshot.data == null) return Text('Not found vrons!');
-          if (snapshot.hasData && snapshot.data!.docs.isEmpty)
-            return Container(
-              child: Center(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.center,
-                  children: [
-                    Container(
-                      height: 250,
-                      width: 250,
-                      child: Lottie.network(
-                          'https://assets3.lottiefiles.com/packages/lf20_r71cen62.json',
-                          fit: BoxFit.contain),
-                    ),
-                    Text(
-                      'Nope! Not a single reply.',
-                      textAlign: TextAlign.center,
-                      style: TextStyle(
-                          fontSize: 15,
-                          fontWeight: FontWeight.w600,
-                          color: Constants.darkText),
-                    ),
-                  ],
-                ),
+          if (snapshot.hasData && snapshot.data!.docs.isEmpty) {
+            Container(
+              child: Column(
+                children: [
+                  Constants.errorLottie,
+                  const SizedBox(
+                    height: 20,
+                  ),
+                  const Text(
+                    'Nope! Not a single reply.',
+                    style: Constants.errorText,
+                  )
+                ],
               ),
             );
+          }
 
           return ListView.builder(
             physics: const NeverScrollableScrollPhysics(),

@@ -30,6 +30,7 @@ class UserInfoProvider  {
 
   Future<void> getUserData() async {
     await initializeFirebase();
+    
     print('firebase initialized');
     print('uid is $uid');
     final userData = await firestore

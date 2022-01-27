@@ -222,7 +222,7 @@ class _DoubtsState extends ConsumerState<Doubts> {
                                                         Row(
                                                           children: [
                                                             Text(
-                                                              timePosted,
+                                                              'SE IT',
                                                               style: TextStyle(
                                                                 fontSize: 12,
                                                                 fontWeight:
@@ -273,7 +273,7 @@ class _DoubtsState extends ConsumerState<Doubts> {
                                               Row(
                                                 children: [
                                                   Icon(
-                                                    Icons.mode_comment,
+                                                    Icons.chat_bubble_outline,
                                                     size: 15,
                                                     color: Constants.darkText
                                                         .withOpacity(0.8),

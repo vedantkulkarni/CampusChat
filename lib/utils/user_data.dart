@@ -9,10 +9,10 @@ final attendanceDataProvider =
     ChangeNotifierProvider<AttendanceData>((ref) => AttendanceData());
 
 class AttendanceData with ChangeNotifier {
-  late final String username;
-  late final String grade;
-  late final String division;
-  late final String averageAttendance;
+  late String username;
+  late String? grade;
+  late String division;
+  late String averageAttendance;
   bool isLoaded = false;
   String? result;
   List<SubjectModel> subjectList = [];
@@ -22,6 +22,7 @@ class AttendanceData with ChangeNotifier {
   }
 
   Future<void> authAndRequestApi() async {
+    if (isLoaded) return;
     final res = await DBHelper.getData();
     final query = res[0];
     final loginId = query['id'];
@@ -46,7 +47,20 @@ class AttendanceData with ChangeNotifier {
     }
   }
 
+  int calcStatus(String s) {
+    s = s.toLowerCase();
+    if (s.contains('-th'))
+      return 1;
+    else if (s.contains('-pr'))
+      return 2;
+    else if (s.contains('-tut'))
+      return 3;
+    else
+      return 0;
+  }
+
   void parserLogic(String s) {
+    if (isLoaded) return;
     var document = html.parse(s);
 
     //get dashboard table
@@ -70,6 +84,7 @@ class AttendanceData with ChangeNotifier {
       var subjectTeachers = 'Not Found';
 
       var subjectName = attendanceTable[i].children[0].text.trim();
+      var status = calcStatus(subjectName);
       var totalLecs = attendanceTable[i].children[1].text.trim();
       var attendedLecs = attendanceTable[i].children[2].text.trim();
       var percent = attendanceTable[i].children[3].text.trim();
@@ -85,7 +100,8 @@ class AttendanceData with ChangeNotifier {
           percent: percent,
           subjectName: subjectName,
           totalLecs: totalLecs,
-          subjectTeachers: subjectTeachers);
+          subjectTeachers: subjectTeachers,
+          status: status);
       subjectList.add(sub);
     }
 
@@ -100,11 +116,13 @@ class SubjectModel {
   final String totalLecs;
   final String attendedLecs;
   final String percent;
+  final int status;
 
   SubjectModel(
       {required this.attendedLecs,
       required this.percent,
       required this.subjectName,
       required this.totalLecs,
-      required this.subjectTeachers});
+      required this.subjectTeachers,
+      required this.status});
 }

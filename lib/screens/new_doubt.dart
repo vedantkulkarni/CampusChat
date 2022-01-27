@@ -1,5 +1,6 @@
 import 'package:chat_app/utils/constants.dart';
 import 'package:chat_app/utils/providers.dart';
+import 'package:chat_app/utils/user_data.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -50,12 +51,11 @@ class _NewDoubtState extends ConsumerState<NewDoubt> {
         .collection('Colleges/PICT/Doubts')
         .doc(widget.doubtId)
         .update({'replies': replyNumber + 1});
-
-    
   }
 
   Future<void> uploadDoubt(String s) async {
     final userProvider = ref.read(userDataProvider);
+    final myProvider = ref.read(attendanceDataProvider);
     String seniorStatus =
         userProvider.seniorStatus == 1 ? 'Freshers' : 'Seniors';
     final doubtRef = userProvider.firestore.collection('Colleges/PICT/Doubts');
@@ -64,10 +64,10 @@ class _NewDoubtState extends ConsumerState<NewDoubt> {
       'timestamp': Timestamp.now(),
       'uid': userProvider.uid,
       'username': userProvider.userName,
-      'seniorStatus': userProvider.seniorStatus,
+      'seniorStatus':  myProvider.grade??' ',
       'upvotes': 0,
       'replies': 0,
-      'Upvoted By':[]
+      'Upvoted By': []
     });
   }
 

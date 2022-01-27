@@ -36,7 +36,6 @@ class _ChatMainState extends ConsumerState<ChatMain>
     animationController = AnimationController(
         vsync: this, duration: const Duration(milliseconds: 500));
     fadeAnimation = Tween(begin: 0.0, end: 1.0).animate(animationController);
-    
   }
 
   @override
@@ -47,12 +46,14 @@ class _ChatMainState extends ConsumerState<ChatMain>
 
   @override
   Widget build(BuildContext context) {
+    final userProvider = ref.watch(userDataProvider);
+
     double h = MediaQuery.of(context).size.height;
     double w = MediaQuery.of(context).size.width;
     return SafeArea(
       child: Scaffold(
         drawer: Drawer(
-          child: DrawerContent(user),
+          child: DrawerContent(),
         ),
         appBar: AppBar(
           actions: [
@@ -90,7 +91,41 @@ class _ChatMainState extends ConsumerState<ChatMain>
                       width: w,
 
                       // child: Center(child: Text('Hi'),),
-                      child: buildChatHome(animationController),
+                      child: userProvider.isLoaded
+                          ? ChatHome(userProvider.userName, animationController)
+                          : FutureBuilder(
+                              future: userProvider.getUserData(),
+                              builder: (context, snapshot) {
+                                if (snapshot.connectionState ==
+                                    ConnectionState.waiting) {
+                                  animationController.forward();
+                                  return Container(
+                                      height: h,
+                                      width: w,
+                                      child: Constants.progressIndicator);
+                                }
+
+                                if (snapshot.hasError) {
+                                  animationController.forward();
+                                  return Container(
+                                    child: Column(
+                                      children: [
+                                        Constants.errorLottie,
+                                        const SizedBox(
+                                          height: 20,
+                                        ),
+                                        const Text('Couldn\'t find anything for you',style: Constants.errorText,)
+                                      ],
+                                    ),
+                                  );
+                                }
+                                animationController.reverse();
+                                animationController.reset();
+                                animationController.forward();
+                                return ChatHome(
+                                    userProvider.userName, animationController);
+                              },
+                            ),
                     ),
                   ),
                 ),
@@ -101,56 +136,12 @@ class _ChatMainState extends ConsumerState<ChatMain>
       ),
     );
   }
-
-  FutureBuilder<DocumentSnapshot<Object?>> buildChatHome(
-      AnimationController ctr1) {
-    final AnimationController ctr = ctr1;
-    return FutureBuilder<DocumentSnapshot>(
-      future: user.doc(FirebaseAuth.instance.currentUser!.uid).get(),
-      builder: (context, AsyncSnapshot<DocumentSnapshot> documentSnapshot) {
-        if (documentSnapshot.hasError) {
-          ctr.forward();
-          return Container(
-              child: const Center(child: Text('Something went wrong!')));
-        } else if (documentSnapshot.hasData && !documentSnapshot.data!.exists) {
-          ctr.forward();
-
-          return Container(
-              child: Center(
-                  child: Column(
-            children: [
-              const Text('There was a problem \nPlease Sign Up again'),
-              ElevatedButton(
-                  onPressed: () {
-                    FirebaseAuth.instance.currentUser!.delete();
-                    FirebaseAuth.instance.signOut();
-                  },
-                  child: const Text('Sign Up again'))
-            ],
-          )));
-        } else if (documentSnapshot.connectionState == ConnectionState.done) {
-          ctr.reset();
-          Map<String, dynamic> data =
-              documentSnapshot.data!.data() as Map<String, dynamic>;
-              ref.read(attendanceDataProvider).authAndRequestApi();
-          return ChatHome(data['username'].toString().split(' ')[0], ctr);
-        } else {
-          ctr.reset();
-          return const Center(
-            child: CircularProgressIndicator(),
-          );
-        }
-      },
-    );
-  }
 }
-
-//Gets User's first name and passes down to ChatHome widget.
 
 class ChatHome extends StatelessWidget {
   final String username;
-  final AnimationController ctr;
-  const ChatHome(this.username, this.ctr);
+  final AnimationController animationController;
+  const ChatHome(this.username, this.animationController);
 
   @override
   Widget build(BuildContext context) {
@@ -164,12 +155,12 @@ class ChatHome extends StatelessWidget {
             height: 20,
           ),
           // GreetingMessage(username: username),
-         
-          UserDashboard(ctr),
+
+          UserDashboard(animationController),
           const SizedBox(
             height: 40,
           ),
-          Expanded(child: ActivityList(ctr, username)),
+          Expanded(child: ActivityList(animationController, username)),
         ],
       ),
     );
@@ -177,246 +168,208 @@ class ChatHome extends StatelessWidget {
 }
 
 class UserDashboard extends ConsumerWidget {
-  final AnimationController ctr;
+  final AnimationController animationController;
   const UserDashboard(
-    this.ctr, {
+    this.animationController, {
     Key? key,
   }) : super(key: key);
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final myProvider = ref.watch(userDataProvider);
-
-    return FutureBuilder(
-        future: myProvider.getUserData(),
-        builder: (context, snapshot) {
-          if (snapshot.connectionState == ConnectionState.waiting)
-            return Container(
-              height: 240,
-              child: Center(
-                child: CircularProgressIndicator(),
-              ),
-            );
-          // ctr.reset();
-          if (snapshot.hasError) {
-            ctr.forward();
-            return Container(
-              child: Center(
-                child: Text('No users found'),
-              ),
-            );
-          }
-          if (snapshot.data == false)
-            return Container(
-              child: Center(
-                child: Text('No users found'),
-              ),
-            );
-          ctr.forward();
-          return Container(
-            child: Column(
-              children: [
-                Container(
-                  height: 20,
-                  child: Row(
-                    children: const [
-                      Text(
-                        'Dashboard',
-                        style: TextStyle(
-                            fontWeight: FontWeight.normal,
-                            fontSize: 17,
-                            color: Colors.blueGrey),
-                      )
-                    ],
-                  ),
-                ),
-                const SizedBox(
-                  height: 10,
-                ),
-                Container(
-                    width: double.maxFinite,
-                    decoration: BoxDecoration(
-                        gradient: LinearGradient(
-                            colors: [
-                              Constants.secondaryThemeColor,
-                              Constants.themeColor.withOpacity(0.7),
-                            ],
-                            begin: Alignment.bottomLeft,
-                            end: Alignment.topRight),
-                        boxShadow: [Constants.boxShadow],
-                        borderRadius: const BorderRadius.only(
-                            topRight: Radius.circular(100),
-                            topLeft: Radius.circular(10),
-                            bottomLeft: Radius.circular(10),
-                            bottomRight: Radius.circular(10))),
+    final attendanceProvider = ref.watch(attendanceDataProvider);
+    attendanceProvider.authAndRequestApi();
+    return Container(
+      child: Column(
+        children: [
+          Container(
+            height: 20,
+            child: Row(
+              children: const [
+                Text(
+                  'Dashboard',
+                  style: TextStyle(
+                      fontWeight: FontWeight.normal,
+                      fontSize: 17,
+                      color: Colors.blueGrey),
+                )
+              ],
+            ),
+          ),
+          const SizedBox(
+            height: 10,
+          ),
+          Container(
+              width: double.maxFinite,
+              decoration: BoxDecoration(
+                  gradient: LinearGradient(colors: [
+                    Constants.secondaryThemeColor,
+                    Constants.themeColor.withOpacity(0.7),
+                  ], begin: Alignment.bottomLeft, end: Alignment.topRight),
+                  boxShadow: [Constants.boxShadow],
+                  borderRadius: const BorderRadius.only(
+                      topRight: Radius.circular(100),
+                      topLeft: Radius.circular(10),
+                      bottomLeft: Radius.circular(10),
+                      bottomRight: Radius.circular(10))),
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Container(
                     child: Column(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
                         Container(
-                          child: Column(
+                          padding: const EdgeInsets.only(
+                              top: 20, left: 20, right: 40, bottom: 10),
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
                             children: [
-                              Container(
-                                padding: const EdgeInsets.only(
-                                    top: 20, left: 20, right: 40, bottom: 10),
-                                child: Row(
-                                  mainAxisAlignment:
-                                      MainAxisAlignment.spaceBetween,
-                                  children: [
-                                    Column(
-                                      mainAxisAlignment:
-                                          MainAxisAlignment.spaceBetween,
-                                      crossAxisAlignment:
-                                          CrossAxisAlignment.start,
-                                      children: [
-                                        Column(
-                                          crossAxisAlignment:
-                                              CrossAxisAlignment.start,
-                                          children: [
-                                            Text(
-                                              'Doubts',
-                                              style: TextStyle(
-                                                  fontSize: 20,
-                                                  color: Constants.background
-                                                      .withOpacity(0.7),
-                                                  fontWeight: FontWeight.w200),
-                                            ),
-                                            const Text(
-                                              'Solved',
-                                              style: TextStyle(
-                                                  fontSize: 30,
-                                                  color: Constants.background,
-                                                  fontWeight: FontWeight.w200),
-                                            ),
-                                            const Divider(
-                                              color: Colors.orangeAccent,
-                                            ),
-                                            Row(
-                                              children: [
-                                                Text(
-                                                  myProvider.monthlySolved
-                                                      .toString(),
-                                                  style: const TextStyle(
-                                                      fontSize: 40,
-                                                      color:
-                                                          Constants.background,
-                                                      fontWeight:
-                                                          FontWeight.bold),
-                                                ),
-                                                Text(
-                                                  '/${myProvider.monthlyGoal}',
-                                                  style: const TextStyle(
-                                                      fontSize: 40,
-                                                      color:
-                                                          Colors.orangeAccent,
-                                                      fontWeight:
-                                                          FontWeight.bold),
-                                                ),
-                                              ],
-                                            ),
-                                          ],
-                                        ),
-                                      ],
-                                    ),
-                                    SizedBox(
-                                      width: 100,
-                                      height: 100,
-                                      child: Lottie.asset(
-                                          'assets/images/chat_lottie.json'),
-                                    )
-                                  ],
-                                ),
+                              Column(
+                                mainAxisAlignment:
+                                    MainAxisAlignment.spaceBetween,
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Column(
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
+                                    children: [
+                                      Text(
+                                        'Doubts',
+                                        style: TextStyle(
+                                            fontSize: 20,
+                                            color: Constants.background
+                                                .withOpacity(0.7),
+                                            fontWeight: FontWeight.w200),
+                                      ),
+                                      const Text(
+                                        'Solved',
+                                        style: TextStyle(
+                                            fontSize: 30,
+                                            color: Constants.background,
+                                            fontWeight: FontWeight.w200),
+                                      ),
+                                      const Divider(
+                                        color: Colors.orangeAccent,
+                                      ),
+                                      Row(
+                                        children: [
+                                          Text(
+                                            myProvider.monthlySolved.toString(),
+                                            style: const TextStyle(
+                                                fontSize: 40,
+                                                color: Constants.background,
+                                                fontWeight: FontWeight.bold),
+                                          ),
+                                          Text(
+                                            '/${myProvider.monthlyGoal}',
+                                            style: const TextStyle(
+                                                fontSize: 40,
+                                                color: Colors.orangeAccent,
+                                                fontWeight: FontWeight.bold),
+                                          ),
+                                        ],
+                                      ),
+                                    ],
+                                  ),
+                                ],
                               ),
+                              SizedBox(
+                                width: 100,
+                                height: 100,
+                                child: Lottie.asset(
+                                    'assets/images/chat_lottie.json'),
+                              )
                             ],
                           ),
                         ),
-                        Column(
+                      ],
+                    ),
+                  ),
+                  Column(
+                    children: [
+                      const Divider(
+                        indent: 20,
+                        endIndent: 20,
+                        // color: Constants.background,
+                        color: Colors.orangeAccent,
+                      ),
+                      Container(
+                        width: double.maxFinite,
+                        padding: const EdgeInsets.only(
+                            top: 10, right: 10, left: 20, bottom: 10),
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: [
-                            const Divider(
-                              indent: 20,
-                              endIndent: 20,
-                              // color: Constants.background,
-                              color: Colors.orangeAccent,
-                            ),
-                            Container(
-                              width: double.maxFinite,
-                              padding: const EdgeInsets.only(
-                                  top: 10, right: 10, left: 20, bottom: 10),
-                              child: Row(
-                                mainAxisAlignment:
-                                    MainAxisAlignment.spaceBetween,
-                                children: [
-                                  Row(
-                                    children: [
-                                      Text(
-                                        'Rating :',
-                                        style: TextStyle(
-                                            color: Constants.background
-                                                .withOpacity(0.7),
-                                            fontWeight: FontWeight.w200,
-                                            fontSize: 17),
-                                      ),
-                                      Row(
-                                        children: List.generate(
-                                          5,
-                                          (index) {
-                                            if (index + 1 <=
-                                                myProvider.ratingStar) {
-                                              return const Icon(
-                                                Icons.star,
-                                                color: Colors.orangeAccent,
-                                                size: 15,
-                                              );
-                                            }
-
-                                            return const Icon(
-                                              Icons.star_border,
-                                              color: Colors.orangeAccent,
-                                              size: 19,
-                                            );
-                                          },
-                                        ),
-                                      )
-                                    ],
-                                  ),
-                                  GestureDetector(
-                                    onTap: () {
-                                      Navigator.push(
-                                          context, PageTransition(Details()));
-                                    },
-                                    child: Row(
-                                      children: [
-                                        Text(
-                                          'Details',
-                                          style: TextStyle(
-                                              color: Constants.background
-                                                  .withOpacity(0.7),
-                                              fontSize: 17,
-                                              fontWeight: FontWeight.w200),
-                                        ),
-                                        const SizedBox(
-                                          width: 10,
-                                        ),
-                                        const Icon(
-                                          Icons.arrow_forward,
+                            Row(
+                              children: [
+                                Text(
+                                  'Rating :',
+                                  style: TextStyle(
+                                      color:
+                                          Constants.background.withOpacity(0.7),
+                                      fontWeight: FontWeight.w200,
+                                      fontSize: 17),
+                                ),
+                                Row(
+                                  children: List.generate(
+                                    5,
+                                    (index) {
+                                      if (index + 1 <= myProvider.ratingStar) {
+                                        return const Icon(
+                                          Icons.star,
                                           color: Colors.orangeAccent,
-                                        )
-                                      ],
-                                    ),
+                                          size: 15,
+                                        );
+                                      }
+
+                                      return const Icon(
+                                        Icons.star_border,
+                                        color: Colors.orangeAccent,
+                                        size: 19,
+                                      );
+                                    },
+                                  ),
+                                )
+                              ],
+                            ),
+                            GestureDetector(
+                              onTap: () {
+                                Navigator.push(
+                                    context, PageTransition(Details()));
+                              },
+                              child: Row(
+                                children: [
+                                  Text(
+                                    'Details',
+                                    style: TextStyle(
+                                        color: Constants.background
+                                            .withOpacity(0.7),
+                                        fontSize: 17,
+                                        fontWeight: FontWeight.w200),
+                                  ),
+                                  const SizedBox(
+                                    width: 10,
+                                  ),
+                                  const Icon(
+                                    Icons.arrow_forward,
+                                    color: Colors.orangeAccent,
                                   )
                                 ],
                               ),
-                            ),
-                            const SizedBox(
-                              height: 10,
                             )
                           ],
                         ),
-                      ],
-                    )),
-              ],
-            ),
-          );
-        });
+                      ),
+                      const SizedBox(
+                        height: 10,
+                      )
+                    ],
+                  ),
+                ],
+              )),
+        ],
+      ),
+    );
   }
 }
 
@@ -594,152 +547,158 @@ class HomeTile extends StatelessWidget {
   }
 }
 
-
-
 //Drawer
-class DrawerContent extends StatelessWidget {
-  CollectionReference user;
-  DrawerContent(
-    this.user, {
+class DrawerContent extends ConsumerWidget {
+  DrawerContent({
     Key? key,
   }) : super(key: key);
 
   @override
-  Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 10),
-      child: Column(
-        children: [
-          Container(
-              width: double.maxFinite,
-              height: 250,
-              margin: EdgeInsets.symmetric(vertical: 20),
-              child: Column(
-                children: [
-                  Container(
+  Widget build(BuildContext context, ref) {
+    final myProvider = ref.watch(userDataProvider);
+    return Container(
+      color: Constants.background,
+      child: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 10),
+        child: Column(
+          children: [
+            Container(
+                width: double.maxFinite,
+                margin: EdgeInsets.symmetric(vertical: 20),
+                child: Column(
+                  children: [
+                    Container(
+                      width: double.maxFinite,
+                      decoration: BoxDecoration(
+                          borderRadius: BorderRadius.circular(150)),
+                      child: Lottie.asset('assets/images/person_lottie.json',
+                          fit: BoxFit.fill),
+                    ),
+                    Padding(
+                      padding: const EdgeInsets.symmetric(
+                          horizontal: 20, vertical: 10),
+                      child: Text(
+                        myProvider.isLoaded ? myProvider.userName : 'User',
+                        style: TextStyle(
+                            fontSize: 25, fontWeight: FontWeight.bold),
+                        overflow: TextOverflow.fade,
+                      ),
+                    )
+                  ],
+                )
+                // color: Colors.blue.withOpacity(0.5),
+                ),
+            // Divider(
+            //   color: Constants.darkText.withOpacity(0.4),
+            // ),
+            Expanded(
+                child: ListView(
+              children: [
+                GestureDetector(
+                  child: Container(
                     width: double.maxFinite,
-                    decoration:
-                        BoxDecoration(borderRadius: BorderRadius.circular(150)),
-                    child: Lottie.asset(
-                        'assets/images/person_lottie.json',
-                        fit: BoxFit.fill),
-                  ),
-                  const SizedBox(height: 10,),
-                  Text('')
-                ],
-              )
-              // color: Colors.blue.withOpacity(0.5),
-              ),
-          Divider(
-            color: Constants.darkText.withOpacity(0.4),
-          ),
-          Expanded(
-              child: ListView(
-            children: [
-              GestureDetector(
-                child: Container(
-                  width: double.maxFinite,
-                  padding: const EdgeInsets.symmetric(vertical: 15),
-                  child: Row(
-                    children: [
-                      Icon(
-                        Icons.notifications,
-                        color: Constants.darkText.withOpacity(0.5),
-                      ),
-                      const SizedBox(
-                        width: 50,
-                      ),
-                      const Text(
-                        'Notifications',
-                        style: TextStyle(
-                            fontSize: 18, fontWeight: FontWeight.w300),
-                      )
-                    ],
+                    padding: const EdgeInsets.symmetric(vertical: 15),
+                    child: Row(
+                      children: [
+                        Icon(
+                          Icons.notifications,
+                          color: Constants.darkText.withOpacity(0.5),
+                        ),
+                        const SizedBox(
+                          width: 50,
+                        ),
+                        const Text(
+                          'Notifications',
+                          style: TextStyle(
+                              fontSize: 18, fontWeight: FontWeight.w300),
+                        )
+                      ],
+                    ),
                   ),
                 ),
-              ),
-              GestureDetector(
-                onTap: () {
-                  Navigator.pop(context);
-                  Navigator.push(context, PageTransition(Doubts(true)));
-                },
-                child: Container(
-                  width: double.maxFinite,
-                  padding: const EdgeInsets.symmetric(vertical: 15),
-                  child: Row(
-                    children: [
-                      Icon(
-                        Icons.book,
-                        color: Constants.darkText.withOpacity(0.5),
-                      ),
-                      const SizedBox(
-                        width: 50,
-                      ),
-                      const Text(
-                        'My Doubts',
-                        style: TextStyle(
-                            fontSize: 18, fontWeight: FontWeight.w300),
-                      )
-                    ],
+                GestureDetector(
+                  onTap: () {
+                    Navigator.pop(context);
+                    Navigator.push(context, PageTransition(Doubts(true)));
+                  },
+                  child: Container(
+                    width: double.maxFinite,
+                    padding: const EdgeInsets.symmetric(vertical: 15),
+                    child: Row(
+                      children: [
+                        Icon(
+                          Icons.book,
+                          color: Constants.darkText.withOpacity(0.5),
+                        ),
+                        const SizedBox(
+                          width: 50,
+                        ),
+                        const Text(
+                          'My Doubts',
+                          style: TextStyle(
+                              fontSize: 18, fontWeight: FontWeight.w300),
+                        )
+                      ],
+                    ),
                   ),
                 ),
-              ),
-              GestureDetector(
-                onTap: () {
-                  Navigator.pop(context);
-                  Navigator.push(context, PageTransition(TeacherList()));
-                },
-                child: Container(
-                  width: double.maxFinite,
-                  padding: const EdgeInsets.symmetric(vertical: 15),
-                  child: Row(
-                    children: [
-                      Icon(
-                        Icons.person,
-                        color: Constants.darkText.withOpacity(0.5),
-                      ),
-                      const SizedBox(
-                        width: 50,
-                      ),
-                      const Text(
-                        'Teachers',
-                        style: TextStyle(
-                            fontSize: 18, fontWeight: FontWeight.w300),
-                      )
-                    ],
+                GestureDetector(
+                  onTap: () {
+                    Navigator.pop(context);
+                    Navigator.push(context, PageTransition(TeacherList()));
+                  },
+                  child: Container(
+                    width: double.maxFinite,
+                    padding: const EdgeInsets.symmetric(vertical: 15),
+                    child: Row(
+                      children: [
+                        Icon(
+                          Icons.person,
+                          color: Constants.darkText.withOpacity(0.5),
+                        ),
+                        const SizedBox(
+                          width: 50,
+                        ),
+                        const Text(
+                          'Teachers',
+                          style: TextStyle(
+                              fontSize: 18, fontWeight: FontWeight.w300),
+                        )
+                      ],
+                    ),
                   ),
                 ),
-              ),
-              GestureDetector(
-                onTap: () {
-                  Navigator.pop(context);
-                  Navigator.push(context,
-                      PageTransition(ChatEngine('Freshers', 'Vedant')));
-                },
-                child: Container(
-                  width: double.maxFinite,
-                  padding: const EdgeInsets.symmetric(vertical: 15),
-                  child: Row(
-                    children: [
-                      Icon(
-                        Icons.chat,
-                        color: Constants.darkText.withOpacity(0.5),
-                      ),
-                      const SizedBox(
-                        width: 50,
-                      ),
-                      const Text(
-                        'Chat',
-                        style: TextStyle(
-                            fontSize: 18, fontWeight: FontWeight.w300),
-                      )
-                    ],
+                GestureDetector(
+                  onTap: () {
+                    Navigator.pop(context);
+                    Navigator.push(context,
+                        PageTransition(ChatEngine('Freshers', 'Vedant')));
+                  },
+                  child: Container(
+                    width: double.maxFinite,
+                    padding: const EdgeInsets.symmetric(vertical: 15),
+                    child: Row(
+                      children: [
+                        Icon(
+                          Icons.chat,
+                          color: Constants.darkText.withOpacity(0.5),
+                        ),
+                        const SizedBox(
+                          width: 50,
+                        ),
+                        const Text(
+                          'Chat',
+                          style: TextStyle(
+                              fontSize: 18, fontWeight: FontWeight.w300),
+                        )
+                      ],
+                    ),
                   ),
                 ),
-              ),
-            ],
-          ))
-        ],
+              ],
+            ))
+          ],
+        ),
       ),
     );
   }

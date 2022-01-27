@@ -109,9 +109,13 @@ class _AuthScreenState extends State<AuthScreen> with TickerProviderStateMixin {
         backgroundColor: Theme.of(ctx).errorColor,
       ));
     } catch (err) {
-      setState(() {
+      if(this.mounted)
+      {
+          setState(() {
         isLoading = false;
       });
+      }
+      
       String myerr = err.toString();
       myerr = myerr.replaceRange(
           myerr.indexOf('['), myerr.lastIndexOf(']') + 1, 'Error: ');
