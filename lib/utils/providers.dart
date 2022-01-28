@@ -8,19 +8,17 @@ final userDataProvider = Provider<UserInfoProvider>((ref) {
   return UserInfoProvider();
 });
 
-class UserInfoProvider  {
+class UserInfoProvider {
   bool isLoaded = false;
   late FirebaseAuth auth;
   late FirebaseFirestore firestore;
   late String userName;
   late String uid;
   int seniorStatus = 1;
+  late String loginId;
 
-  late int ratingStar;
-  late int ratingValue;
-  int monthlyGoal = 10;
-  int monthlySolved = 1;
-  bool vis = false; // Password form field visibility icon
+  bool vis = false;
+  late String doubtsRaised; // Password form field visibility icon
 
   Future<void> initializeFirebase() async {
     auth = FirebaseAuth.instance;
@@ -30,9 +28,12 @@ class UserInfoProvider  {
 
   Future<void> getUserData() async {
     await initializeFirebase();
-    
-    print('firebase initialized');
-    print('uid is $uid');
+
+    doubtsRaised =
+        await firestore.collection('Colleges/PICT/Doubts').get().then((value) {
+      return value.docs.length.toString();
+    });
+
     final userData = await firestore
         .collection('Colleges/PICT/Users')
         .doc(uid)
@@ -40,6 +41,7 @@ class UserInfoProvider  {
         .then((documentSnapshot) {
       if (!documentSnapshot.exists) {
         print('no doc found');
+        throw Exception();
       }
       return documentSnapshot.data();
     });
@@ -47,12 +49,8 @@ class UserInfoProvider  {
       throw Exception();
     }
     userName = userData['username'];
+    loginId = userData['loginId'];
 
-    ratingStar = userData['ratingStar'];
-    ratingValue = userData['ratingValue'];
-    monthlyGoal = userData['monthlyGoal'];
-    monthlySolved = userData['monthlySolved'];
-   
     isLoaded = true;
   }
 

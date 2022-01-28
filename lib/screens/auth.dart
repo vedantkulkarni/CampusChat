@@ -26,11 +26,13 @@ class _AuthScreenState extends State<AuthScreen> with TickerProviderStateMixin {
     // TODO: implement initState
     super.initState();
     myLottie = Lottie.asset('assets/images/auth_lottie.json');
-    animationController = new AnimationController(
-        vsync: this, duration: Duration(milliseconds: 500));
+    animationController =  AnimationController(
+        vsync: this, duration: const Duration(milliseconds: 500));
     animation = Tween(begin: 0.0, end: 1.0).animate(animationController);
     animationController.forward();
   }
+
+ 
 
   @override
   void dispose() {
@@ -65,38 +67,36 @@ class _AuthScreenState extends State<AuthScreen> with TickerProviderStateMixin {
       if (isSignIn) {
         authresult = await auth.signInWithEmailAndPassword(
             email: email, password: password);
-            await DBHelper.insert(misId, password);
+        await DBHelper.insert(misId, password);
+        ScaffoldMessenger.of(ctx).showSnackBar(const SnackBar(
+          content: Text('Login Successfull!'),
+          backgroundColor: Colors.green,
+        ));
         setState(() {
           isLoading = false;
         });
-        ScaffoldMessenger.of(ctx)
-            .showSnackBar(const SnackBar(content: Text('Login Successfull!'),backgroundColor: Colors.green,));
+        
       } else {
         authresult = await auth.createUserWithEmailAndPassword(
             email: email, password: password);
-        
+
         ScaffoldMessenger.of(ctx).showSnackBar(const SnackBar(
           content: Text('User created successfully'),
           backgroundColor: Colors.green,
         ));
-        fireInstance
+        await fireInstance
             .collection('Colleges/PICT/Users')
             .doc(authresult.user.uid)
             .set({
           'username': name,
           'email': email,
           'loginId': misId,
-          'ratingValue': 0,
-          'ratingStar': 0,
-          'monthlySolved': 0,
-          'monthlyGoal': 10,
+          
         });
         await DBHelper.insert(misId, password);
       }
     } on PlatformException catch (e) {
-      setState(() {
-        isLoading = false;
-      });
+      
       var message = 'Please check your credentials!';
       if (e.message != null) {
         message = e.message.toString();
@@ -108,21 +108,27 @@ class _AuthScreenState extends State<AuthScreen> with TickerProviderStateMixin {
         content: Text(message),
         backgroundColor: Theme.of(ctx).errorColor,
       ));
-    } catch (err) {
-      if(this.mounted)
-      {
-          setState(() {
+      setState(() {
         isLoading = false;
       });
-      }
+    } catch (err) {
       
-      String myerr = err.toString();
-      myerr = myerr.replaceRange(
-          myerr.indexOf('['), myerr.lastIndexOf(']') + 1, 'Error: ');
-      ScaffoldMessenger.of(ctx).showSnackBar(SnackBar(
+         String myerr = err.toString();
+
+      if(mounted)
+      {
+          ScaffoldMessenger.of(ctx).showSnackBar(SnackBar(
         content: Text(myerr),
         backgroundColor: Theme.of(ctx).errorColor,
       ));
+        setState(() {
+          isLoading = false;
+        });
+      }
+      
+      
+
+     
     }
   }
 

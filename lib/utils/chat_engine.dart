@@ -7,9 +7,8 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 class ChatEngine extends StatefulWidget {
-  final String status;
   final String userFirstName; //To identify whether user is Fresher or senior.
-  ChatEngine(this.status, this.userFirstName, {Key? key}) : super(key: key);
+  ChatEngine(this.userFirstName, {Key? key}) : super(key: key);
   @override
   _ChatEngineState createState() => _ChatEngineState();
 }
@@ -37,7 +36,7 @@ class _ChatEngineState extends State<ChatEngine> {
               if (!FocusScope.of(context).hasPrimaryFocus) {
                 FocusScope.of(context).unfocus();
 
-                await Future.delayed(Duration(milliseconds: 200), () {});
+                await Future.delayed(const Duration(milliseconds: 200), () {});
               }
 
               Navigator.of(context).pop();
@@ -50,38 +49,25 @@ class _ChatEngineState extends State<ChatEngine> {
           backgroundColor: Constants.background,
           elevation: 5,
           title: const Text(
-            'Freshers General Chat',
+            'General Chat',
             style: TextStyle(
                 color: Constants.darkText, fontWeight: FontWeight.bold),
           ),
-          actions: [
-            PopupMenuButton(
-                icon: const Icon(
-                  Icons.more_vert,
-                  color: Constants.darkText,
-                ),
-                itemBuilder: (context) => [
-                      const PopupMenuItem(
-                        child: Text('First'),
-                        value: 1,
-                      ),
-                      const PopupMenuItem(
-                        child: Text('Second'),
-                        value: 2,
-                      )
-                    ])
-          ],
         ),
         body: Container(
             color: Constants.background,
             child: Column(
               children: [
-                Expanded(child: GetMessages(firestore, uid, widget.status)),
+                Expanded(
+                    child: GetMessages(
+                  firestore,
+                  uid,
+                )),
                 Consumer(
                   builder: (_, widgetRef, __) {
-                    final username = widgetRef.watch(userDataProvider);
+                    final usernameProvider = widgetRef.watch(userDataProvider);
                     return NewMessage(
-                        firestore, uid, widget.status, username.userName);
+                        firestore, uid, usernameProvider.userName);
                   },
                 )
               ],
@@ -95,13 +81,12 @@ class NewMessage extends StatefulWidget {
   NewMessage(
     this.firestore,
     this.uid,
-    this.status,
     this.username, {
     Key? key,
   }) : super(key: key);
   FirebaseFirestore firestore;
   String username;
-  String status;
+
   String uid;
   @override
   State<NewMessage> createState() => _NewMessageState();
@@ -126,9 +111,7 @@ class _NewMessageState extends State<NewMessage> {
   void sendMessage(String s) async {
     s = s.trim();
 
-    await widget.firestore
-        .collection('${widget.status}/generalChat/messages')
-        .add({
+    await widget.firestore.collection('Colleges/PICT/GeneralChat').add({
       'message': s,
       'uid': widget.uid,
       'timestamp': Timestamp.now(),
@@ -200,7 +183,10 @@ class MessageChipUI extends StatelessWidget {
         Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            checkWithPrevMessage(uid,nextUid)
+            !checkWithPrevMessage(uid, nextUid)
+                ? SizedBox(height: 10)
+                : SizedBox(),
+            checkWithPrevMessage(uid, nextUid)
                 ? Container()
                 : isMe
                     ? Container()
@@ -257,12 +243,10 @@ class MessageChipUI extends StatelessWidget {
 class GetMessages extends StatefulWidget {
   FirebaseFirestore firestore;
   String uid;
-  String status;
 
   GetMessages(
     this.firestore,
-    this.uid,
-    this.status, {
+    this.uid, {
     Key? key,
   }) : super(key: key);
 
@@ -271,34 +255,29 @@ class GetMessages extends StatefulWidget {
 }
 
 class _GetMessagesState extends State<GetMessages> {
- 
-  bool checkWithPrevMessage(String uid,String nextUid) {
+  bool checkWithPrevMessage(String uid, String nextUid) {
     if (nextUid == '') {
-      
-      
       return false;
     }
     if (nextUid != uid) {
-      
-     
       return false;
     }
-    
+
     return true;
   }
 
   @override
   Widget build(BuildContext context) {
     final Stream<QuerySnapshot> messageStream = widget.firestore
-        .collection('${widget.status}/generalChat/messages')
+        .collection('Colleges/PICT/GeneralChat')
         .orderBy('timestamp', descending: true)
         .snapshots();
     return StreamBuilder(
       stream: messageStream,
       builder: (context, AsyncSnapshot<QuerySnapshot> snapshot) {
         if (snapshot.connectionState == ConnectionState.waiting) {
-          return const Center(
-            child: CircularProgressIndicator(),
+          return Container(
+            child: Constants.progressIndicator,
           );
         }
         if (snapshot.connectionState == ConnectionState.done &&
@@ -307,9 +286,13 @@ class _GetMessagesState extends State<GetMessages> {
             child: Text('Something went wrong'),
           );
         }
-        if (snapshot.data!.docs == null) {
-          return const Center(
-            child: Text('No data was found'),
+        if (snapshot.data!.docs.isEmpty) {
+          return Center(
+            child: Column(children: [
+              Constants.progressIndicator,
+              const SizedBox(height: 10,),
+              const Text('Start Messaging!',style: TextStyle(fontSize: 23,color: Constants.darkText,fontWeight: FontWeight.bold),)
+            ],),
           );
         }
 
@@ -322,10 +305,12 @@ class _GetMessagesState extends State<GetMessages> {
           itemBuilder: (context, index) {
             String nextUid;
             bool isMe = snapshot.data!.docs[index]['uid'] == widget.uid;
-            if (index != snapshot.data!.docs.length - 1)
+            if (index != snapshot.data!.docs.length - 1) {
               nextUid = snapshot.data!.docs[index + 1]['uid'];
-            else
+            } else {
               nextUid = '';
+            }
+
             return MessageChipUI(
                 snapshot.data!.docs[index]['message'],
                 isMe,

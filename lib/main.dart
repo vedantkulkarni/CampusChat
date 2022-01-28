@@ -1,7 +1,6 @@
 import 'package:chat_app/screens/auth.dart';
 import 'package:chat_app/screens/chat_main.dart';
 import 'package:chat_app/screens/doubts.dart';
-import 'package:chat_app/screens/freshers.dart';
 import 'package:chat_app/screens/profile.dart';
 import 'package:chat_app/screens/teacher_list.dart';
 import 'package:chat_app/utils/chat_engine.dart';
@@ -28,14 +27,12 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       title: 'Flutter Demo',
-      theme: ThemeData(
-        primarySwatch: Colors.blue,
-        fontFamily: 'Chirp'
-      ),
+      theme: ThemeData(primarySwatch: Colors.blue, fontFamily: 'Chirp'),
       debugShowCheckedModeBanner: false,
       home: StreamBuilder(
         stream: FirebaseAuth.instance.userChanges(),
         builder: (context, userSnapShot) {
+          if (userSnapShot.hasError) return NoDoubts();
           if (userSnapShot.hasData) {
             return ChatMain();
           }

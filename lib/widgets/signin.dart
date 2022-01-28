@@ -45,7 +45,7 @@ class _SignInFormState extends State<SignInForm> {
                 width: 300,
                 child: TextFormField(
                   validator: (value) {
-                    print("value is : $value");
+                   
                     if (value!.isEmpty || value.contains('@')) {
                       return 'Please enter a valid email address.';
                     }

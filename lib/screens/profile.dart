@@ -10,8 +10,6 @@ import 'package:http/http.dart' as http;
 import 'package:html/parser.dart' show parse;
 import 'package:html/dom.dart' as dom;
 import 'package:cookie_jar/cookie_jar.dart';
-import 'package:dio/dio.dart';
-import 'package:dio_cookie_manager/dio_cookie_manager.dart';
 
 class Profile extends ConsumerStatefulWidget {
   Profile({Key? key}) : super(key: key);
@@ -356,28 +354,24 @@ class AttendanceCard extends StatelessWidget {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Container(
-                          child: const FittedBox(
-                            child: Text(
-                              'Attended',
-                              style: TextStyle(
-                                  fontSize: 15,
-                                  fontWeight: FontWeight.w500,
-                                  color: Color(0xfff97a80)),
-                            ),
+                          child:const Text(
+                            'Attended',
+                            style: TextStyle(
+                                fontSize: 15,
+                                fontWeight: FontWeight.w500,
+                                color: Color(0xfff97a80)),
                           ),
                         ),
                         const SizedBox(
                           width: 5,
                         ),
                         Container(
-                          child: FittedBox(
-                            child: Text(
-                              sub.attendedLecs,
-                              style: const TextStyle(
-                                  color: Color(0xfff97a80),
-                                  fontSize: 15,
-                                  fontWeight: FontWeight.w500),
-                            ),
+                          child: Text(
+                            sub.attendedLecs,
+                            style: const TextStyle(
+                                color: Color(0xfff97a80),
+                                fontSize: 15,
+                                fontWeight: FontWeight.w500),
                           ),
                         ),
                       ],
@@ -389,26 +383,22 @@ class AttendanceCard extends StatelessWidget {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Container(
-                          child: FittedBox(
-                            child: Text(
-                              'Total',
-                              style: TextStyle(
-                                  fontSize: 15,
-                                  fontWeight: FontWeight.w500,
-                                  color: Constants.darkText.withOpacity(0.7)),
-                            ),
+                          child: Text(
+                            'Total',
+                            style: TextStyle(
+                                fontSize: 15,
+                                fontWeight: FontWeight.w500,
+                                color: Constants.darkText.withOpacity(0.7)),
                           ),
                         ),
                         const SizedBox(
                           width: 5,
                         ),
                         Container(
-                          child: FittedBox(
-                            child: Text(
-                              sub.totalLecs,
-                              style: const TextStyle(
-                                  fontSize: 15, fontWeight: FontWeight.w500),
-                            ),
+                          child: Text(
+                            sub.totalLecs,
+                            style: const TextStyle(
+                                fontSize: 15, fontWeight: FontWeight.w500),
                           ),
                         ),
                       ],
@@ -416,26 +406,24 @@ class AttendanceCard extends StatelessWidget {
                   ],
                 ),
                 Container(
-                  child: FittedBox(
-                    child: Text(
-                      sub.status == 1
-                          ? 'THEORY'
+                  child: Text(
+                    sub.status == 1
+                        ? 'THEORY'
+                        : sub.status == 2
+                            ? 'PRACTICAL'
+                            : sub.status == 3
+                                ? 'TUTORIAL'
+                                : '',
+                    style: TextStyle(
+                      fontSize: 15,
+                      fontWeight: FontWeight.w500,
+                      color: sub.status == 1
+                          ? Colors.brown
                           : sub.status == 2
-                              ? 'PRACTICAL'
+                              ? Constants.secondaryThemeColor
                               : sub.status == 3
-                                  ? 'TUTORIAL'
-                                  : '',
-                      style: TextStyle(
-                        fontSize: 15,
-                        fontWeight: FontWeight.w500,
-                        color: sub.status == 1
-                            ? Colors.brown
-                            : sub.status == 2
-                                ? Constants.secondaryThemeColor
-                                : sub.status == 3
-                                    ? Colors.blueAccent
-                                    : Colors.black,
-                      ),
+                                  ? Colors.blueAccent
+                                  : Colors.black,
                     ),
                   ),
                 ),

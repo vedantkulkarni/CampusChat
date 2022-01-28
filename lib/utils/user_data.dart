@@ -13,6 +13,7 @@ class AttendanceData with ChangeNotifier {
   late String? grade;
   late String division;
   late String averageAttendance;
+  late String compareId;
   bool isLoaded = false;
   String? result;
   List<SubjectModel> subjectList = [];
@@ -21,10 +22,16 @@ class AttendanceData with ChangeNotifier {
     return result;
   }
 
+  void setCompareId(String s) {
+    compareId = s;
+    
+  }
+
   Future<void> authAndRequestApi() async {
     if (isLoaded) return;
     final res = await DBHelper.getData();
-    final query = res[0];
+    final query = res.firstWhere((element) => element['id'] == compareId);
+    
     final loginId = query['id'];
     final pass = query['pass'];
     final authUrl =
@@ -51,12 +58,12 @@ class AttendanceData with ChangeNotifier {
     s = s.toLowerCase();
     if (s.contains('-th'))
       return 1;
-    else if (s.contains('-pr'))
+    else if (s.contains('-pr') || s.contains(' lab'))
       return 2;
-    else if (s.contains('-tut'))
+    else if (s.contains('-tut') || s.contains('tutorial'))
       return 3;
     else
-      return 0;
+      return 1;
   }
 
   void parserLogic(String s) {
@@ -66,7 +73,7 @@ class AttendanceData with ChangeNotifier {
     //get dashboard table
     var dashboardElements =
         document.getElementById('table5')!.children[0].children;
-    print(dashboardElements.length);
+    
     username = dashboardElements[4].children[1].text.trim();
 
     grade = dashboardElements[8].children[1].text.trim();
@@ -105,7 +112,7 @@ class AttendanceData with ChangeNotifier {
       subjectList.add(sub);
     }
 
-    notifyListeners();
+    // notifyListeners();
     isLoaded = true;
   }
 }

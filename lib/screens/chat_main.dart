@@ -2,12 +2,13 @@ import 'dart:ui';
 
 import 'package:chat_app/screens/details.dart';
 import 'package:chat_app/screens/doubts.dart';
-import 'package:chat_app/screens/freshers.dart';
+import 'package:chat_app/screens/new_doubt.dart';
 import 'package:chat_app/screens/profile.dart';
 import 'package:chat_app/screens/teacher_list.dart';
 
 import 'package:chat_app/utils/chat_engine.dart';
 import 'package:chat_app/utils/constants.dart';
+import 'package:chat_app/utils/my_flutter_app_icons.dart';
 import 'package:chat_app/utils/page_transition.dart';
 import 'package:chat_app/utils/providers.dart';
 import 'package:chat_app/utils/user_data.dart';
@@ -17,6 +18,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_staggered_animations/flutter_staggered_animations.dart';
 import 'package:lottie/lottie.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 class ChatMain extends ConsumerStatefulWidget {
   @override
@@ -47,7 +49,7 @@ class _ChatMainState extends ConsumerState<ChatMain>
   @override
   Widget build(BuildContext context) {
     final userProvider = ref.watch(userDataProvider);
-
+    final attendanceProvider = ref.watch(attendanceDataProvider);
     double h = MediaQuery.of(context).size.height;
     double w = MediaQuery.of(context).size.width;
     return SafeArea(
@@ -59,9 +61,11 @@ class _ChatMainState extends ConsumerState<ChatMain>
           actions: [
             IconButton(
                 onPressed: () {
-                  FirebaseAuth.instance.signOut();
+                  userProvider.isLoaded = false;
+                  userProvider.getUserData();
+                  setState(() {});
                 },
-                icon: const Icon(Icons.logout))
+                icon: const Icon(Icons.refresh))
           ],
           title: const Text(
             'CampusChat',
@@ -148,6 +152,7 @@ class ChatHome extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    animationController.forward();
     return Padding(
       padding: const EdgeInsets.symmetric(
           horizontal: 30), //Left and right padding to entire screen
@@ -181,7 +186,11 @@ class UserDashboard extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final myProvider = ref.watch(userDataProvider);
     final attendanceProvider = ref.watch(attendanceDataProvider);
-    attendanceProvider.authAndRequestApi();
+    if (attendanceProvider.isLoaded == false) {
+      attendanceProvider.setCompareId(myProvider.loginId);
+      attendanceProvider.authAndRequestApi();
+    }
+
     return Container(
       child: Column(
         children: [
@@ -245,32 +254,18 @@ class UserDashboard extends ConsumerWidget {
                                             fontWeight: FontWeight.w200),
                                       ),
                                       const Text(
-                                        'Solved',
+                                        'Raised',
                                         style: TextStyle(
                                             fontSize: 30,
                                             color: Constants.background,
                                             fontWeight: FontWeight.w200),
                                       ),
-                                      const Divider(
-                                        color: Colors.orangeAccent,
-                                      ),
-                                      Row(
-                                        children: [
-                                          Text(
-                                            myProvider.monthlySolved.toString(),
-                                            style: const TextStyle(
-                                                fontSize: 40,
-                                                color: Constants.background,
-                                                fontWeight: FontWeight.bold),
-                                          ),
-                                          Text(
-                                            '/${myProvider.monthlyGoal}',
-                                            style: const TextStyle(
-                                                fontSize: 40,
-                                                color: Colors.orangeAccent,
-                                                fontWeight: FontWeight.bold),
-                                          ),
-                                        ],
+                                      Text(
+                                        '${myProvider.doubtsRaised}',
+                                        style: const TextStyle(
+                                            fontSize: 40,
+                                            color: Colors.orangeAccent,
+                                            fontWeight: FontWeight.bold),
                                       ),
                                     ],
                                   ),
@@ -303,52 +298,20 @@ class UserDashboard extends ConsumerWidget {
                         child: Row(
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: [
-                            Row(
-                              children: [
-                                Text(
-                                  'Rating :',
-                                  style: TextStyle(
-                                      color:
-                                          Constants.background.withOpacity(0.7),
-                                      fontWeight: FontWeight.w200,
-                                      fontSize: 17),
-                                ),
-                                Row(
-                                  children: List.generate(
-                                    5,
-                                    (index) {
-                                      if (index + 1 <= myProvider.ratingStar) {
-                                        return const Icon(
-                                          Icons.star,
-                                          color: Colors.orangeAccent,
-                                          size: 15,
-                                        );
-                                      }
-
-                                      return const Icon(
-                                        Icons.star_border,
-                                        color: Colors.orangeAccent,
-                                        size: 19,
-                                      );
-                                    },
-                                  ),
-                                )
-                              ],
-                            ),
                             GestureDetector(
                               onTap: () {
                                 Navigator.push(
-                                    context, PageTransition(Details()));
+                                    context, PageTransition(Doubts(false)));
                               },
                               child: Row(
                                 children: [
                                   Text(
-                                    'Details',
+                                    'Doubts',
                                     style: TextStyle(
-                                        color: Constants.background
-                                            .withOpacity(0.7),
-                                        fontSize: 17,
-                                        fontWeight: FontWeight.w200),
+                                        color:
+                                            Constants.background.withOpacity(1),
+                                        fontWeight: FontWeight.w200,
+                                        fontSize: 17),
                                   ),
                                   const SizedBox(
                                     width: 10,
@@ -359,7 +322,32 @@ class UserDashboard extends ConsumerWidget {
                                   )
                                 ],
                               ),
-                            )
+                            ),
+                            GestureDetector(
+                              onTap: () {
+                                Navigator.push(
+                                    context, PageTransition(NewDoubt(false)));
+                              },
+                              child: Row(
+                                children: [
+                                  Text(
+                                    'Ask a doubt',
+                                    style: TextStyle(
+                                        color:
+                                            Constants.background.withOpacity(1),
+                                        fontWeight: FontWeight.w200,
+                                        fontSize: 17),
+                                  ),
+                                  const SizedBox(
+                                    width: 10,
+                                  ),
+                                  const Icon(
+                                    Icons.question_answer,
+                                    color: Colors.orangeAccent,
+                                  )
+                                ],
+                              ),
+                            ),
                           ],
                         ),
                       ),
@@ -388,7 +376,7 @@ class ActivityList extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     const Map<int, dynamic> mp = {
-      1: ['Doubts', 'Ask and solve some doubts'],
+      1: ['General Chat', 'Chat with your friends'],
       2: ['My Attendance', 'Check your attendance and know your teachers'],
       3: ['Teachers', 'Consult some faculty'],
       4: ['Alumni', 'Get guidance from expert alumni']
@@ -480,7 +468,7 @@ class HomeTile extends StatelessWidget {
     return GestureDetector(
       onTap: () {
         if (index == 0)
-          Navigator.push(context, PageTransition(Freshers(userFirstName)));
+          Navigator.push(context, PageTransition(ChatEngine(userFirstName)));
         else
           Navigator.push(context, PageTransition(Profile()));
       },
@@ -556,9 +544,16 @@ class DrawerContent extends ConsumerWidget {
     Key? key,
   }) : super(key: key);
 
+  void launchUrl(String url) async {
+    if (await canLaunch(url)) {
+      await launch(url);
+    }
+  }
+
   @override
   Widget build(BuildContext context, ref) {
     final myProvider = ref.watch(userDataProvider);
+    final attendanceProvider = ref.watch(attendanceDataProvider);
     return Container(
       color: Constants.background,
       child: Padding(
@@ -570,7 +565,7 @@ class DrawerContent extends ConsumerWidget {
                 children: [
                   Container(
                       width: double.maxFinite,
-                      margin: EdgeInsets.symmetric(vertical: 20),
+                      margin: const EdgeInsets.symmetric(vertical: 20),
                       child: Column(
                         children: [
                           Container(
@@ -603,29 +598,6 @@ class DrawerContent extends ConsumerWidget {
                   Expanded(
                     child: ListView(
                       children: [
-                        GestureDetector(
-                          child: Container(
-                            width: double.maxFinite,
-                            padding: const EdgeInsets.symmetric(vertical: 15),
-                            child: Row(
-                              children: [
-                                Icon(
-                                  Icons.notifications,
-                                  color: Constants.darkText.withOpacity(0.5),
-                                ),
-                                const SizedBox(
-                                  width: 50,
-                                ),
-                                const Text(
-                                  'Notifications',
-                                  style: TextStyle(
-                                      fontSize: 18,
-                                      fontWeight: FontWeight.w300),
-                                )
-                              ],
-                            ),
-                          ),
-                        ),
                         GestureDetector(
                           onTap: () {
                             Navigator.pop(context);
@@ -684,11 +656,10 @@ class DrawerContent extends ConsumerWidget {
                         ),
                         GestureDetector(
                           onTap: () {
-                            Navigator.pop(context);
-                            Navigator.push(
-                                context,
-                                PageTransition(
-                                    ChatEngine('Freshers', 'Vedant')));
+                            myProvider.isLoaded = false;
+                            attendanceProvider.isLoaded = false;
+                            attendanceProvider.subjectList.clear();
+                            FirebaseAuth.instance.signOut();
                           },
                           child: Container(
                             width: double.maxFinite,
@@ -696,14 +667,14 @@ class DrawerContent extends ConsumerWidget {
                             child: Row(
                               children: [
                                 Icon(
-                                  Icons.chat,
+                                  Icons.logout,
                                   color: Constants.darkText.withOpacity(0.5),
                                 ),
                                 const SizedBox(
                                   width: 50,
                                 ),
                                 const Text(
-                                  'Chat',
+                                  'Log Out',
                                   style: TextStyle(
                                       fontSize: 18,
                                       fontWeight: FontWeight.w300),
@@ -727,14 +698,42 @@ class DrawerContent extends ConsumerWidget {
                         style: TextStyle(
                             color: Constants.darkText.withOpacity(0.6)),
                       ),
-                      const SizedBox(
-                        height: 5,
-                      ),
                       const Text('Vedant Kulkarni',
                           style: TextStyle(
-                            fontSize: 22,
+                            fontSize: 20,
                             fontWeight: FontWeight.bold,
-                          ))
+                          )),
+                      const SizedBox(
+                        height: 10,
+                      ),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                        children: [
+                          IconButton(
+                              onPressed: () {
+                                launchUrl('https://github.com/vedantkulkarni');
+                              },
+                              icon: Icon(
+                                MyFlutterApp.github_circled,
+                                size: 19,
+                                color: Constants.darkText.withOpacity(0.7),
+                              )),
+                          IconButton(
+                              onPressed: () {
+                                launchUrl('https://www.instagram.com/_vedant__kulkarni_/');
+                              },
+                              icon: Icon(MyFlutterApp.instagram,
+                                  size: 19,
+                                  color: Constants.darkText.withOpacity(0.7))),
+                          IconButton(
+                              onPressed: () {
+                                launchUrl('https://www.linkedin.com/in/vedant-kulkarni-951770207/');
+                              },
+                              icon: Icon(MyFlutterApp.linkedin_squared,
+                                  size: 19,
+                                  color: Constants.darkText.withOpacity(0.7))),
+                        ],
+                      )
                     ],
                   )
                 ],

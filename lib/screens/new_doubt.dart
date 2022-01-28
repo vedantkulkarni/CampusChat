@@ -54,6 +54,7 @@ class _NewDoubtState extends ConsumerState<NewDoubt> {
   }
 
   Future<void> uploadDoubt(String s) async {
+    s = s.trim();
     final userProvider = ref.read(userDataProvider);
     final myProvider = ref.read(attendanceDataProvider);
     String seniorStatus =
@@ -64,7 +65,7 @@ class _NewDoubtState extends ConsumerState<NewDoubt> {
       'timestamp': Timestamp.now(),
       'uid': userProvider.uid,
       'username': userProvider.userName,
-      'seniorStatus':  myProvider.grade??' ',
+      'grade': myProvider.grade ?? ' ',
       'upvotes': 0,
       'replies': 0,
       'Upvoted By': []
@@ -181,9 +182,11 @@ class _NewDoubtState extends ConsumerState<NewDoubt> {
                               style: TextStyle(fontSize: 17),
                               controller: textEditingController,
                               autocorrect: true,
-                              decoration: const InputDecoration(
+                              decoration: InputDecoration(
                                 border: InputBorder.none,
-                                hintText: 'Ask Something.....',
+                                hintText: widget.isReply
+                                    ? 'Write your reply......'
+                                    : 'Ask Something.....',
                               ),
                               enableSuggestions: true,
                               expands: true,

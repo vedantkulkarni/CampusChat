@@ -3,6 +3,8 @@ import 'package:chat_app/utils/constants.dart';
 import 'package:chat_app/utils/page_transition.dart';
 import 'package:chat_app/utils/providers.dart';
 import 'package:chat_app/utils/upvote.dart';
+import 'package:chat_app/utils/user_data.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -39,6 +41,7 @@ class _DoubtsState extends ConsumerState<Doubts> {
     from = DateTime(from.year, from.month, from.day);
     var to = DateTime.now();
     final d = (to.difference(from).inHours / 24).round() - 1;
+    if (d == -1) return 'Today';
     if (d == 0)
       return 'Today';
     else if (d == 1)
@@ -51,6 +54,7 @@ class _DoubtsState extends ConsumerState<Doubts> {
   @override
   Widget build(BuildContext context) {
     final myProvider = ref.watch(userDataProvider);
+    final attendanceProvider = ref.watch(attendanceDataProvider);
     return SafeArea(
       child: Scaffold(
         appBar: AppBar(
@@ -108,10 +112,11 @@ class _DoubtsState extends ConsumerState<Doubts> {
                       .orderBy(sorting, descending: true)
                       .snapshots(),
               builder: (context, AsyncSnapshot<QuerySnapshot> snapshot) {
-                if (snapshot.connectionState == ConnectionState.waiting)
-                  {
-                    return Container(child:Constants.progressIndicator,);
-                  }
+                if (snapshot.connectionState == ConnectionState.waiting) {
+                  return Container(
+                    child: Constants.progressIndicator,
+                  );
+                }
                 if (snapshot.data == null) return Text('Null was returned');
                 if (snapshot.hasData && snapshot.data!.docs.isEmpty)
                   return NoDoubts();
@@ -127,15 +132,19 @@ class _DoubtsState extends ConsumerState<Doubts> {
                         bool isUpvoted = snapshot
                             .data!.docs[index]['Upvoted By']
                             .contains(myProvider.uid);
-                        String desc = snapshot.data!.docs[index]['desc'];
+                        String desc = snapshot.data!.docs[index]['desc'].trim();
                         String upvotes =
                             snapshot.data!.docs[index]['upvotes'].toString();
-                        String username =
-                            snapshot.data!.docs[index]['username'];
+                        String username = snapshot.data!.docs[index]['uid'] ==
+                                FirebaseAuth.instance.currentUser!.uid
+                            ? 'You'
+                            : snapshot.data!.docs[index]['username'];
                         String timePosted = daysBetween(
                             snapshot.data!.docs[index]['timestamp'].toDate());
                         String replies =
                             snapshot.data!.docs[index]['replies'].toString();
+                        String grade =
+                            snapshot.data!.docs[index]['grade'].toString();
 
                         return AnimationConfiguration.staggeredList(
                             delay: const Duration(milliseconds: 100),
@@ -153,7 +162,8 @@ class _DoubtsState extends ConsumerState<Doubts> {
                                             username,
                                             timePosted,
                                             doubtId,
-                                            widget.isMyDoubts)));
+                                            widget.isMyDoubts,
+                                            grade)));
                                   },
                                   child: Container(
                                     // constraints: BoxConstraints(maxHeight: 180),
@@ -224,7 +234,7 @@ class _DoubtsState extends ConsumerState<Doubts> {
                                                         Row(
                                                           children: [
                                                             Text(
-                                                              'SE IT',
+                                                              grade,
                                                               style: TextStyle(
                                                                 fontSize: 12,
                                                                 fontWeight:
@@ -270,56 +280,74 @@ class _DoubtsState extends ConsumerState<Doubts> {
                                               horizontal: 10, vertical: 10),
                                           child: Row(
                                             mainAxisAlignment:
-                                                MainAxisAlignment.end,
+                                                MainAxisAlignment.spaceBetween,
                                             children: [
-                                              Row(
-                                                children: [
-                                                  Icon(
-                                                    Icons.chat_bubble_outline,
-                                                    size: 15,
-                                                    color: Constants.darkText
-                                                        .withOpacity(0.8),
-                                                  ),
-                                                  const SizedBox(
-                                                    width: 5,
-                                                  ),
-                                                  Text(
-                                                    replies,
-                                                    style: TextStyle(
-                                                      color: Constants.darkText
-                                                          .withOpacity(0.8),
-                                                      letterSpacing: 0,
-                                                      fontSize: 13,
-                                                      fontWeight:
-                                                          FontWeight.w300,
-                                                    ),
-                                                  ),
-                                                ],
-                                              ),
-                                              const SizedBox(
-                                                width: 10,
+                                              Text(
+                                                timePosted,
+                                                style: TextStyle(
+                                                  fontSize: 12,
+                                                  fontWeight: FontWeight.bold,
+                                                  color: Constants.darkText
+                                                      .withOpacity(0.6),
+                                                ),
                                               ),
                                               Row(
                                                 children: [
-                                                  Icon(
-                                                    Icons.favorite_border,
-                                                    size: 15,
-                                                    color: Constants.darkText
-                                                        .withOpacity(0.8),
+                                                  Row(
+                                                    children: [
+                                                      Icon(
+                                                        Icons
+                                                            .chat_bubble_outline,
+                                                        size: 15,
+                                                        color: Constants
+                                                            .darkText
+                                                            .withOpacity(0.8),
+                                                      ),
+                                                      const SizedBox(
+                                                        width: 5,
+                                                      ),
+                                                      Text(
+                                                        replies,
+                                                        style: TextStyle(
+                                                          color: Constants
+                                                              .darkText
+                                                              .withOpacity(0.8),
+                                                          letterSpacing: 0,
+                                                          fontSize: 13,
+                                                          fontWeight:
+                                                              FontWeight.w300,
+                                                        ),
+                                                      ),
+                                                    ],
                                                   ),
                                                   const SizedBox(
-                                                    width: 5,
+                                                    width: 10,
                                                   ),
-                                                  Text(
-                                                    upvotes,
-                                                    style: TextStyle(
-                                                      color: Constants.darkText
-                                                          .withOpacity(0.8),
-                                                      letterSpacing: 0,
-                                                      fontSize: 13,
-                                                      fontWeight:
-                                                          FontWeight.w300,
-                                                    ),
+                                                  Row(
+                                                    children: [
+                                                      Icon(
+                                                        Icons.favorite_border,
+                                                        size: 15,
+                                                        color: Constants
+                                                            .darkText
+                                                            .withOpacity(0.8),
+                                                      ),
+                                                      const SizedBox(
+                                                        width: 5,
+                                                      ),
+                                                      Text(
+                                                        upvotes,
+                                                        style: TextStyle(
+                                                          color: Constants
+                                                              .darkText
+                                                              .withOpacity(0.8),
+                                                          letterSpacing: 0,
+                                                          fontSize: 13,
+                                                          fontWeight:
+                                                              FontWeight.w300,
+                                                        ),
+                                                      ),
+                                                    ],
                                                   ),
                                                 ],
                                               ),
@@ -361,13 +389,7 @@ class NoDoubts extends StatelessWidget {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
-                  Container(
-                    height: 300,
-                    width: 300,
-                    child: Lottie.network(
-                        'https://assets3.lottiefiles.com/packages/lf20_r71cen62.json',
-                        fit: BoxFit.contain),
-                  ),
+                  Constants.errorLottie,
                   const SizedBox(
                     height: 40,
                   ),

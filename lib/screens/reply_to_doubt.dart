@@ -12,12 +12,13 @@ import 'package:lottie/lottie.dart';
 
 class ReplyToDoubt extends ConsumerStatefulWidget {
   final String desc;
+  final String? grade;
   final String username;
   final String timePosted;
   final String doubtId;
   final bool isMyDoubts;
-  ReplyToDoubt(
-      this.desc, this.username, this.timePosted, this.doubtId, this.isMyDoubts);
+  ReplyToDoubt(this.desc, this.username, this.timePosted, this.doubtId,
+      this.isMyDoubts, this.grade);
   @override
   _ReplyToDoubtState createState() => _ReplyToDoubtState();
 }
@@ -165,7 +166,7 @@ class _ReplyToDoubtState extends ConsumerState<ReplyToDoubt> {
                                     height: 5,
                                   ),
                                   Text(
-                                    'SE IT',
+                                    widget.grade??'',
                                     style: TextStyle(
                                       fontSize: 13,
                                       fontWeight: FontWeight.w400,
@@ -255,7 +256,7 @@ class _GetRepliesState extends State<GetReplies> {
         builder: (BuildContext context, AsyncSnapshot snapshot) {
           if (snapshot.data == null) return Text('Not found vrons!');
           if (snapshot.hasData && snapshot.data!.docs.isEmpty) {
-           return Container(
+            return Container(
               child: Column(
                 children: [
                   Constants.errorLottie,

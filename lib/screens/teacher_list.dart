@@ -18,6 +18,11 @@ class _TeacherListState extends ConsumerState<TeacherList> {
     return SafeArea(
         child: Scaffold(
       appBar: AppBar(
+        title: const Text(
+          'Teachers',
+          style:
+              TextStyle(fontWeight: FontWeight.bold, color: Constants.darkText),
+        ),
         backgroundColor: Constants.background,
         elevation: 0,
         leading: IconButton(
@@ -32,16 +37,6 @@ class _TeacherListState extends ConsumerState<TeacherList> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            const Padding(
-              padding: EdgeInsets.only(left: 20, top: 10),
-              child: Text(
-                'Teachers',
-                style: TextStyle(
-                    fontSize: 30,
-                    fontWeight: FontWeight.bold,
-                    color: Constants.darkText),
-              ),
-            ),
             const SizedBox(
               height: 10,
             ),
@@ -55,7 +50,22 @@ class _TeacherListState extends ConsumerState<TeacherList> {
                   return Center(child: CircularProgressIndicator());
                 if (snapshot.data == null) return Text('Null was returned');
                 if (snapshot.hasData && snapshot.data!.docs.isEmpty)
-                  return Text('No');
+                  return Container(
+                    child: Center(
+                      child: Column(
+                        children: [
+                          Constants.errorLottie,
+                          Text(
+                            'No teachers added yet!',
+                            style: TextStyle(
+                                fontSize: 22,
+                                fontWeight: FontWeight.bold,
+                                color: Constants.darkText),
+                          )
+                        ],
+                      ),
+                    ),
+                  );
 
                 return AnimationLimiter(
                   child: ListView.builder(
