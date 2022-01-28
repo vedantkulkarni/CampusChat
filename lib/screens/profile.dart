@@ -54,9 +54,32 @@ class _ProfileState extends ConsumerState<Profile> {
 
                   if (snapshot.hasError) {
                     return Container(
-                      child: const Center(
-                        child: Text("Error occured"),
-                      ),
+                      color: Constants.background,
+                      child: Center(
+                          child: Column(
+                        children: [
+                          Constants.errorLottie,
+                          const Text('Unable to login to MIS!',
+                              style: TextStyle(
+                                fontSize: 22,
+                                fontWeight: FontWeight.bold,
+                                color: Constants.darkText,
+                              )),
+                          const SizedBox(
+                            height: 10,
+                          ),
+                          Padding(
+                            padding: const EdgeInsets.symmetric(horizontal: 30),
+                            child: Text(
+                                'You should probably delete this account and signup again with the correct MIS credentials.',
+                                style: TextStyle(
+                                  fontSize: 16,
+                                  fontWeight: FontWeight.bold,
+                                  color: Constants.darkText.withOpacity(0.7),
+                                ),),
+                          )
+                        ],
+                      )),
                     );
                   }
 
@@ -354,7 +377,7 @@ class AttendanceCard extends StatelessWidget {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Container(
-                          child:const Text(
+                          child: const Text(
                             'Attended',
                             style: TextStyle(
                                 fontSize: 15,

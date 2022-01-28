@@ -14,6 +14,8 @@ class AttendanceData with ChangeNotifier {
   late String division;
   late String averageAttendance;
   late String compareId;
+  late String loginId;
+  late String pass;
   bool isLoaded = false;
   String? result;
   List<SubjectModel> subjectList = [];
@@ -24,33 +26,37 @@ class AttendanceData with ChangeNotifier {
 
   void setCompareId(String s) {
     compareId = s;
-    
   }
 
   Future<void> authAndRequestApi() async {
     if (isLoaded) return;
     final res = await DBHelper.getData();
     final query = res.firstWhere((element) => element['id'] == compareId);
+
+    loginId = query['id'];
+    pass = query['pass'];
     
-    final loginId = query['id'];
-    final pass = query['pass'];
     final authUrl =
         'http://pict.ethdigitalcampus.com:80/DCWeb/authenticate.do?loginid=$loginId&password=$pass&dbConnVar=PICT&service_id';
     final attendanceUrl =
         'http://pict.ethdigitalcampus.com/DCWeb/form/jsp_sms/StudentsPersonalFolder_pict.jsp?loginid=$loginId&password=$pass&dbConnVar=PICT&service_id=&dashboard=1';
 
     var response = await http.post(Uri.parse(authUrl));
+
     if (response.statusCode == 302) {
       var sessionId = response.headers['set-cookie'];
 
       sessionId = sessionId!.split(';')[0];
 
-      var getData = await http
-          .post(Uri.parse(attendanceUrl), headers: {'Cookie': sessionId});
+      try {
+        var getData = await http
+            .post(Uri.parse(attendanceUrl), headers: {'Cookie': sessionId});
 
-      parserLogic(getData.body);
-    } else {
-      throw Exception();
+        parserLogic(getData.body);
+      } catch (e) {
+        print('Null was returned');
+        throw Exception();
+      }
     }
   }
 
@@ -73,7 +79,7 @@ class AttendanceData with ChangeNotifier {
     //get dashboard table
     var dashboardElements =
         document.getElementById('table5')!.children[0].children;
-    
+
     username = dashboardElements[4].children[1].text.trim();
 
     grade = dashboardElements[8].children[1].text.trim();

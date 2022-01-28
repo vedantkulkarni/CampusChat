@@ -27,7 +27,11 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       title: 'Flutter Demo',
-      theme: ThemeData(primarySwatch: Colors.blue, fontFamily: 'Chirp'),
+      theme: ThemeData(
+        primarySwatch: Colors.blue,
+        fontFamily: 'Chirp',
+        
+      ),
       debugShowCheckedModeBanner: false,
       home: StreamBuilder(
         stream: FirebaseAuth.instance.userChanges(),

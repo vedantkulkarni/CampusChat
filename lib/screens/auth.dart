@@ -26,13 +26,11 @@ class _AuthScreenState extends State<AuthScreen> with TickerProviderStateMixin {
     // TODO: implement initState
     super.initState();
     myLottie = Lottie.asset('assets/images/auth_lottie.json');
-    animationController =  AnimationController(
+    animationController = AnimationController(
         vsync: this, duration: const Duration(milliseconds: 500));
     animation = Tween(begin: 0.0, end: 1.0).animate(animationController);
     animationController.forward();
   }
-
- 
 
   @override
   void dispose() {
@@ -75,15 +73,15 @@ class _AuthScreenState extends State<AuthScreen> with TickerProviderStateMixin {
         setState(() {
           isLoading = false;
         });
-        
       } else {
         authresult = await auth.createUserWithEmailAndPassword(
             email: email, password: password);
-
+        
         ScaffoldMessenger.of(ctx).showSnackBar(const SnackBar(
           content: Text('User created successfully'),
           backgroundColor: Colors.green,
         ));
+        print('Coming at fireInstance');
         await fireInstance
             .collection('Colleges/PICT/Users')
             .doc(authresult.user.uid)
@@ -91,12 +89,10 @@ class _AuthScreenState extends State<AuthScreen> with TickerProviderStateMixin {
           'username': name,
           'email': email,
           'loginId': misId,
-          
         });
         await DBHelper.insert(misId, password);
       }
     } on PlatformException catch (e) {
-      
       var message = 'Please check your credentials!';
       if (e.message != null) {
         message = e.message.toString();
@@ -112,23 +108,17 @@ class _AuthScreenState extends State<AuthScreen> with TickerProviderStateMixin {
         isLoading = false;
       });
     } catch (err) {
-      
-         String myerr = err.toString();
+      String myerr = err.toString();
 
-      if(mounted)
-      {
-          ScaffoldMessenger.of(ctx).showSnackBar(SnackBar(
-        content: Text(myerr),
-        backgroundColor: Theme.of(ctx).errorColor,
-      ));
+      if (mounted) {
+        ScaffoldMessenger.of(ctx).showSnackBar(SnackBar(
+          content: Text(myerr),
+          backgroundColor: Theme.of(ctx).errorColor,
+        ));
         setState(() {
           isLoading = false;
         });
       }
-      
-      
-
-     
     }
   }
 

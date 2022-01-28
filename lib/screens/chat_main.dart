@@ -8,6 +8,7 @@ import 'package:chat_app/screens/teacher_list.dart';
 
 import 'package:chat_app/utils/chat_engine.dart';
 import 'package:chat_app/utils/constants.dart';
+import 'package:chat_app/utils/db_helper.dart';
 import 'package:chat_app/utils/my_flutter_app_icons.dart';
 import 'package:chat_app/utils/page_transition.dart';
 import 'package:chat_app/utils/providers.dart';
@@ -86,54 +87,57 @@ class _ChatMainState extends ConsumerState<ChatMain>
           child: Column(
             children: [
               Expanded(
-                child: SingleChildScrollView(
-                  physics: const BouncingScrollPhysics(),
-                  child: FadeTransition(
-                    opacity: fadeAnimation,
-                    child: Container(
-                      height: h,
-                      width: w,
+                child: FadeTransition(
+                  opacity: fadeAnimation,
+                  child: Container(
+                    height: h,
+                    width: w,
 
-                      // child: Center(child: Text('Hi'),),
-                      child: userProvider.isLoaded
-                          ? ChatHome(userProvider.userName, animationController)
-                          : FutureBuilder(
-                              future: userProvider.getUserData(),
-                              builder: (context, snapshot) {
-                                if (snapshot.connectionState ==
-                                    ConnectionState.waiting) {
-                                  animationController.forward();
-                                  return Container(
-                                      height: h,
-                                      width: w,
-                                      child: Constants.progressIndicator);
-                                }
-
-                                if (snapshot.hasError) {
-                                  animationController.forward();
-                                  return Container(
-                                    child: Column(
-                                      children: [
-                                        Constants.errorLottie,
-                                        const SizedBox(
-                                          height: 20,
-                                        ),
-                                        const Text(
-                                          'Couldn\'t find anything for you',
-                                          style: Constants.errorText,
-                                        )
-                                      ],
-                                    ),
-                                  );
-                                }
-                                animationController.reverse();
-                                animationController.reset();
+                    // child: Center(child: Text('Hi'),),
+                    child: userProvider.isLoaded
+                        ? ChatHome(userProvider.userName, animationController)
+                        : FutureBuilder(
+                            future: userProvider.getUserData(),
+                            builder: (context, snapshot) {
+                              if (snapshot.connectionState ==
+                                  ConnectionState.waiting) {
                                 animationController.forward();
-                                return ChatHome(
-                                    userProvider.userName, animationController);
-                              },
-                            ),
-                    ),
+                                return Container(
+                                    height: h,
+                                    width: w,
+                                    child: Constants.progressIndicator);
+                              }
+
+                              if (snapshot.hasError) {
+                                animationController.forward();
+                                return Container(
+                                  child: Column(
+                                    children: [
+                                      Constants.errorLottie,
+                                      const SizedBox(
+                                        height: 20,
+                                      ),
+                                      const Text(
+                                        'Couldn\'t find anything for you.',
+                                        style: Constants.errorText,
+                                      ),
+                                      const Text(
+                                        'Try deleting your account and signing up again.',
+                                        style: TextStyle(
+                                            fontSize: 16,
+                                            fontWeight: FontWeight.bold),
+                                      )
+                                    ],
+                                  ),
+                                );
+                              }
+                              animationController.reverse();
+                              animationController.reset();
+                              animationController.forward();
+                              return ChatHome(
+                                  userProvider.userName, animationController);
+                            },
+                          ),
                   ),
                 ),
               ),
@@ -378,8 +382,6 @@ class ActivityList extends StatelessWidget {
     const Map<int, dynamic> mp = {
       1: ['General Chat', 'Chat with your friends'],
       2: ['My Attendance', 'Check your attendance and know your teachers'],
-      3: ['Teachers', 'Consult some faculty'],
-      4: ['Alumni', 'Get guidance from expert alumni']
     };
 
     const colorList = {
@@ -413,8 +415,7 @@ class ActivityList extends StatelessWidget {
               width: MediaQuery.of(context).size.width * 0.85,
               child: AnimationLimiter(
                 child: ListView.builder(
-                  shrinkWrap: true,
-                  physics: const NeverScrollableScrollPhysics(),
+                  physics: const BouncingScrollPhysics(),
                   itemBuilder: (context, index) {
                     return AnimationConfiguration.staggeredList(
                         position: index,
@@ -655,6 +656,50 @@ class DrawerContent extends ConsumerWidget {
                           ),
                         ),
                         GestureDetector(
+                          onTap: () async {
+                            myProvider.isLoaded = false;
+                            await myProvider.firestore
+                                .collection(Constants.userPath)
+                                .doc(myProvider.uid)
+                                .set({'username': 'Deleted User'});
+                            try {
+                              await myProvider.auth.currentUser!.delete();
+                            } catch (e) {
+                              String email =
+                                  '${attendanceProvider.loginId}@gmail.com';
+                              await myProvider.auth.currentUser!
+                                  .reauthenticateWithCredential(
+                                      EmailAuthProvider.credential(
+                                          email: email,
+                                          password: attendanceProvider.pass));
+                              await myProvider.auth.currentUser!.delete();
+                            }
+
+                            await myProvider.auth.signOut();
+                          },
+                          child: Container(
+                            width: double.maxFinite,
+                            padding: const EdgeInsets.symmetric(vertical: 15),
+                            child: Row(
+                              children: [
+                                Icon(
+                                  Icons.delete_outlined,
+                                  color: Constants.darkText.withOpacity(0.5),
+                                ),
+                                const SizedBox(
+                                  width: 50,
+                                ),
+                                const Text(
+                                  'Delete My Account',
+                                  style: TextStyle(
+                                      fontSize: 18,
+                                      fontWeight: FontWeight.w300),
+                                )
+                              ],
+                            ),
+                          ),
+                        ),
+                        GestureDetector(
                           onTap: () {
                             myProvider.isLoaded = false;
                             attendanceProvider.isLoaded = false;
@@ -689,6 +734,12 @@ class DrawerContent extends ConsumerWidget {
 
                   Column(
                     children: [
+                      Text(
+                        'Version 1.0',
+                        style: TextStyle(
+                            fontSize: 12,
+                            color: Constants.darkText.withOpacity(0.4)),
+                      ),
                       const Divider(),
                       const SizedBox(
                         height: 5,
@@ -720,14 +771,16 @@ class DrawerContent extends ConsumerWidget {
                               )),
                           IconButton(
                               onPressed: () {
-                                launchUrl('https://www.instagram.com/_vedant__kulkarni_/');
+                                launchUrl(
+                                    'https://www.instagram.com/_vedant__kulkarni_/');
                               },
                               icon: Icon(MyFlutterApp.instagram,
                                   size: 19,
                                   color: Constants.darkText.withOpacity(0.7))),
                           IconButton(
                               onPressed: () {
-                                launchUrl('https://www.linkedin.com/in/vedant-kulkarni-951770207/');
+                                launchUrl(
+                                    'https://www.linkedin.com/in/vedant-kulkarni-951770207/');
                               },
                               icon: Icon(MyFlutterApp.linkedin_squared,
                                   size: 19,

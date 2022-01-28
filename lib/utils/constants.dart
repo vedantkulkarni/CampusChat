@@ -10,6 +10,7 @@ class Constants {
   static const Color background = Color.fromARGB(255, 243, 243, 249);
   static const String fontName = 'Roboto';
   static const String mainScreenRoute = '/main';
+  static const String userPath = 'Colleges/PICT/Users';
   static final progressIndicator = Center(
     child: SizedBox(
       height: 200,

@@ -24,7 +24,7 @@
   </intent>
 </queries>
    <application
-        android:label="chat_app"
+        android:label="Campus Chat"
         android:icon="@mipmap/ic_launcher">
         <activity
             android:name=".MainActivity"

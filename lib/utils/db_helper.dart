@@ -13,7 +13,7 @@ class DBHelper {
   static Future<void> insert(String loginId, String password) async {
     final db = await DBHelper.database();
     db.insert('creds', {'id': loginId, 'pass': password},
-        conflictAlgorithm: sql.ConflictAlgorithm.ignore);
+        conflictAlgorithm: sql.ConflictAlgorithm.replace);
 
     db.close();
   }
