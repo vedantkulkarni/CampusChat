@@ -66,7 +66,7 @@ The app is entirely powered by Google's Firebase as backend. Also the app is mad
 ## Contributing:hugs:
 
 Contributions are what make the open source community such an amazing place to be learn, inspire, and create. Any contributions you make are **greatly appreciated**.
-* If you have suggestions for adding or removing projects, feel free to [open an issue](https://github.com/vedantkulkarni/MealsApp/issues/new) to discuss it, or directly create a pull request after you edit the project file with necessary changes.
+* If you have suggestions for adding or removing projects, feel free to [open an issue](https://github.com/vedantkulkarni/CampusChat/issues/new) to discuss it, or directly create a pull request after you edit the project file with necessary changes.
 * Please make sure you check your spelling and grammar.
 
 
