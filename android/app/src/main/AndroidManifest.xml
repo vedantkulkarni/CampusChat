@@ -1,5 +1,5 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="com.example.chat_app">
+    package="com.example.campuschat">
     <uses-permission android:name="android.permission.INTERNET"/>
     <queries>
   <!-- If your app opens https URLs -->
@@ -24,7 +24,7 @@
   </intent>
 </queries>
    <application
-        android:label="Campus Chat"
+        android:label="CampusChat"
         android:icon="@mipmap/ic_launcher">
         <activity
             android:name=".MainActivity"

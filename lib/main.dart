@@ -1,11 +1,6 @@
 import 'package:chat_app/screens/auth.dart';
 import 'package:chat_app/screens/chat_main.dart';
 import 'package:chat_app/screens/doubts.dart';
-import 'package:chat_app/screens/profile.dart';
-import 'package:chat_app/screens/teacher_list.dart';
-import 'package:chat_app/utils/chat_engine.dart';
-import 'package:chat_app/utils/constants.dart';
-import 'package:chat_app/utils/teacher_model.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
@@ -62,7 +57,7 @@ class _MyHomePageState extends State<MyHomePage> {
     final Stream<QuerySnapshot> _messageStream = FirebaseFirestore.instance
         .collection('Users/d2yAm7uat41hvHxytd8n/messages')
         .snapshots();
-    final message_doc = FirebaseFirestore.instance
+    final messageDoc = FirebaseFirestore.instance
         .collection('Users/d2yAm7uat41hvHxytd8n/messages');
     return Scaffold(
       appBar: AppBar(
@@ -78,14 +73,14 @@ class _MyHomePageState extends State<MyHomePage> {
             if (streamSnapshot.connectionState == ConnectionState.waiting) {
               return const Text("Loading");
             }
-            final message_data = streamSnapshot.data!.docs;
+            final messageData = streamSnapshot.data!.docs;
             return ListView.builder(
               physics: const BouncingScrollPhysics(
                   parent: AlwaysScrollableScrollPhysics()),
               itemBuilder: (context, index) {
                 return Padding(
                   padding: const EdgeInsets.all(8.0),
-                  child: Text(message_data[index]['messages'].toString()),
+                  child: Text(messageData[index]['messages'].toString()),
                 );
               },
               itemCount: streamSnapshot.data!.docs.length,
@@ -94,7 +89,7 @@ class _MyHomePageState extends State<MyHomePage> {
       floatingActionButton: FloatingActionButton(
         child: const Icon(Icons.add),
         onPressed: () {
-          message_doc.add({'messages': 'This was added by Vedant!'});
+          messageDoc.add({'messages': 'This was added by Vedant!'});
         },
       ),
 

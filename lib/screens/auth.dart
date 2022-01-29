@@ -81,9 +81,9 @@ class _AuthScreenState extends State<AuthScreen> with TickerProviderStateMixin {
           content: Text('User created successfully'),
           backgroundColor: Colors.green,
         ));
-        print('Coming at fireInstance');
+        
         await fireInstance
-            .collection('Colleges/PICT/Users')
+            .collection(Constants.userPath)
             .doc(authresult.user.uid)
             .set({
           'username': name,

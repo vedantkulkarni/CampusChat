@@ -1,15 +1,9 @@
-import 'dart:convert';
-import 'dart:io';
 import 'package:chat_app/utils/constants.dart';
 import 'package:chat_app/utils/user_data.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_staggered_animations/flutter_staggered_animations.dart';
-import 'package:html/parser.dart' as html;
+
 import 'package:flutter/material.dart';
-import 'package:http/http.dart' as http;
-import 'package:html/parser.dart' show parse;
-import 'package:html/dom.dart' as dom;
-import 'package:cookie_jar/cookie_jar.dart';
 
 class Profile extends ConsumerStatefulWidget {
   Profile({Key? key}) : super(key: key);
@@ -71,12 +65,13 @@ class _ProfileState extends ConsumerState<Profile> {
                           Padding(
                             padding: const EdgeInsets.symmetric(horizontal: 30),
                             child: Text(
-                                'You should probably delete this account and signup again with the correct MIS credentials.',
-                                style: TextStyle(
-                                  fontSize: 16,
-                                  fontWeight: FontWeight.bold,
-                                  color: Constants.darkText.withOpacity(0.7),
-                                ),),
+                              'You should probably delete this account and signup again with the correct MIS credentials.',
+                              style: TextStyle(
+                                fontSize: 16,
+                                fontWeight: FontWeight.bold,
+                                color: Constants.darkText.withOpacity(0.7),
+                              ),
+                            ),
                           )
                         ],
                       )),

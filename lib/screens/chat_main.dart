@@ -1,6 +1,6 @@
 import 'dart:ui';
 
-import 'package:chat_app/screens/details.dart';
+
 import 'package:chat_app/screens/doubts.dart';
 import 'package:chat_app/screens/new_doubt.dart';
 import 'package:chat_app/screens/profile.dart';
@@ -28,7 +28,7 @@ class ChatMain extends ConsumerStatefulWidget {
 
 class _ChatMainState extends ConsumerState<ChatMain>
     with SingleTickerProviderStateMixin {
-  final user = FirebaseFirestore.instance.collection('Colleges/PICT/Users');
+  final user = FirebaseFirestore.instance.collection(Constants.userPath);
   late final AnimationController animationController;
   late final Animation<double> fadeAnimation;
 

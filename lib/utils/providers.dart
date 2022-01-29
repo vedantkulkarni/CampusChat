@@ -1,3 +1,4 @@
+import 'package:chat_app/utils/constants.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:riverpod/riverpod.dart';
@@ -30,17 +31,17 @@ class UserInfoProvider {
     await initializeFirebase();
 
     doubtsRaised =
-        await firestore.collection('Colleges/PICT/Doubts').get().then((value) {
+        await firestore.collection(Constants.doubtPath).get().then((value) {
       return value.docs.length.toString();
     });
 
     final userData = await firestore
-        .collection('Colleges/PICT/Users')
+        .collection(Constants.userPath)
         .doc(uid)
         .get()
         .then((documentSnapshot) {
       if (!documentSnapshot.exists) {
-        print('no doc found');
+        
         throw Exception();
       }
       return documentSnapshot.data();

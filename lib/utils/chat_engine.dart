@@ -99,7 +99,7 @@ class _NewMessageState extends State<NewMessage> {
   void initState() {
     // TODO: implement initState
     super.initState();
-    textcontroller = new TextEditingController();
+    textcontroller =  TextEditingController();
   }
 
   @override
@@ -184,8 +184,8 @@ class MessageChipUI extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             !checkWithPrevMessage(uid, nextUid)
-                ? SizedBox(height: 10)
-                : SizedBox(),
+                ? const SizedBox(height: 10)
+                : const SizedBox(),
             checkWithPrevMessage(uid, nextUid)
                 ? Container()
                 : isMe

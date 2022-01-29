@@ -9,8 +9,7 @@ import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_staggered_animations/flutter_staggered_animations.dart';
-import 'package:intl/intl.dart';
-import 'package:lottie/lottie.dart';
+
 
 class Doubts extends ConsumerStatefulWidget {
   final bool isMyDoubts;
@@ -103,12 +102,12 @@ class _DoubtsState extends ConsumerState<Doubts> {
           child: StreamBuilder<QuerySnapshot>(
               stream: widget.isMyDoubts
                   ? firestore //1fYZzZBotnX2gxEuL2aSZPNQPD53
-                      .collection('Colleges/PICT/Doubts')
+                      .collection(Constants.doubtPath)
                       // .orderBy('timestamp', descending: true)
                       .where('uid', isEqualTo: myProvider.uid)
                       .snapshots()
                   : firestore
-                      .collection('Colleges/PICT/Doubts')
+                      .collection(Constants.doubtPath)
                       .orderBy(sorting, descending: true)
                       .snapshots(),
               builder: (context, AsyncSnapshot<QuerySnapshot> snapshot) {

@@ -1,7 +1,6 @@
 import 'package:chat_app/utils/db_helper.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:riverpod/riverpod.dart';
 import 'package:http/http.dart' as http;
 import 'package:html/parser.dart' as html;
 

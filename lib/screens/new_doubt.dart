@@ -28,7 +28,7 @@ class _NewDoubtState extends ConsumerState<NewDoubt> {
   Future<void> uploadReply(String s) async {
     final userProvider = ref.read(userDataProvider);
     final doubtRef = userProvider.firestore
-        .collection('Colleges/PICT/Doubts')
+        .collection(Constants.doubtPath)
         .doc(widget.doubtId)
         .collection('Replies');
     final result = await doubtRef.add({
@@ -40,7 +40,7 @@ class _NewDoubtState extends ConsumerState<NewDoubt> {
       'isAckwnoledgedByUser': false
     });
     final int replyNumber = await userProvider.firestore
-        .collection('Colleges/PICT/Doubts')
+        .collection(Constants.doubtPath)
         .doc(widget.doubtId)
         .get()
         .then((value) {
@@ -48,7 +48,7 @@ class _NewDoubtState extends ConsumerState<NewDoubt> {
       return value.data()!['replies'];
     });
     await userProvider.firestore
-        .collection('Colleges/PICT/Doubts')
+        .collection(Constants.doubtPath)
         .doc(widget.doubtId)
         .update({'replies': replyNumber + 1});
   }
@@ -59,7 +59,7 @@ class _NewDoubtState extends ConsumerState<NewDoubt> {
     final myProvider = ref.read(attendanceDataProvider);
     String seniorStatus =
         userProvider.seniorStatus == 1 ? 'Freshers' : 'Seniors';
-    final doubtRef = userProvider.firestore.collection('Colleges/PICT/Doubts');
+    final doubtRef = userProvider.firestore.collection(Constants.doubtPath);
     final result = await doubtRef.add({
       'desc': ' $s',
       'timestamp': Timestamp.now(),

@@ -31,14 +31,13 @@ class _ReplyToDoubtState extends ConsumerState<ReplyToDoubt> {
     // TODO: implement initState
     super.initState();
     final myProvider = ref.read(userDataProvider);
-    replyReference = myProvider.firestore.collection('Colleges/PICT/Doubts');
+    replyReference = myProvider.firestore.collection(Constants.doubtPath);
   }
 
   Future<void> deleteDoubt(BuildContext context) async {
-    final doubtRef =
-        ref.read(userDataProvider).firestore.collection('Colleges/PICT/Doubts');
+    final doubtRef = replyReference;
     doubtRef.doc(widget.doubtId).delete().then((value) {
-      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
         content: Text(
           'Deletion Successful',
           style: TextStyle(color: Constants.background),
@@ -114,7 +113,7 @@ class _ReplyToDoubtState extends ConsumerState<ReplyToDoubt> {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Container(
-                        margin: EdgeInsets.symmetric(horizontal: 20),
+                        margin: const EdgeInsets.symmetric(horizontal: 20),
                         decoration: BoxDecoration(
                             borderRadius: BorderRadius.circular(10),
                             color: Colors.white,
@@ -166,7 +165,7 @@ class _ReplyToDoubtState extends ConsumerState<ReplyToDoubt> {
                                     height: 5,
                                   ),
                                   Text(
-                                    widget.grade??'',
+                                    widget.grade ?? '',
                                     style: TextStyle(
                                       fontSize: 13,
                                       fontWeight: FontWeight.w400,
@@ -254,7 +253,7 @@ class _GetRepliesState extends State<GetReplies> {
             .orderBy('timestamp', descending: true)
             .snapshots(),
         builder: (BuildContext context, AsyncSnapshot snapshot) {
-          if (snapshot.data == null) return Text('Not found vrons!');
+          if (snapshot.data == null) return const Text('Not found vrons!');
           if (snapshot.hasData && snapshot.data!.docs.isEmpty) {
             return Container(
               child: Column(
@@ -378,11 +377,9 @@ class _ReplyFeedbackState extends State<ReplyFeedback> {
   }
 
   Future<void> increaseRating() async {
-    final firestore =
-        FirebaseFirestore.instance.collection('Colleges/PICT/Users');
+    final firestore = FirebaseFirestore.instance.collection(Constants.userPath);
 
-    final doubtRef =
-        FirebaseFirestore.instance.collection('Colleges/PICT/Doubts');
+    final doubtRef = FirebaseFirestore.instance.collection(Constants.doubtPath);
     await doubtRef
         .doc(widget.doubtId)
         .collection('Replies')

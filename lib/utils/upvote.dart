@@ -31,7 +31,7 @@ class _UpVoteState extends ConsumerState<UpVote> {
             onPressed: () {
               if (!widget.isUpvoted) {
                 FirebaseFirestore.instance
-                    .collection('Colleges/PICT/Doubts')
+                    .collection(Constants.doubtPath)
                     .doc(widget.doubtId)
                     .update({
                   'upvotes': FieldValue.increment(1),
@@ -42,7 +42,7 @@ class _UpVoteState extends ConsumerState<UpVote> {
                 });
               } else {
                 FirebaseFirestore.instance
-                    .collection('Colleges/PICT/Doubts')
+                    .collection(Constants.doubtPath)
                     .doc(widget.doubtId)
                     .update({
                   'upvotes': FieldValue.increment(-1),

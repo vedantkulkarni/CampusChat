@@ -11,6 +11,7 @@ class Constants {
   static const String fontName = 'Roboto';
   static const String mainScreenRoute = '/main';
   static const String userPath = 'Colleges/PICT/Users';
+  static const String doubtPath = 'Colleges/PICT/Doubts';
   static final progressIndicator = Center(
     child: SizedBox(
       height: 200,

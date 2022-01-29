@@ -50,12 +50,13 @@ class _TeacherListState extends ConsumerState<TeacherList> {
                   return Center(child: CircularProgressIndicator());
                 if (snapshot.data == null) return Text('Null was returned');
                 if (snapshot.hasData && snapshot.data!.docs.isEmpty)
+                {
                   return Container(
                     child: Center(
                       child: Column(
                         children: [
                           Constants.errorLottie,
-                          Text(
+                          const Text(
                             'No teachers added yet!',
                             style: TextStyle(
                                 fontSize: 22,
@@ -66,6 +67,8 @@ class _TeacherListState extends ConsumerState<TeacherList> {
                       ),
                     ),
                   );
+                }
+                  
 
                 return AnimationLimiter(
                   child: ListView.builder(
