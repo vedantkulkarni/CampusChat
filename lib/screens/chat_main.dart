@@ -8,7 +8,6 @@ import 'package:chat_app/screens/teacher_list.dart';
 
 import 'package:chat_app/utils/chat_engine.dart';
 import 'package:chat_app/utils/constants.dart';
-import 'package:chat_app/utils/db_helper.dart';
 import 'package:chat_app/utils/my_flutter_app_icons.dart';
 import 'package:chat_app/utils/page_transition.dart';
 import 'package:chat_app/utils/providers.dart';
