@@ -15,6 +15,7 @@ class AttendanceData with ChangeNotifier {
   late String compareId;
   late String loginId;
   late String pass;
+  late String password;
   bool isLoaded = false;
   String? result;
   List<SubjectModel> subjectList = [];
@@ -79,6 +80,7 @@ class AttendanceData with ChangeNotifier {
     final query = res.firstWhere((element) => element['id'] == compareId);
 
     loginId = query['id'];
+    password = query['pass'];
     pass = passEncoder(query['pass']);
 
     final authUrl =

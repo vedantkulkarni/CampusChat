@@ -1,110 +1,95 @@
-# Campus Chat
+<br/>
+<p align="center">
+  <a href="https://github.com/vedantkulkarni/CampusChat">
+    <img src="./new_icon-modified.png" alt="Logo" width="100" height="100">
+  </a>
 
-<p align="center">
-  <img src="/lib/images/logo.png" align="center" width="400" hspace="10" vspace="10">
-</p>
-<p align="center">
-  Fast n' fresh is an E-Commerce Grocery Delivery Mobile Application.<br/>
-  It has separate login for the User, the Admin and the Delivery Boy.<br/>
-  Unlike many other similar apps Fast n' fresh is free and open source.<br/>
-  The backend is created in NodeJS and is temporarily hosted on Heroku.
+  <h1 align="center">CampusChat</h1>
+
+  <p align="center">
+    Get your doubts cleared the right way!
+    <br/>
+    <br/>   
+  </p>
 </p>
   
-## Installing
 
-These instructions will get you a copy of the project up and running on your local machine for development purposes.
+## About
 
-#### Clone
+I just wanted to push my own limits with this app. It started as a fun and learn kind of project but eventually it became one of my best development projects so far. I have majorly focused on UI and UX in this app - material design, animations and stuff.
+The app is essentialy a doubts platform where students can get their doubts cleared. Apart from this the app also provides group chatting services and PICT students can view their latest attendance, in real-time.
+The app is entirely powered by Google's Firebase as backend. Also the app is made in Flutter framework which is again, backed by Google, apparently, and therefore the backend and the frontend integrate seamlessly with each other resulting in a faster app.
 
-To clone this repository copy and paste the following command in your terminal.
+ 
+<br/>
 
-```
-git clone https://github.com/Fast-n-fresh/fast-n-fresh-app.git
-```
 
-#### Prerequisites
+## Built With🛠️
 
-These are the prerequisites that you will need to run this app for your own.
+<p align="left">
+<a href="https://flutter.dev/" target="_blank"><img src="https://img.icons8.com/color/48/000000/flutter.png" width="45" height="45"/> </a> 
+<a href="https://git-scm.com/" target="_blank"> <img src="https://img.icons8.com/color/48/000000/git.png"/> </a> 
+<a href="https://code.visualstudio.com/" target="_blank"> <img src="https://img.icons8.com/color/48/000000/visual-studio-code-2019.png"/> </a> 
+<a href="https://www.dartpad.dev/?null_safety=true" target="_blank"><img src="https://img.icons8.com/color/48/000000/dart.png" width="45" height="45"/> </a>
+<a href="https://github.com/" target="_blank"><img src="https://img.icons8.com/nolan/128/github.png" width="45" height="45"/> </a>
+<a href="https://console.firebase.google.com/" target="_blank"><img src="https://img.icons8.com/color/48/000000/firebase.png" width="45" height="45"/> </a>
+</p>
 
-- This app uses a custom backend made in NodeJS so you will have to create one for yourself.
-- Create different routes according to the requirements in the network folder.
-- Place your own logo in the images folder.
+<br/>
 
-#### Other Requirements
 
-- Android Studio - To build the app for Android devices
-- XCode - To build the app for IOS devices
+## Features💻
 
-## Features
+- Pune Institute of Computer Technology(PICT) Students can view their attendance by signing up with their MIS Portal Credentials.
+- Doubt platform can be used for solving even the simplest and silliest of doubts.
+- General Chat section provided for group discissions.
 
-- Separate Login for the Users, the Admins and the Delivery Boys.
-- Feedback facility for the User.
-- Delivery Status - Pending, Placed, Delivered
-- Two step delivery status updates - By Admin and by Delivery Boy
+<br/>
 
-## Built with
+## Screenshots🚀
 
-- [Flutter](https://flutter.dev/) - The framework
-- [Dart](https://dart.dev/) - The programming language
 
-#### Important Packages Used
-
-- [Provider](https://pub.dev/packages/provider) - For State Management
-- [Razorpay](https://pub.dev/packages/razorpay_flutter) - For Payments
-- [Shimmer](https://pub.dev/packages/shimmer) - For placeholders
-- [Flutter Toast](https://pub.dev/packages/fluttertoast) - For creating toast messages
-- [Curved Navigation Bar](https://pub.dev/packages/curved_navigation_bar) - For the beautiful bottom navigation bar
-- [Shared Preferences](https://pub.dev/packages/shared_preferences) - For caching some data
-- [Google Fonts](https://pub.dev/packages/google_fonts) - For the fonts
-- [Email Validator](https://pub.dev/packages/email_validator) - For email validations
-
-## Developers
-
-- **Rohin Bhat** - 🟢 [Github](https://github.com/RohinBhat) 🟡 [LinkedIn](https://www.linkedin.com/in/rohin-bhat-a2a9a5192/) 🔴 [Website](https://rohinbhat.me)
-- **Burhanuddin Merchant** - 🟢 [Github](https://github.com/BurhanuddinMerchant) 🟡 [LinkedIn](https://www.linkedin.com/in/burhanuddin-merchant-89b14a198/) 🔴 [Website](https://burhanuddinmerchant.ml/)
-
-## Screenshots
-
-### User
-
-|**Login**|**User Profile**|
+|**Manage Account**|**Home Screen**|
 |---|---|
-|<img src="/mockups/login.png" height="750"/>|<img src="/mockups/user-profile.png" height="750"/>|
+|<img src="./mockups/drawer.png" height="750"/>|<img src="./mockups/home.png" height="750"/>|
 
-|**Products 1**|**Products 2**|
+|**View Your Attendance**|**Chat With Your Friends**|
 |---|---|
-|<img src="/mockups/products-1.png" height="750"/>|<img src="/mockups/products-2.png" height="750"/>|
+|<img src="./mockups/attendance.png" height="750"/>|<img src="./mockups/chat.png" height="750"/>|
 
-|**My Cart (Empty)**|**My Cart**|
+|**Ask Some Doubts**|**Reply To People!**|
 |---|---|
-|<img src="/mockups/my-cart-empty.png" height="750"/>|<img src="/mockups/my-cart.png" height="750"/>|
+|<img src="./mockups/doubts.png" height="750"/>|<img src="./mockups/reply.png" height="750"/>|
 
-|**My Orders (Empty)**|**My Orders**|
-|---|---|
-|<img src="/mockups/my-orders-empty.png" height="750"/>|<img src="/mockups/my-orders.png" height="750"/>|
+<br/>
 
-### Admin
+## Contributing:hugs:
 
-|**Create Entities**|**Assign Orders**|
-|---|---|
-|<img src="/mockups/create-entities.png" height="750"/>|<img src="/mockups/assign-orders.png" height="750"/>|
+Contributions are what make the open source community such an amazing place to be learn, inspire, and create. Any contributions you make are **greatly appreciated**.
+* If you have suggestions for adding or removing projects, feel free to [open an issue](https://github.com/vedantkulkarni/MealsApp/issues/new) to discuss it, or directly create a pull request after you edit the project file with necessary changes.
+* Please make sure you check your spelling and grammar.
 
-|**Feedbacks**|**Delivery Status**|
-|---|---|
-|<img src="/mockups/feedbacks.png" height="750"/>|<img src="/mockups/delivery-status.png" height="750"/>|
 
-|**Admin Profile**|
-|---|
-|<img src="/mockups/admin-profile.png" height="750"/>|
 
-### Delivery Boy
+### Creating A Pull Request 🛠️
+1. Raise an issue and get assigned.
+2. Fork the Project
+3. Create your Feature Branch (`git checkout -b feature/AmazingFeature`)
+4. Commit your Changes (`git commit -m 'Add some AmazingFeature'`)
+5. Push to the Branch (`git push origin feature/AmazingFeature`)
+6. Open a Pull Request
 
-|**Assigned Orders**|**Delivery Status**|
-|---|---|
-|<img src="/mockups/assigned-orders.png" height="750"/>|<img src="/mockups/update-delivery-status.png" height="750"/>|
+<br/>
 
-|**Delivery Boy Profile**|
-|---|
-|<img src="/mockups/delivery-boy-profile.png" height="750"/>|
+## Authors
 
-# <p align="center"> < Happy Coding :smile: /> </p>
+* **Vedant Kulkarni** - *Information Technology Student* - [Vedant Kulkarni](https://github.com/vedantkulkarni) 
+
+<br/>
+## Connect with me:
+<a href = "https://www.linkedin.com/in/vedant-kulkarni-951770207/"><img src="https://cdn-icons-png.flaticon.com/512/124/124011.png" hspace="15" width="40" height="40"/></a>
+<a href = "https://www.instagram.com/_vedant__kulkarni_/"><img src="https://cdn-icons-png.flaticon.com/512/355/355975.png" width="42" height="42"/></a>
+
+ <br/>
+
+# I'd really appreciate if you give this repo a  🌟 Thank You 😊

@@ -677,7 +677,7 @@ class DrawerContent extends ConsumerWidget {
                                   .reauthenticateWithCredential(
                                       EmailAuthProvider.credential(
                                           email: email,
-                                          password: attendanceProvider.pass));
+                                          password: attendanceProvider.password));
                               await myProvider.auth.currentUser!.delete();
                             }
 

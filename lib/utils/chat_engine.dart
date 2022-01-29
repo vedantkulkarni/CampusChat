@@ -297,8 +297,8 @@ class _GetMessagesState extends State<GetMessages> {
         }
 
         return ListView.builder(
-          cacheExtent: 2,
-          shrinkWrap: true,
+          
+          shrinkWrap: false,
           physics: const BouncingScrollPhysics(
               parent: AlwaysScrollableScrollPhysics()),
           reverse: true,
