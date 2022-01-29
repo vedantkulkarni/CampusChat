@@ -52,6 +52,7 @@ dependencies:
   url_launcher: ^6.0.18
   url_launcher_web: ^2.0.6
   flutter_launcher_icons: ^0.9.2
+  firebase_messaging: ^11.2.6
 
 flutter_icons:
   image_path: 'assets/images/new_icon.jpg'

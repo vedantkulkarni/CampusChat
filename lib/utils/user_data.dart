@@ -29,48 +29,46 @@ class AttendanceData with ChangeNotifier {
 
   String passEncoder(String s) {
     if (s.contains('!')) {
-      s=s.replaceAll('!', '%20');
+      s = s.replaceAll('!', '%20');
       return s;
     }
     if (s.contains('#')) {
-      s=s.replaceAll('#', '%23');
+      s = s.replaceAll('#', '%23');
       return s;
     }
     if (s.contains('\$')) {
-      s=s.replaceAll('\$', '%24');
+      s = s.replaceAll('\$', '%24');
       return s;
     }
     if (s.contains('%')) {
-      s=s.replaceAll('%', '%25');
+      s = s.replaceAll('%', '%25');
       return s;
     }
     if (s.contains('&')) {
-      s=s.replaceAll('&', '%26');
+      s = s.replaceAll('&', '%26');
       return s;
     }
     if (s.contains('?')) {
-      s=s.replaceAll('?', '%3F');
+      s = s.replaceAll('?', '%3F');
       return s;
     }
     if (s.contains('@')) {
-      s=s.replaceAll('@', '%40');
+      s = s.replaceAll('@', '%40');
       return s;
     }
     if (s.contains('^')) {
-      s=s.replaceAll('^', '%5E');
+      s = s.replaceAll('^', '%5E');
       return s;
     }
     if (s.contains('_')) {
-      s=s.replaceAll('_', '%5F');
+      s = s.replaceAll('_', '%5F');
       return s;
     }
-    
+
     if (s.contains('*')) {
-      s=s.replaceAll('*', '%2A');
+      s = s.replaceAll('*', '%2A');
       return s;
     }
-    
-    
 
     return s;
   }
@@ -83,26 +81,24 @@ class AttendanceData with ChangeNotifier {
     loginId = query['id'];
     pass = passEncoder(query['pass']);
 
-    
-
     final authUrl =
         'http://pict.ethdigitalcampus.com:80/DCWeb/authenticate.do?loginid=$loginId&password=$pass&dbConnVar=PICT&service_id';
     final attendanceUrl =
         'http://pict.ethdigitalcampus.com/DCWeb/form/jsp_sms/StudentsPersonalFolder_pict.jsp?loginid=$loginId&password=$pass&dbConnVar=PICT&service_id=&dashboard=1';
 
     var response = await http.post(Uri.parse(authUrl));
-    
+
     if (response.statusCode == 302) {
       var sessionId = response.headers['set-cookie'];
 
       sessionId = sessionId!.split(';')[0].trim();
-      
 
       var getData = await http
           .get(Uri.parse(attendanceUrl), headers: {'Cookie': sessionId});
-      
 
-      
+      if (getData == null || getData.body.contains('Session Expired')) {
+        throw Error();
+      }
       parserLogic(getData.body);
     }
   }
