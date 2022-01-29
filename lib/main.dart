@@ -90,7 +90,7 @@ class _MyHomePageState extends State<MyHomePage> {
         child: const Icon(Icons.add),
         onPressed: () {
           messageDoc.add({'messages': 'This was added by Vedant!'});
-        },
+           },
       ),
 
       // This trailing comma makes auto-formatting nicer for build methods.

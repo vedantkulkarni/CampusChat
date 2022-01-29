@@ -1,6 +1,5 @@
 import 'dart:ui';
 
-
 import 'package:chat_app/screens/doubts.dart';
 import 'package:chat_app/screens/new_doubt.dart';
 import 'package:chat_app/screens/profile.dart';
@@ -296,8 +295,7 @@ class UserDashboard extends ConsumerWidget {
                       ),
                       Container(
                         width: double.maxFinite,
-                        padding: const EdgeInsets.only(
-                            top: 10, right: 10, left: 20, bottom: 10),
+                        padding: const EdgeInsets.only(left: 20, right: 20),
                         child: Row(
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: [
@@ -306,24 +304,29 @@ class UserDashboard extends ConsumerWidget {
                                 Navigator.push(
                                     context, PageTransition(Doubts(false)));
                               },
-                              child: Row(
-                                children: [
-                                  Text(
-                                    'Doubts',
-                                    style: TextStyle(
-                                        color:
-                                            Constants.background.withOpacity(1),
-                                        fontWeight: FontWeight.w200,
-                                        fontSize: 17),
-                                  ),
-                                  const SizedBox(
-                                    width: 10,
-                                  ),
-                                  const Icon(
-                                    Icons.arrow_forward,
-                                    color: Colors.orangeAccent,
-                                  )
-                                ],
+                              child: Container(
+                                padding:
+                                    const EdgeInsets.symmetric(vertical: 10),
+                                child: Row(
+                                  children: [
+                                    Text(
+                                      'Doubts',
+                                      style: TextStyle(
+                                          color: Constants.background
+                                              .withOpacity(1),
+                                          fontWeight: FontWeight.w200,
+                                          fontSize: 17),
+                                    ),
+                                    const SizedBox(
+                                      width: 10,
+                                    ),
+                                    const Icon(
+                                      Icons.arrow_forward_ios,
+                                      color: Colors.orangeAccent,
+                                      size: 17,
+                                    )
+                                  ],
+                                ),
                               ),
                             ),
                             GestureDetector(
@@ -331,24 +334,28 @@ class UserDashboard extends ConsumerWidget {
                                 Navigator.push(
                                     context, PageTransition(NewDoubt(false)));
                               },
-                              child: Row(
-                                children: [
-                                  Text(
-                                    'Ask a doubt',
-                                    style: TextStyle(
-                                        color:
-                                            Constants.background.withOpacity(1),
-                                        fontWeight: FontWeight.w200,
-                                        fontSize: 17),
-                                  ),
-                                  const SizedBox(
-                                    width: 10,
-                                  ),
-                                  const Icon(
-                                    Icons.question_answer,
-                                    color: Colors.orangeAccent,
-                                  )
-                                ],
+                              child: Container(
+                                padding:
+                                    const EdgeInsets.symmetric(vertical: 10),
+                                child: Row(
+                                  children: [
+                                    Text(
+                                      'Ask a doubt',
+                                      style: TextStyle(
+                                          color: Constants.background
+                                              .withOpacity(1),
+                                          fontWeight: FontWeight.w200,
+                                          fontSize: 17),
+                                    ),
+                                    const SizedBox(
+                                      width: 10,
+                                    ),
+                                    const Icon(
+                                      Icons.question_answer,
+                                      color: Colors.orangeAccent,
+                                    )
+                                  ],
+                                ),
                               ),
                             ),
                           ],

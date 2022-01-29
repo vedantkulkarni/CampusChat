@@ -27,35 +27,83 @@ class AttendanceData with ChangeNotifier {
     compareId = s;
   }
 
+  String passEncoder(String s) {
+    if (s.contains('!')) {
+      s=s.replaceAll('!', '%20');
+      return s;
+    }
+    if (s.contains('#')) {
+      s=s.replaceAll('#', '%23');
+      return s;
+    }
+    if (s.contains('\$')) {
+      s=s.replaceAll('\$', '%24');
+      return s;
+    }
+    if (s.contains('%')) {
+      s=s.replaceAll('%', '%25');
+      return s;
+    }
+    if (s.contains('&')) {
+      s=s.replaceAll('&', '%26');
+      return s;
+    }
+    if (s.contains('?')) {
+      s=s.replaceAll('?', '%3F');
+      return s;
+    }
+    if (s.contains('@')) {
+      s=s.replaceAll('@', '%40');
+      return s;
+    }
+    if (s.contains('^')) {
+      s=s.replaceAll('^', '%5E');
+      return s;
+    }
+    if (s.contains('_')) {
+      s=s.replaceAll('_', '%5F');
+      return s;
+    }
+    
+    if (s.contains('*')) {
+      s=s.replaceAll('*', '%2A');
+      return s;
+    }
+    
+    
+
+    return s;
+  }
+
   Future<void> authAndRequestApi() async {
     if (isLoaded) return;
     final res = await DBHelper.getData();
     final query = res.firstWhere((element) => element['id'] == compareId);
 
     loginId = query['id'];
-    pass = query['pass'];
+    pass = passEncoder(query['pass']);
+
     
+
     final authUrl =
         'http://pict.ethdigitalcampus.com:80/DCWeb/authenticate.do?loginid=$loginId&password=$pass&dbConnVar=PICT&service_id';
     final attendanceUrl =
         'http://pict.ethdigitalcampus.com/DCWeb/form/jsp_sms/StudentsPersonalFolder_pict.jsp?loginid=$loginId&password=$pass&dbConnVar=PICT&service_id=&dashboard=1';
 
     var response = await http.post(Uri.parse(authUrl));
-
+    
     if (response.statusCode == 302) {
       var sessionId = response.headers['set-cookie'];
 
-      sessionId = sessionId!.split(';')[0];
+      sessionId = sessionId!.split(';')[0].trim();
+      
 
-      try {
-        var getData = await http
-            .post(Uri.parse(attendanceUrl), headers: {'Cookie': sessionId});
+      var getData = await http
+          .get(Uri.parse(attendanceUrl), headers: {'Cookie': sessionId});
+      
 
-        parserLogic(getData.body);
-      } catch (e) {
-        print('Null was returned');
-        throw Exception();
-      }
+      
+      parserLogic(getData.body);
     }
   }
 
