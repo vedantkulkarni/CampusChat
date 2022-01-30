@@ -17,7 +17,7 @@
 ## About
 
 I just wanted to push my own limits with this app. It started as a fun and learn kind of project but eventually it became one of my best development projects so far. I have majorly focused on UI and UX in this app - material design, animations and stuff.
-The app is essentialy a doubts platform where students can get their doubts cleared. Apart from this the app also provides group chatting services and PICT students can view their latest attendance, in real-time.
+The app is essentially a doubts platform where students can get their doubts cleared. Apart from this the app also provides group chatting services and PICT students can view their latest attendance, in real-time.
 The app is entirely powered by Google's Firebase as backend. Also the app is made in Flutter framework which is again, backed by Google, apparently, and therefore the backend and the frontend integrate seamlessly with each other resulting in a faster app.
 
  
