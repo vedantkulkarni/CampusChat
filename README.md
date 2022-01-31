@@ -86,6 +86,7 @@ Contributions are what make the open source community such an amazing place to b
 * **Vedant Kulkarni** - *Information Technology Student* - [Vedant Kulkarni](https://github.com/vedantkulkarni) 
 
 <br/>
+
 ## Connect with me:
 <a href = "https://www.linkedin.com/in/vedant-kulkarni-951770207/"><img src="https://cdn-icons-png.flaticon.com/512/124/124011.png" hspace="15" width="40" height="40"/></a>
 <a href = "https://www.instagram.com/_vedant__kulkarni_/"><img src="https://cdn-icons-png.flaticon.com/512/355/355975.png" width="42" height="42"/></a>
