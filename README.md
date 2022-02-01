@@ -92,5 +92,7 @@ Contributions are what make the open source community such an amazing place to b
 <a href = "https://www.instagram.com/_vedant__kulkarni_/"><img src="https://cdn-icons-png.flaticon.com/512/355/355975.png" width="42" height="42"/></a>
 
  <br/>
+ 
+## App is in the process of being launched on playstore, link will be updated here!
 
 # I'd really appreciate if you give this repo a  🌟 Thank You 😊
