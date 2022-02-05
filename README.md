@@ -23,6 +23,9 @@ The app is entirely powered by Google's Firebase as backend. Also the app is mad
  
 <br/>
 
+## Play Store Link 
+ https://lnkd.in/dbhEKwZ2
+
 
 ## Built With🛠️
 
@@ -93,6 +96,5 @@ Contributions are what make the open source community such an amazing place to b
 
  <br/>
  
-## Play Store Link - https://lnkd.in/dbhEKwZ2
 
 # I'd really appreciate if you give this repo a  🌟 Thank You 😊
