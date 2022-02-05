@@ -93,6 +93,6 @@ Contributions are what make the open source community such an amazing place to b
 
  <br/>
  
-## App is in the process of being launched on playstore, link will be updated here!
+## Play Store Link - https://lnkd.in/dbhEKwZ2
 
 # I'd really appreciate if you give this repo a  🌟 Thank You 😊
